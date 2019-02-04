@@ -11,11 +11,13 @@ function myFunction() {
 
   let responseTime = performance.timing.responseEnd - performance.timing.responseStart;
   let fetchToResponse = performance.timing.responseStart - performance.timing.fetchStart;
+  let requestTime = performance.timing.responseStart - performance.timing.requestStart;
+  let appCacheAndDns = performance.timing.domainLookupEnd - performance.timing.fetchStart;
 
   alert("performance.timing.loadEventStart - performance.timing.navigationStart: " + loadTime +
     "\nperformance.timing.unloadEventEnd - performance.timing.unloadEventStart: " + unloadTime +
     "\nperformance.timing.responseEnd - performance.timing.responseStart: " + responseTime +
-    "\nfetchToResponse: " + fetchToResponse);
+    "\nfetchToResponse: " + fetchToResponse + " requestTime: " + requestTime + " appCacheAndDns: " + appCacheAndDns);
 
 
 }
