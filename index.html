@@ -7,7 +7,12 @@
 <script>
 function myFunction() {
   let loadTime = performance.timing.loadEventStart - performance.timing.navigationStart;
-  alert("performance.timing.loadEventStart - performance.timing.navigationStart: " + loadTime);
+  let unloadTime = performance.timing.unloadEventEnd - performance.timing.unloadEventStart;
+  
+  alert("performance.timing.loadEventStart - performance.timing.navigationStart: " + loadTime +
+    "\nperformance.timing.unloadEventEnd - performance.timing.unloadEventStart: " + unloadTime);
+
+  
 }
 </script>
 
