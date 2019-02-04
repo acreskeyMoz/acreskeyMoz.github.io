@@ -9,13 +9,15 @@ function myFunction() {
   let loadTime = performance.timing.loadEventStart - performance.timing.navigationStart;
   let unloadTime = performance.timing.unloadEventEnd - performance.timing.unloadEventStart;
 
-  let responseTime = performance.timing.responseEnd - performance.timing.navigationStart;
-  
+  let responseTime = performance.timing.responseEnd - performance.timing.responseStart;
+  let fetchToResponse = performance.timing.responseStart - performance.timing.fetchStart;
+
   alert("performance.timing.loadEventStart - performance.timing.navigationStart: " + loadTime +
     "\nperformance.timing.unloadEventEnd - performance.timing.unloadEventStart: " + unloadTime +
-    "\nperformance.timing.responseEnd - performance.timing.navigationStart: " + responseTime);
+    "\nperformance.timing.responseEnd - performance.timing.responseStart: " + responseTime +
+    "\nfetchToResponse: " + fetchToResponse);
 
-  
+
 }
 </script>
 
