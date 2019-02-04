@@ -1,1 +1,15 @@
-Hello World
+<!DOCTYPE html>
+<html>
+<body onload="myFunction()">
+
+<h1>Hello World!</h1>
+
+<script>
+function myFunction() {
+  let loadTime = performance.timing.loadEventStart - performance.timing.navigationStart;
+  alert("performance.timing.loadEventStart - performance.timing.navigationStart: " + loadTime);
+}
+</script>
+
+</body>
+</html>
