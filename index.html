@@ -15,12 +15,14 @@ function myFunction() {
   let appCacheAndDns = performance.timing.domainLookupEnd - performance.timing.fetchStart;
   let tcpConnectTime = performance.timing.connectEnd - performance.timing.connectStart;
 
-  alert("performance.timing.loadEventStart - performance.timing.navigationStart: " + loadTime +
-    "\nperformance.timing.unloadEventEnd - performance.timing.unloadEventStart: " + unloadTime +
-    "\nperformance.timing.responseEnd - performance.timing.responseStart: " + responseTime +
-    "\nfetchToResponseStart: " + fetchToResponseStart + " requestTime: " + requestTime + " appCacheAndDns: " + appCacheAndDns
-     + "\ntcpConnectTime: " + tcpConnectTime);
-
+  let output = "performance.timing.loadEventStart - performance.timing.navigationStart: " + loadTime +
+    "<br>performance.timing.unloadEventEnd - performance.timing.unloadEventStart: " + unloadTime +
+    "<br>performance.timing.responseEnd - performance.timing.responseStart: " + responseTime +
+    "<br>fetchToResponseStart: " + fetchToResponseStart + " requestTime: " + requestTime + " appCacheAndDns: " + appCacheAndDns
+     + "<br>tcpConnectTime: " + tcpConnectTime;
+  document.write(output);
+  
+  //alert(output);
 }
 </script>
 
