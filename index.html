@@ -1,14 +1,18 @@
 <!DOCTYPE html>
 <html>
-<body onload="myFunction()">
+<body onload="reportTiming()">
 
 <h1>Hello World!</h1>
 <p id="output"></p>
+<p id="load_event_output"></p>
 
 <img src="Mountain.jpg" alt="Mountain" width="500" height="333">
 
+<img src="http://gfsnt.no/oen/foto/Haegefjell_Jan_2013_Large.jpg" alt="Large image">
+
+
 <script>
-function myFunction() {
+function reportTiming() {
   let loadTime = performance.timing.loadEventStart - performance.timing.navigationStart;
   let unloadTime = performance.timing.unloadEventEnd - performance.timing.unloadEventStart;
 
@@ -25,9 +29,24 @@ function myFunction() {
      + "<br>tcpConnectTime: " + tcpConnectTime;
   
   document.getElementById('output').innerHTML = output;
+  measureLoadEventDuration();
   //alert(output);
 }
+
+function measureLoadEventDuration() {
+  let loadEventEnd = window.performance.timing.loadEventEnd;
+  if (loadEventEnd > 0) {
+    console.log("got loadEventEnd");
+    let output = "performance.timing.loadEventEnd - performance.timing.loadEventStart: " + (loadEventEnd -window.performance.timing.loadEventStart);
+    document.getElementById('load_event_output').innerHTML = output;
+  } else {
+    window.setTimeout(measureLoadEventDuration, 100);
+  }
+}
 </script>
+
+"<br>performance.timing.loadEventEnd - performance.timing.navigationStart: " + loadTimeWithEvent +
+
 
 </body>
 </html>
