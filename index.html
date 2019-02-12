@@ -10,7 +10,6 @@
 <script>
 function myFunction() {
   let loadTime = performance.timing.loadEventStart - performance.timing.navigationStart;
-  let loadTimeWithEvent = performance.timing.loadEventEnd - performance.timing.navigationStart;
   let unloadTime = performance.timing.unloadEventEnd - performance.timing.unloadEventStart;
 
   let responseTime = performance.timing.responseEnd - performance.timing.responseStart;
@@ -20,7 +19,6 @@ function myFunction() {
   let tcpConnectTime = performance.timing.connectEnd - performance.timing.connectStart;
 
   let output = "performance.timing.loadEventStart - performance.timing.navigationStart: " + loadTime +
-    "<br>performance.timing.loadEventEnd - performance.timing.navigationStart: " + loloadTimeWithEventadTime +
     "<br>performance.timing.unloadEventEnd - performance.timing.unloadEventStart: " + unloadTime +
     "<br>performance.timing.responseEnd - performance.timing.responseStart: " + responseTime +
     "<br>fetchToResponseStart: " + fetchToResponseStart + " requestTime: " + requestTime + " appCacheAndDns: " + appCacheAndDns
