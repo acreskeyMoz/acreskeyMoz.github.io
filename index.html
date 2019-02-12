@@ -3,6 +3,9 @@
 <body onload="myFunction()">
 
 <h1>Hello World!</h1>
+<p id="output"></p>
+
+<img src="Mountain.jpg" alt="Mountain" width="500" height="333">
 
 <script>
 function myFunction() {
@@ -20,8 +23,8 @@ function myFunction() {
     "<br>performance.timing.responseEnd - performance.timing.responseStart: " + responseTime +
     "<br>fetchToResponseStart: " + fetchToResponseStart + " requestTime: " + requestTime + " appCacheAndDns: " + appCacheAndDns
      + "<br>tcpConnectTime: " + tcpConnectTime;
-  document.write(output);
   
+  document.getElementById('output').innerHTML = output;
   //alert(output);
 }
 </script>
