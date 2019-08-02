@@ -5,6 +5,7 @@
 <h1>Hello World!</h1>
 <p id="output"></p>
 <p id="load_event_output"></p>
+<p id="demo"></p>
 
 <img src="Mountain.jpg" alt="Mountain" width="500" height="333">
 
@@ -14,9 +15,34 @@
 
 <img src="island.jpg" alt="island" width="1200" height="800">
 
-<!-- <img src="http://gfsnt.no/oen/foto/Haegefjell_Jan_2013_Large.jpg" alt="Large image"> -->
+<img src="http://gfsnt.no/oen/foto/Haegefjell_Jan_2013_Large.jpg" alt="Large image">
 
 <script>
+
+
+if(window.addEventListener)
+{
+  window.addEventListener('load', loadEventHit)
+}
+
+function myTimeout()
+{
+
+  window.performance.mark("mark_timeout");
+  
+  window.performance.measure('thisTimeout', 'navigationStart', 'mark_timeout' );
+  var perfResult = window.performance.getEntriesByName('thisTimeout');
+  console.log('myTimeout: ' + perfResult[0].duration);
+  window.performance.clearMarks();
+}
+
+window.setTimeout(myTimeout, 100);
+
+function loadEventHit() {
+  document.getElementById("demo").innerHTML = Date();
+  console.log("loadEvenHit");
+}
+
 function reportTiming() {
   let loadTime = performance.timing.loadEventStart - performance.timing.navigationStart;
   let unloadTime = performance.timing.unloadEventEnd - performance.timing.unloadEventStart;
