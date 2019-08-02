@@ -27,9 +27,7 @@ if(window.addEventListener)
 
 function myTimeout()
 {
-
   window.performance.mark("mark_timeout");
-  
   window.performance.measure('thisTimeout', 'navigationStart', 'mark_timeout' );
   var perfResult = window.performance.getEntriesByName('thisTimeout');
   console.log('myTimeout: ' + perfResult[0].duration);
