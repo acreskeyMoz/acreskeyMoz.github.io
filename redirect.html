@@ -59,12 +59,13 @@ function reportTiming() {
   let requestTime = performance.timing.responseStart - performance.timing.requestStart;
   let appCacheAndDns = performance.timing.domainLookupEnd - performance.timing.fetchStart;
   let tcpConnectTime = performance.timing.connectEnd - performance.timing.connectStart;
-
+ 
+   navigationTiming = window.performance.getEntriesByType("navigation")
   
   let output = "performance.timing.loadEventStart - performance.timing.navigationStart: " + loadTime +
     "<br>performance.timing.unloadEventEnd - performance.timing.unloadEventStart: " + unloadTime +
-    "<br>performance.timing.redirectStart: " + performance.timing.redirectStart +
-    "<br>performance.timing.redirectEnd: " + performance.timing.redirectEnd +
+    "<br>navigationTiming.redirectStart: " + navigationTiming[0].redirectStart + 
+    "<br>pnavigationTiming.redirectEnd: " + navigationTiming[0].redirectEnd + 
     "<br>performance.timing.responseEnd - performance.timing.responseStart: " + responseTime +
     "<br>fetchToResponseStart: " + fetchToResponseStart + " requestTime: " + requestTime + " appCacheAndDns: " + appCacheAndDns
      + "<br>tcpConnectTime: " + tcpConnectTime;
