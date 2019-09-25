@@ -2,7 +2,7 @@
 <html>
 <body onload="reportTiming()">
 
-<h1>Hello World!</h1>
+<h1>Redirected Hello World!</h1>
 <p id="output"></p>
 <p id="load_event_output"></p>
 <p id="demo"></p>
@@ -18,10 +18,6 @@
 <img src="http://gfsnt.no/oen/foto/Haegefjell_Jan_2013_Large.jpg" alt="Large image">
 
 <script>
-
-console.log("redirect");
-window.location = "redirect.html";
-
 
 function reqListener () {
   console.log(this.responseText);
@@ -64,8 +60,11 @@ function reportTiming() {
   let appCacheAndDns = performance.timing.domainLookupEnd - performance.timing.fetchStart;
   let tcpConnectTime = performance.timing.connectEnd - performance.timing.connectStart;
 
+  
   let output = "performance.timing.loadEventStart - performance.timing.navigationStart: " + loadTime +
     "<br>performance.timing.unloadEventEnd - performance.timing.unloadEventStart: " + unloadTime +
+    "<br>performance.timing.redirectStart: " + performance.timing.redirectStart +
+    "<br>performance.timing.redirectEnd: " + performance.timing.redirectEnd +
     "<br>performance.timing.responseEnd - performance.timing.responseStart: " + responseTime +
     "<br>fetchToResponseStart: " + fetchToResponseStart + " requestTime: " + requestTime + " appCacheAndDns: " + appCacheAndDns
      + "<br>tcpConnectTime: " + tcpConnectTime;
