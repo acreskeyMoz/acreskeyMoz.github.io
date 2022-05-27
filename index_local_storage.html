@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+
+<body onload="reportTiming()">
+
+
+<h1>Hello World!</h1>
+<p id="output"></p>
+<p id="load_event_output"></p>
+<p id="demo"></p>
+
+
+<div id="result"></div>
+
+<img src="Mountain.jpg" alt="Mountain" width="500" height="333">
+
+<img src="island.jpg" alt="Island" width="500" height="333">
+
+<img src="tracks.jpg" alt="Tracks" width="500" height="333">
+
+<img src="tsproxy_android_results.png" alt="tsproxy" width="500" height="333">
+
+<img src="matterhorn.jpg" alt="matterhorn" width="500" height="333">
+
+
+
+<script>
+
+
+// Check browser support
+if (typeof(Storage) !== "undefined") {
+    // Store
+    localStorage.setItem("lastname", "Smith");
+    // Retrieve
+    document.getElementById("result").innerHTML = localStorage.getItem("lastname");
+  } else {
+    document.getElementById("result").innerHTML = "Sorry, your browser does not support Web Storage...";
+  }
+
+function reqListener () {
+  console.log(this.responseText);
+}
+
+// var oReq = new XMLHttpRequest();
+// oReq.addEventListener("load", reqListener);
+// oReq.open("GET", "https://www.example.org/example.txt", true);
+// oReq.send();
+
+
+if(window.addEventListener)
+{
+  window.addEventListener('load', loadEventHit)
+}
+
+function myTimeout()
+{
+  window.performance.mark("mark_timeout");
+  window.performance.measure('thisTimeout', 'navigationStart', 'mark_timeout' );
+  var perfResult = window.performance.getEntriesByName('thisTimeout');
+  console.log('myTimeout: ' + perfResult[0].duration);
+  window.performance.clearMarks();
+}
+
+window.setTimeout(myTimeout, 100);
+
+function loadEventHit() {
+  document.getElementById("demo").innerHTML = Date();
+  console.log("loadEvenHit");
+}
+
+function reportTiming() {
+  let loadTime = performance.timing.loadEventStart - performance.timing.navigationStart;
+  let unloadTime = performance.timing.unloadEventEnd - performance.timing.unloadEventStart;
+
+  let responseTime = performance.timing.responseEnd - performance.timing.responseStart;
+  let fetchToResponseStart = performance.timing.responseStart - performance.timing.fetchStart;
+  let requestTime = performance.timing.responseStart - performance.timing.requestStart;
+  let appCacheAndDns = performance.timing.domainLookupEnd - performance.timing.fetchStart;
+  let tcpConnectTime = performance.timing.connectEnd - performance.timing.connectStart;
+
+  let output = "performance.timing.loadEventStart - performance.timing.navigationStart: " + loadTime +
+    "<br>performance.timing.unloadEventEnd - performance.timing.unloadEventStart: " + unloadTime +
+    "<br>performance.timing.responseEnd - performance.timing.responseStart: " + responseTime +
+    "<br>fetchToResponseStart: " + fetchToResponseStart + " requestTime: " + requestTime + " appCacheAndDns: " + appCacheAndDns
+     + "<br>tcpConnectTime: " + tcpConnectTime;
+  
+  document.getElementById('output').innerHTML = output;
+  measureLoadEventDuration();
+
+  measureLCP();
+
+  //testPromise();
+  //alert(output);
+}
+
+async function testPromise()
+{
+
+  await new Promise(
+    function (resolve) {
+
+      let lcp = 0;
+
+      // Create the PerformanceObserver instance.
+      // const po = new PerformanceObserver((entryList) => {
+
+      //   const entries = entryList.getEntries();
+      //   const lastEntry = entries[entries.length - 1];
+
+      //   // Update `lcp` to the latest value, using `renderTime` if it's available,
+      //   // otherwise using `loadTime`. (Note: `renderTime` may not be available if
+      //   // the element is an image and it's loaded cross-origin without the
+      //   // `Timing-Allow-Origin` header.)
+      //   lcp = lastEntry.renderTime || lastEntry.loadTime;
+      //   lcp = 2;
+
+      //   console.log("largest-contentful-paint PerformanceObserver - lcp: " + lcp);
+
+      // });
+
+       //po.observe({type: 'largest-contentful-paint', buffered: true});
+
+        while (lcp == 0)
+        {
+          console.log("waiting for lcp");
+        }
+
+        console.log("waited for lcp");
+        resolve(lcp);
+      }
+  );
+
+}
+
+function measureLCP()
+{
+// Catch errors since some browsers throw when using the new `type` option.
+// https://bugs.webkit.org/show_bug.cgi?id=209216
+
+console.log("measure lcp");
+try {
+  // Create a variable to hold the latest LCP value (since it can change).
+  let lcp;
+
+  // Create the PerformanceObserver instance.
+  const po = new PerformanceObserver((entryList) => {
+
+    const entries = entryList.getEntries();
+    const lastEntry = entries[entries.length - 1];
+
+    // Update `lcp` to the latest value, using `renderTime` if it's available,
+    // otherwise using `loadTime`. (Note: `renderTime` may not be available if
+    // the element is an image and it's loaded cross-origin without the
+    // `Timing-Allow-Origin` header.)
+    lcp = lastEntry.renderTime || lastEntry.loadTime;
+
+    console.log("largest-contentful-paint PerformanceObserver - lcp: " + lcp);
+
+  });
+
+  // Observe entries of type `largest-contentful-paint`, including buffered
+  // entries, i.e. entries that occurred before calling `observe()`.
+  po.observe({type: 'largest-contentful-paint', buffered: true});
+
+  // Send the latest LCP value to your analytics server once the user
+  // leaves the tab.
+  addEventListener('visibilitychange', function fn() {
+    if (lcp && document.visibilityState === 'hidden') {
+      console.log('LCP:', lcp);
+      removeEventListener('visibilitychange', fn, true);
+    }
+  }, true);
+} catch (e) {
+  // Do nothing if the browser doesn't support this API.
+  console.log("lcp not supported");
+}
+
+}
+
+function measureLoadEventDuration() {
+  let loadEventEnd = window.performance.timing.loadEventEnd;
+  if (loadEventEnd > 0) {
+    console.log("got loadEventEnd");
+    let output = "performance.timing.loadEventEnd - performance.timing.loadEventStart: " + (loadEventEnd -window.performance.timing.loadEventStart);
+    document.getElementById('load_event_output').innerHTML = output;
+  } else {
+    window.setTimeout(measureLoadEventDuration, 100);
+  }
+}
+</script>
+
+</body>
+</html>
