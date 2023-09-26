@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plotly.js Example</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+
+<input type="file" id="csvFileInput" accept=".csv" onchange="handleFiles(this.files)">
+<div id="plot"></div>
+
+
+<div id="histogramPlot"></div>
+<div id="cdfPlot"></div>
+
+<script src="https://d3js.org/d3.v5.min.js"></script>
+
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+<script>
+
+
+function computeMean(array) {
+    return array.reduce((acc, val) => acc + val, 0) / array.length;
+}
+
+function computeMedian(array) {
+    const sorted = array.slice().sort((a, b) => a - b);
+    const middle = Math.floor(sorted.length / 2);
+    return sorted.length % 2 === 0 ? (sorted[middle - 1] + sorted[middle]) / 2 : sorted[middle];
+}
+
+function computeStdDev(array, mean) {
+    return Math.sqrt(array.reduce((acc, val) => acc + Math.pow(val - mean, 2), 0) / array.length);
+}
+
+function computeQuantile(array, q) {
+    const sorted = array.slice().sort((a, b) => a - b);
+    const pos = (sorted.length - 1) * q;
+    const base = Math.floor(pos);
+    const rest = pos - base;
+    if (sorted[base + 1] !== undefined) {
+        return sorted[base] + rest * (sorted[base + 1] - sorted[base]);
+    } else {
+        return sorted[base];
+    }
+}
+
+function handleFiles(files) {
+        const file = files[0];
+        const reader = new FileReader();
+
+        reader.onload = function(event) {
+            parseCSVAndPlot(event.target.result);
+        };
+
+        reader.readAsText(file);
+    }
+
+    function parseCSVAndPlot(csvData) {
+        const data = Plotly.d3.csv.parse(csvData);
+
+        // Dynamically determine the branches
+        const branches = [...new Set(data.map(d => d.branch))];
+
+        const histogramTraces = [];
+        const cdfTraces = [];
+
+        branches.forEach(branch => {
+            const branchData = data.filter(d => d.branch === branch);
+            const values = branchData.map(d => +d.value).filter(v => v < 5000).sort((a, b) => a - b);
+            histogramTraces.push({
+                type: 'histogram',
+                name: branch,
+                x: values,
+                opacity: 0.6
+            });
+
+            // Calculate CDF values
+            const xCDF = values;
+            const yCDF = xCDF.map((val, index) => (index + 1) / values.length);
+            cdfTraces.push({
+                type: 'scatter',
+                mode: 'lines',
+                name: branch,
+                x: xCDF,
+                y: yCDF
+            });
+        });
+
+        // Display statistics table
+        const statsTable = document.createElement('table');
+        statsTable.style.textAlign = 'right';  // Align content to the right
+        document.body.appendChild(statsTable);
+        const headerRow = document.createElement('tr');
+        const statsLabels = ['Num results', 'Mean', 'Median', 'Standard Deviation', 'Quantile 0.05', 'Quantile 0.25', 'Quantile 0.5', 'Quantile 0.75', 'Quantile 0.95'];
+
+        const placeholderHeader = document.createElement('th');
+        placeholderHeader.style.textAlign = 'left';  // Align the label to the left
+        headerRow.appendChild(placeholderHeader);
+        branches.forEach(branch => {
+            const th = document.createElement('th');
+            th.innerText = branch;
+            headerRow.appendChild(th);
+        });
+        statsTable.appendChild(headerRow);
+
+        statsLabels.forEach(statLabel => {
+            const row = document.createElement('tr');
+            const labelCell = document.createElement('td');
+            labelCell.innerText = statLabel;
+            labelCell.style.textAlign = 'left';  // Align the label to the left
+            row.appendChild(labelCell);
+            statsTable.appendChild(row);
+
+            branches.forEach(branch => {
+                const branchData = data.filter(d => d.branch === branch);
+                const values = branchData.map(d => +d.value);
+
+                let statValue;
+                switch (statLabel) {
+                    case 'Num results':
+                        statValue = values.length;
+                        break;
+                    case 'Mean':
+                        statValue = computeMean(values);
+                        break;
+                    case 'Median':
+                        statValue = computeMedian(values);
+                        break;
+                    case 'Standard Deviation':
+                        statValue = computeStdDev(values, computeMean(values));
+                        break;
+                    default:  // For quantiles
+                        statValue = computeQuantile(values, parseFloat(statLabel.split(' ')[1]));
+                }
+
+                const cell = document.createElement('td');
+                cell.innerText = statLabel === 'Num results' ? Math.round(statValue).toString() : statValue.toFixed(2);
+                row.appendChild(cell);
+            });
+        });
+
+        const histogramLayout = {
+            title: 'Histogram of Values by Branch',
+            xaxis: {
+                title: 'Value'
+            },
+            yaxis: {
+                title: 'Count'
+            },
+            barmode: 'group'  // Groups histogram bars side by side
+        };
+
+        const cdfLayout = {
+            title: 'CDF of Values by Branch',
+            xaxis: {
+                title: 'Value'
+            },
+            yaxis: {
+                title: 'Cumulative Probability'
+            }
+        };
+
+        Plotly.newPlot('histogramPlot', histogramTraces, histogramLayout);
+        Plotly.newPlot('cdfPlot', cdfTraces, cdfLayout);
+    }
+
+function addRowToTable(table, label, value) {
+    const row = document.createElement('tr');
+    row.innerHTML = `<td>${label}</td><td>${value.toFixed(2)}</td>`;
+    table.appendChild(row);
+}
+
+function getMode(array) {
+    const counts = array.reduce((acc, value) => {
+        if (acc[value]) {
+            acc[value]++;
+        } else {
+            acc[value] = 1;
+        }
+        return acc;
+    }, {});
+
+    let maxCount = 0;
+    let modeValue;
+    for (let value in counts) {
+        if (counts[value] > maxCount) {
+            maxCount = counts[value];
+            modeValue = +value;
+        }
+    }
+
+    return modeValue;
+}
+
+function generateAnnotations(value, label, yOffset, branch) {
+    return [{
+        xref: 'x',
+        yref: 'paper',
+        x: value,
+        y: yOffset,
+        xanchor: 'left',
+        yanchor: 'bottom',
+        text: `${branch} ${label}: ${value.toFixed(2)}`,
+        showarrow: true,
+        arrowhead: 4,
+        ax: 0,
+        ay: -40,
+        bgcolor: 'rgba(255,255,255,0.7)',
+        opacity: 0.8
+    }];
+
+}
+
+</script>
+
+
+
+
+
+</body>
+</html>

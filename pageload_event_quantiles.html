@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plots with Plotly</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+</head>
+
+<body>
+
+<input type="file" id="csvFileInput" accept=".csv" onchange="handleFiles(this.files)">
+<div id="plotly-box-div"></div>
+<div id="plotly-cdf-div"></div>
+<div id="plotly-uplift-div"></div>
+<div id="plotly-branch-percentile-div"></div> 
+
+<table id="quantiles-table" border="1">
+    <thead>
+        <tr>
+            <th>Quantile</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+<script>
+    function handleFiles(files) {
+        const file = files[0];
+        const reader = new FileReader();
+
+        reader.onload = function(event) {
+            parseCSVAndPlot(event.target.result);
+        };
+
+        reader.readAsText(file);
+    }
+
+    function parseCSVAndPlot(csvText) {
+        data = d3.csvParse(csvText);
+
+        const MAX_VALUE = 12000;
+        const QUANTILES = [0.01, 0.05, 0.10, 0.15, 0.20, 0.25, 0.30, 0.35, 0.40, 0.45, 0.50, 0.55, 0.60, 0.65, 0.70, 0.75, 0.80, 0.85, 0.90, 0.95, 0.99];
+
+        data = data.filter(row => parseFloat(row.metric_value) <= MAX_VALUE);
+
+        // Prepare data for box plots
+        var branches = [...new Set(data.map(row => row.branch))];
+        var boxData = branches.map(branch => {
+            var values = data.filter(row => row.branch === branch)
+                .map(row => parseFloat(row.metric_value))
+                .filter(value => value <= MAX_VALUE); // Exclude values above 12,000
+            return {
+                y: values,
+                type: 'box',
+                name: branch
+            };
+        });
+
+        const ALL_PERCENTILES = Array.from({length: 100}, (_, i) => (i + 1) / 100);
+
+        // Calculate uplift for each branch compared to control
+        const controlData = data.filter(row => row.branch === 'control');
+        let upliftData = branches.map(branch => {
+            let branchData = data.filter(row => row.branch === branch);
+            return {
+                name: `uplift-${branch}`,
+                x: ALL_PERCENTILES,
+                y: ALL_PERCENTILES.map(p => {
+                    let controlValue = parseFloat(d3.quantile(controlData.map(row => parseFloat(row.metric_value)), p));
+                    let branchValue = parseFloat(d3.quantile(branchData.map(row => parseFloat(row.metric_value)), p));
+                    return branchValue - controlValue;
+                }),
+                type: 'scatter',
+                mode: 'lines+markers'
+            };
+        });
+
+        // Plot uplift values
+        Plotly.newPlot('plotly-uplift-div', upliftData, {
+            title: 'Uplift for Different Branches',
+            xaxis: {
+                title: 'Percentile'
+            },
+            yaxis: {
+                title: 'Uplift Value'
+            }
+        });
+
+        // Plot box plot
+        Plotly.newPlot('plotly-box-div', boxData, {
+            title: 'Box Plots for Different Branches',
+            yaxis: {
+                title: 'Metric Value'
+            },
+            xaxis: {
+                title: 'Branch'
+            }
+        });
+
+        // Prepare data for CDF
+        let cdfData = branches.map(branch => {
+            var values = data.filter(row => row.branch === branch)
+                .map(row => parseFloat(row.metric_value))
+                .filter(value => value <= MAX_VALUE) // Exclude values above 12,000
+                .sort((a, b) => a - b);
+            var l = values.length;
+            return {
+                x: values,
+                y: values.map((_, i) => (i + 1) / l),
+                type: 'scatter',
+                mode: 'lines',
+                name: branch
+            };
+        });
+
+        // Plot CDF
+        Plotly.newPlot('plotly-cdf-div', cdfData, {
+            title: 'CDF for Different Branches',
+            xaxis: {
+                title: 'Metric Value'
+            },
+            yaxis: {
+                title: 'Cumulative Percentage'
+            }
+        });
+
+        // Prepare table data
+        let tableData = QUANTILES.map(q => {
+            let row = { 'Quantile': q };
+            branches.forEach(branch => {
+                var values = data.filter(row => row.branch === branch)
+                    .map(row => parseFloat(row.metric_value))
+                    .filter(value => value <= MAX_VALUE) // Exclude values above 12,000
+                    .sort((a, b) => a - b);
+                row[branch] = d3.quantile(values, q).toFixed(2);
+            });
+            return row;
+        });
+
+        // New Plot: Branch value at each percentile
+        let branchPercentileData = branches.map(branch => {
+            var values = data.filter(row => row.branch === branch)
+                .map(row => parseFloat(row.metric_value))
+                .sort((a, b) => a - b);
+            return {
+                x: ALL_PERCENTILES,
+                y: ALL_PERCENTILES.map(p => parseFloat(d3.quantile(values, p))),
+                type: 'scatter',
+                mode: 'lines+markers',
+                name: branch
+            };
+        });
+
+        Plotly.newPlot('plotly-branch-percentile-div', branchPercentileData, {
+            title: 'Metric Value at Each Percentile for Different Branches',
+            xaxis: {
+                title: 'Percentile'
+            },
+            yaxis: {
+                title: 'Metric Value'
+            }
+        });
+
+        // Populate the table
+        d3.select("#quantiles-table thead tr")
+            .selectAll('th')
+            .data(['Quantile'].concat(branches))
+            .enter()
+            .append('th')
+            .text(d => d);
+
+        d3.select("#quantiles-table tbody")
+            .selectAll('tr')
+            .data(tableData)
+            .enter()
+            .append('tr')
+            .selectAll('td')
+            .data(d => Object.values(d))
+            .enter()
+            .append('td')
+            .text(d => d);
+    }
+</script>
+
+</body>
+</html>

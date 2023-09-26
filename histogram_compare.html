@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plotly.js Example</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+
+<input type="file" id="csvFileInput" accept=".csv" onchange="handleFiles(this.files)">
+
+<div id="linePlot"></div>
+<div id="cdfPlot"></div>
+<div id="upliftPlot"></div>
+
+<script>
+  function handleFiles(files) {
+      const file = files[0];
+      const reader = new FileReader();
+
+      reader.onload = function(event) {
+          parseCSVAndPlot(event.target.result);
+      };
+
+      reader.readAsText(file);
+  }
+
+  function parseCSVAndPlot(csvData) {
+      const data = Plotly.d3.csv.parse(csvData);
+      const filteredData = data.filter(d => +d.metric_key <= 12000);
+
+      const controlData = {};
+        filteredData.filter(d => d.branch === "control").forEach(d => {
+            controlData[d.metric_key] = +d.metric_value;
+        });
+
+      // Dynamically determine the branches
+      const branches = [...new Set(filteredData.map(d => d.branch))];
+
+      const lineTraces = [];
+
+      branches.forEach(branch => {
+          const branchData = filteredData.filter(d => d.branch === branch);
+          const xValues = [...new Set(branchData.map(d => +d.metric_key))].sort((a, b) => a - b);
+          
+          // Raw key/value pairs for each branch
+          const yValues = xValues.map(key => {
+              const entry = branchData.find(d => +d.metric_key === key);
+              return entry ? +entry.metric_value : 0;
+          });
+
+          lineTraces.push({
+              type: 'scatter',
+              mode: 'lines+markers',
+              name: branch,
+              x: xValues,
+              y: yValues
+          });
+      });
+
+      const layoutLine = {
+          title: 'Metric Value by Branch',
+          xaxis: {
+              title: 'Metric Key'
+          },
+          yaxis: {
+              title: 'Metric Value'
+          }
+      };
+
+      Plotly.newPlot('linePlot', lineTraces, layoutLine);
+      
+      function calculateCDF(data, metricKey) {
+          const filteredData = data.filter(d => +d.metric_key <= metricKey);
+          const totalEntries = data.length;
+          const cumulativeEntries = filteredData.length;
+          return cumulativeEntries / totalEntries;
+      }
+
+      const cdfTraces = [];
+
+      branches.forEach(branch => {
+          const branchData = filteredData.filter(d => d.branch === branch);
+          const xValues = [...new Set(branchData.map(d => +d.metric_key))].sort((a, b) => a - b);
+          const yValues = xValues.map(key => calculateCDF(branchData, key));
+
+          cdfTraces.push({
+              type: 'scatter',
+              mode: 'lines+markers',
+              name: branch + ' CDF',
+              x: xValues,
+              y: yValues
+          });
+      });
+
+      const layoutCDF = {
+          title: 'CDF of Metric Value by Branch',
+          xaxis: {
+              title: 'Metric Key'
+          },
+          yaxis: {
+              title: 'CDF'
+          }
+      };
+
+      Plotly.newPlot('cdfPlot', cdfTraces, layoutCDF);
+
+      //////////////
+      const upliftTraces = [];
+
+      branches.forEach(branch => {
+        const branchData = filteredData.filter(d => d.branch === branch);
+        const xValues = [...new Set(branchData.map(d => +d.metric_key))].sort((a, b) => a - b);
+
+        // Calculate uplift values
+        const yValues = xValues.map(key => {
+            const entry = branchData.find(d => +d.metric_key === key);
+            const branchValue = entry ? +entry.metric_value : 0;
+            const controlValue = controlData[key] || 0;
+            return branchValue - controlValue;
+        });
+
+        upliftTraces.push({
+            type: 'scatter',
+            mode: 'lines+markers',
+            name: branch + ' Uplift',
+            x: xValues,
+            y: yValues
+        });
+      });
+
+     const layoutUplift = {
+        title: 'Uplift by Branch (against Control)',
+        xaxis: {
+            title: 'Metric Key'
+        },
+        yaxis: {
+            title: 'Uplift Value'
+        }
+    };
+
+    Plotly.newPlot('upliftPlot', upliftTraces, layoutUplift);
+
+  }
+</script>
+
+
+</body>
+</html>

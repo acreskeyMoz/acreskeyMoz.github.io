@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plotly.js Chart from CSV</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+
+<body>
+
+<input type="file" id="input-csv" accept=".csv">
+
+<div id="plotly-div"></div>
+
+<script>
+ document.getElementById('input-csv').addEventListener('change', handleFileSelect, false);
+
+ function handleFileSelect(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const dataURL = URL.createObjectURL(file);
+            Plotly.d3.csv(dataURL, function(err, data) {
+                if(err) throw err;
+                renderChart(data);
+            });
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+function renderChart(data) {
+    const controlValues = [];
+    const treatmentAValues = [];
+    const treatmentBValues = [];
+
+    data.forEach(item => {
+        switch (item.branch) {
+            case 'control':
+                controlValues.push(parseFloat(item.value));
+                break;
+            case 'treatment-a':
+                treatmentAValues.push(parseFloat(item.value));
+                break;
+            case 'treatment-b':
+                treatmentBValues.push(parseFloat(item.value));
+                break;
+        }
+    });
+
+    const percentilesControl = getBootstrappedPercentiles(controlValues);
+    const percentilesTreatmentA = getBootstrappedPercentiles(treatmentAValues);
+    const percentilesTreatmentB = getBootstrappedPercentiles(treatmentBValues);
+
+    const traceControl = {
+        type: 'scatter',
+        mode: 'lines+markers',
+        name: 'Control',
+        x: Object.keys(percentilesControl),
+        y: Object.values(percentilesControl).map(p => p.value),
+        error_y: {
+            type: 'data',
+            symmetric: false,
+            array: Object.values(percentilesControl).map(p => p.upper - p.value),
+            arrayminus: Object.values(percentilesControl).map(p => p.value - p.lower)
+        }
+    };
+
+    const traceTreatmentA = {
+        type: 'scatter',
+        mode: 'lines+markers',
+        name: 'Treatment A',
+        x: Object.keys(percentilesTreatmentA),
+        y: Object.values(percentilesTreatmentA).map(p => p.value),
+        error_y: {
+            type: 'data',
+            symmetric: false,
+            array: Object.values(percentilesTreatmentA).map(p => p.upper - p.value),
+            arrayminus: Object.values(percentilesTreatmentA).map(p => p.value - p.lower)
+        }
+    };
+
+    const traceTreatmentB = {
+        type: 'scatter',
+        mode: 'lines+markers',
+        name: 'Treatment B',
+        x: Object.keys(percentilesTreatmentB),
+        y: Object.values(percentilesTreatmentB).map(p => p.value),
+        error_y: {
+            type: 'data',
+            symmetric: false,
+            array: Object.values(percentilesTreatmentB).map(p => p.upper - p.value),
+            arrayminus: Object.values(percentilesTreatmentB).map(p => p.value - p.lower)
+        }
+    };
+
+    Plotly.newPlot('plotly-div', [traceControl, traceTreatmentA, traceTreatmentB]);
+}
+
+function getBootstrappedPercentiles(data) {
+    const N = data.length;
+    const bootstraps = 10000;
+    const percentiles = Array.from({ length: 100 }, (_, i) => i + 1);
+    const results = {};
+
+    const bootstrapPercentiles = percentiles.map(() => []);
+
+    for (let i = 0; i < bootstraps; i++) {
+        const sample = [];
+        for (let j = 0; j < N; j++) {
+            const idx = Math.floor(Math.random() * N);
+            sample.push(data[idx]);
+        }
+        percentiles.forEach((percentile, pIdx) => {
+            bootstrapPercentiles[pIdx].push(getPercentile(sample, percentile));
+        });
+    }
+
+    percentiles.forEach((percentile, idx) => {
+        bootstrapPercentiles[idx].sort((a, b) => a - b);
+        const lower = bootstrapPercentiles[idx][Math.floor(bootstraps * 0.025)];  // 2.5th percentile
+        const upper = bootstrapPercentiles[idx][Math.floor(bootstraps * 0.975)];  // 97.5th percentile
+        const value = getPercentile(data, percentile);
+        results[percentile] = {
+            value,
+            lower,
+            upper
+        };
+    });
+
+    return results;
+}
+
+function getPercentile(data, percentile) {
+    data.sort((a, b) => a - b);
+    const index = (percentile / 100) * data.length;
+    if (Number.isInteger(index)) {
+        return (data[index - 1] + data[index]) / 2;
+    }
+    return data[Math.floor(index)];
+}
+
+</script>
+
+</body>
+
+</html>
