@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plots Experiment Data with Plotly</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <style>
+      #totalCountDisplay {
+        text-align: right;
+        max-width: 200px;
+      }
+    </style>
+  </head>
+
+  <body>
+
+    <input type="file" id="csvFileInput" accept=".csv" onchange="handleFiles(this.files)">
+
+    <div></div>
+    <label for="loadTypeSelector">Select Load Type: </label>
+    <select id="loadTypeSelector">
+    </select>
+
+    <div id="totalCountDisplay"></div>
+
+    <div id="plotly-uplift-div"></div>
+    <div id="plotly-percentage-uplift-div"></div>
+
+    <script>
+
+      document.getElementById('loadTypeSelector').addEventListener('change', function() {
+        const selectedLoadType = this.value;
+        parseCSVAndPlot(csvTextGlobal, selectedLoadType);
+      });
+
+      let csvTextGlobal; // Store the original CSV text
+      function handleFiles(files) {
+        const file = files[0];
+        const reader = new FileReader();
+
+        reader.onload = function(event) {
+          csvTextGlobal = event.target.result;
+          parseCSVAndPlot(csvTextGlobal, null);
+        };
+
+        reader.readAsText(file);
+      }
+
+      function populateLoadTypeSelector(loadTypes, defaultLoadType) {
+        const selector = document.getElementById('loadTypeSelector');
+        selector.innerHTML = "";
+
+        loadTypes.forEach(loadType => {
+          const option = document.createElement('option');
+          option.value = loadType;
+          option.textContent = loadType;
+
+          // Set default load type as selected
+          if (loadType === defaultLoadType) {
+            option.selected = true;
+          }
+
+          selector.appendChild(option);
+        });
+      }
+
+
+      function parseCSVAndPlot(csvText, selectedLoadType) {
+        data = d3.csvParse(csvText);
+
+        if (!selectedLoadType) {
+          let loadTypes = [...new Set(data.map(row => row.load_type))];
+
+          // Default to 'NORMAL' load_type if available, else use the first available load_type
+          selectedLoadType = loadTypes.includes('NORMAL') ? 'NORMAL' : loadTypes[0];
+
+          populateLoadTypeSelector(loadTypes, selectedLoadType);
+        }
+
+        data = data.filter(row => row.load_type === selectedLoadType);
+
+        // Exclude extremely long pageloads
+        const MAX_VALUE = 15000;
+        data = data.filter(row => parseFloat(row.metric_value) <= MAX_VALUE);
+
+        var branches = [...new Set(data.map(row => row.branch))];
+
+        // Check if total_count is available, and display it if it is
+        if (data[0].hasOwnProperty('total_count')) {
+          displayTotalCount(data, branches);
+        }
+
+        // 0.01 to 0.99
+        const ALL_PERCENTILES = Array.from({
+          length: 99
+        }, (_, i) => (i + 1) / 100);
+
+        // Calculate uplift for each branch relative to control
+        const controlData = data.filter(row => row.branch === 'control');
+        let upliftData = branches.map(branch => {
+          let branchData = data.filter(row => row.branch === branch);
+          return {
+            name: `uplift-${branch}`,
+            x: ALL_PERCENTILES,
+            y: ALL_PERCENTILES.map(p => {
+              let controlValue = parseFloat(d3.quantile(controlData.map(row => parseFloat(row.metric_value)), p));
+              let branchValue = parseFloat(d3.quantile(branchData.map(row => parseFloat(row.metric_value)), p));
+              return branchValue - controlValue;
+            }),
+            type: 'scatter',
+            mode: 'lines+markers'
+          };
+        });
+
+        // Plot absolute uplift values
+        Plotly.newPlot('plotly-uplift-div', upliftData, {
+          title: 'Absolute Uplift by Branch',
+          xaxis: {
+            title: 'Percentile'
+          },
+          yaxis: {
+            title: 'Uplift Value',
+            range: [-100, 100] // Setting fixed range for y-axis
+          }
+        });
+
+        // Calculate percentage uplift for each branch compared to control
+        let percentageUpliftData = branches.map(branch => {
+          let branchData = data.filter(row => row.branch === branch);
+          return {
+            name: `percentage-uplift-${branch}`,
+            x: ALL_PERCENTILES,
+            y: ALL_PERCENTILES.map(p => {
+              let controlValue = parseFloat(d3.quantile(controlData.map(row => parseFloat(row.metric_value)), p));
+              let branchValue = parseFloat(d3.quantile(branchData.map(row => parseFloat(row.metric_value)), p));
+              return ((branchValue - controlValue) / controlValue) * 100; // Percentage uplift
+            }),
+            type: 'scatter',
+            mode: 'lines+markers'
+          };
+        });
+
+        // Plot percentage uplift values
+        Plotly.newPlot('plotly-percentage-uplift-div', percentageUpliftData, {
+          title: 'Percentage Uplift by Branch',
+          xaxis: {
+            title: 'Percentile'
+          },
+          yaxis: {
+            title: 'Uplift Percentage'
+          }
+        });
+
+      }
+
+      function displayTotalCount(data, branches) {
+        let totalCounts = branches.map(branch => {
+          let branchData = data.filter(row => row.branch === branch);
+          let totalCount = branchData[0].total_count; // Take the first total_count
+          return {
+            branch,
+            totalCount
+          };
+        });
+
+        // Displaying total_count
+        const totalCountDisplay = document.getElementById('totalCountDisplay');
+        totalCountDisplay.innerHTML = "<h4>Total Counts</h4>";
+        totalCounts.forEach(({
+          branch,
+          totalCount
+        }) => {
+          totalCountDisplay.innerHTML += `<p style="text-align:right;">${branch}: ${parseInt(totalCount).toLocaleString()}</p>`;
+        });
+      }
+    </script>
+
+  </body>
+
+</html>
