@@ -67,6 +67,25 @@
         });
       }
 
+      function displayAverageAbsoluteUplift(upliftData) {
+        // Get the display element
+        const averageUpliftDisplay = document.getElementById('totalCountDisplay');
+
+        // Loop through each branch data in upliftData
+        upliftData.forEach(branchData => {
+          // Skip the 'control' branch
+          if (branchData.name.includes('control')) {
+            return;
+          }
+          
+          // Calculate the average of all uplift values across all percentiles
+          let averageUplift = branchData.y.reduce((acc, val) => acc + val, 0) / branchData.y.length;
+
+          // Displaying average absolute uplift for the branch
+          averageUpliftDisplay.innerHTML += `<p>Average Absolute Uplift (${branchData.name}): ${averageUplift.toFixed(2)}</p>`;
+        });
+      }
+
 
       function parseCSVAndPlot(csvText, selectedLoadType) {
         data = d3.csvParse(csvText);
@@ -82,32 +101,29 @@
 
         data = data.filter(row => row.load_type === selectedLoadType);
 
-        // Exclude extremely long pageloads
         const MAX_VALUE = 15000;
-        data = data.filter(row => parseFloat(row.metric_value) <= MAX_VALUE);
+        // Filter out the 0.0 and 1.0 quantiles and any negative metric_values or extremely long pageloads
+        data = data.filter(row => row.percentile_rank > 0.0 && row.percentile_rank < 1.0 && parseFloat(row.metric_value) >= 0 && parseFloat(row.metric_value) <= MAX_VALUE);
 
+        
         var branches = [...new Set(data.map(row => row.branch))];
 
         // Check if total_count is available, and display it if it is
         if (data[0].hasOwnProperty('total_count')) {
           displayTotalCount(data, branches);
         }
-
-        // 0.01 to 0.99
-        const ALL_PERCENTILES = Array.from({
-          length: 99
-        }, (_, i) => (i + 1) / 100);
-
-        // Calculate uplift for each branch relative to control
-        const controlData = data.filter(row => row.branch === 'control');
-        let upliftData = branches.map(branch => {
+ 
+          // Calculate uplift for each branch relative to control
+          const controlData = data.filter(row => row.branch === 'control');
+          let upliftData = branches.map(branch => {
           let branchData = data.filter(row => row.branch === branch);
           return {
             name: `uplift-${branch}`,
-            x: ALL_PERCENTILES,
-            y: ALL_PERCENTILES.map(p => {
-              let controlValue = parseFloat(d3.quantile(controlData.map(row => parseFloat(row.metric_value)), p));
-              let branchValue = parseFloat(d3.quantile(branchData.map(row => parseFloat(row.metric_value)), p));
+            x: branchData.map(row => parseFloat(row.percentile_rank)),
+            y: branchData.map(row => {
+              let correspondingControl = controlData.find(controlRow => controlRow.percentile_rank === row.percentile_rank);
+              let controlValue = parseFloat(correspondingControl.metric_value);
+              let branchValue = parseFloat(row.metric_value);
               return branchValue - controlValue;
             }),
             type: 'scatter',
@@ -127,15 +143,19 @@
           }
         });
 
+
+        displayAverageAbsoluteUplift(upliftData);
+
         // Calculate percentage uplift for each branch compared to control
         let percentageUpliftData = branches.map(branch => {
           let branchData = data.filter(row => row.branch === branch);
           return {
             name: `percentage-uplift-${branch}`,
-            x: ALL_PERCENTILES,
-            y: ALL_PERCENTILES.map(p => {
-              let controlValue = parseFloat(d3.quantile(controlData.map(row => parseFloat(row.metric_value)), p));
-              let branchValue = parseFloat(d3.quantile(branchData.map(row => parseFloat(row.metric_value)), p));
+            x: branchData.map(row => parseFloat(row.percentile_rank)),
+            y: branchData.map(row => {
+              let correspondingControl = controlData.find(controlRow => controlRow.percentile_rank === row.percentile_rank);
+              let controlValue = parseFloat(correspondingControl.metric_value);
+              let branchValue = parseFloat(row.metric_value);
               return ((branchValue - controlValue) / controlValue) * 100; // Percentage uplift
             }),
             type: 'scatter',
