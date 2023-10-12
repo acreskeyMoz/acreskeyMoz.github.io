@@ -101,7 +101,7 @@
 
         data = data.filter(row => row.load_type === selectedLoadType);
 
-        const MAX_VALUE = 15000;
+        const MAX_VALUE = 12000;
         // Filter out the 0.0 and 1.0 quantiles and any negative metric_values or extremely long pageloads
         data = data.filter(row => row.percentile_rank > 0.0 && row.percentile_rank < 1.0 && parseFloat(row.metric_value) >= 0 && parseFloat(row.metric_value) <= MAX_VALUE);
 
@@ -139,7 +139,7 @@
           },
           yaxis: {
             title: 'Uplift Value',
-            range: [-100, 100] // Setting fixed range for y-axis
+            range: [-200, 200] // Setting fixed range for y-axis
           }
         });
 
