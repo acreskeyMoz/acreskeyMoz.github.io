@@ -426,6 +426,11 @@ div.chart {
        </a>
       </li>
       <li>
+       <a href="#All-http_page_dns_issue_time">
+        http_page_dns_issue_time
+       </a>
+      </li>
+      <li>
        <a href="#All-fcp_time">
         pageload event: fcp_time
        </a>
@@ -496,6 +501,11 @@ div.chart {
       <li>
        <a href="#Windows-http_page_tls_handshake">
         http_page_tls_handshake
+       </a>
+      </li>
+      <li>
+       <a href="#Windows-http_page_dns_issue_time">
+        http_page_dns_issue_time
        </a>
       </li>
       <li>
@@ -572,6 +582,11 @@ div.chart {
        </a>
       </li>
       <li>
+       <a href="#Linux-http_page_dns_issue_time">
+        http_page_dns_issue_time
+       </a>
+      </li>
+      <li>
        <a href="#Linux-fcp_time">
         pageload event: fcp_time
        </a>
@@ -642,6 +657,11 @@ div.chart {
       <li>
        <a href="#Mac-http_page_tls_handshake">
         http_page_tls_handshake
+       </a>
+      </li>
+      <li>
+       <a href="#Mac-http_page_dns_issue_time">
+        http_page_dns_issue_time
        </a>
       </li>
       <li>
@@ -970,11 +990,11 @@ div.chart {
            <tr>
             <td rowspan="1" style="background:white; border-bottom-style:solid; border-right-style:solid;">
              <div class="tooltip">
-              <a href="#All-fcp_time-mean">
-               fcp_time
+              <a href="#All-http_page_dns_issue_time-mean">
+               http_page_dns_issue_time
               </a>
               <span class="tooltiptext">
-               Time between firstContentfulPaint and navigationStart, in ms.
+               HTTP page: open() -&gt; DNS request issued (ms)
               </span>
              </div>
             </td>
@@ -985,12 +1005,12 @@ div.chart {
             </td>
             <td style="background:white;border-bottom-style:solid;">
              <div style="font-weight: normal;">
-              +1.8%
+              -5.1%
              </div>
             </td>
             <td style="background:white;border-bottom-style:solid;">
              <div style="font-weight: normal;">
-              Small (r=0.01)
+              None (p=0.01)
              </div>
             </td>
            </tr>
@@ -998,11 +1018,11 @@ div.chart {
             <tr>
              <td rowspan="1" style="background:#ececec; border-bottom-style:solid; border-right-style:solid;">
               <div class="tooltip">
-               <a href="#All-lcp_time-mean">
-                lcp_time
+               <a href="#All-fcp_time-mean">
+                fcp_time
                </a>
                <span class="tooltiptext">
-                Time between largestContentfulPaint and navigationStart, at the point of onLoad firing, in ms. This may differ from the final LCP value as reported through the LCP histogram.
+                Time between firstContentfulPaint and navigationStart, in ms.
                </span>
               </div>
              </td>
@@ -1013,7 +1033,7 @@ div.chart {
              </td>
              <td style="background:#ececec;border-bottom-style:solid;">
               <div style="font-weight: normal;">
-               +1.5%
+               +1.8%
               </div>
              </td>
              <td style="background:#ececec;border-bottom-style:solid;">
@@ -1026,11 +1046,11 @@ div.chart {
              <tr>
               <td rowspan="1" style="background:white; border-bottom-style:solid; border-right-style:solid;">
                <div class="tooltip">
-                <a href="#All-load_time-mean">
-                 load_time
+                <a href="#All-lcp_time-mean">
+                 lcp_time
                 </a>
                 <span class="tooltiptext">
-                 Time between loadEventStart and navigationStart, in ms.
+                 Time between largestContentfulPaint and navigationStart, at the point of onLoad firing, in ms. This may differ from the final LCP value as reported through the LCP histogram.
                 </span>
                </div>
               </td>
@@ -1041,12 +1061,12 @@ div.chart {
               </td>
               <td style="background:white;border-bottom-style:solid;">
                <div style="font-weight: normal;">
-                +0.5%
+                +1.5%
                </div>
               </td>
               <td style="background:white;border-bottom-style:solid;">
                <div style="font-weight: normal;">
-                None (p=0.01)
+                Small (r=0.01)
                </div>
               </td>
              </tr>
@@ -1054,11 +1074,11 @@ div.chart {
               <tr>
                <td rowspan="1" style="background:#ececec; border-bottom-style:solid; border-right-style:solid;">
                 <div class="tooltip">
-                 <a href="#All-response_time-mean">
-                  response_time
+                 <a href="#All-load_time-mean">
+                  load_time
                  </a>
                  <span class="tooltiptext">
-                  Time between responseStart and navigationStart, in ms.
+                  Time between loadEventStart and navigationStart, in ms.
                  </span>
                 </div>
                </td>
@@ -1074,7 +1094,7 @@ div.chart {
                </td>
                <td style="background:#ececec;border-bottom-style:solid;">
                 <div style="font-weight: normal;">
-                 None (p=0.69)
+                 None (p=0.01)
                 </div>
                </td>
               </tr>
@@ -1082,11 +1102,11 @@ div.chart {
                <tr>
                 <td rowspan="1" style="background:white; border-bottom-style:solid; border-right-style:solid;">
                  <div class="tooltip">
-                  <a href="#All-js_exec_time-mean">
-                   js_exec_time
+                  <a href="#All-response_time-mean">
+                   response_time
                   </a>
                   <span class="tooltiptext">
-                   Time spent executing JS during page load, in ms.
+                   Time between responseStart and navigationStart, in ms.
                   </span>
                  </div>
                 </td>
@@ -1097,16 +1117,45 @@ div.chart {
                 </td>
                 <td style="background:white;border-bottom-style:solid;">
                  <div style="font-weight: normal;">
-                  -0.2%
+                  +0.5%
                  </div>
                 </td>
                 <td style="background:white;border-bottom-style:solid;">
                  <div style="font-weight: normal;">
-                  None (p=0.60)
+                  None (p=0.69)
                  </div>
                 </td>
                </tr>
                <tr>
+                <tr>
+                 <td rowspan="1" style="background:#ececec; border-bottom-style:solid; border-right-style:solid;">
+                  <div class="tooltip">
+                   <a href="#All-js_exec_time-mean">
+                    js_exec_time
+                   </a>
+                   <span class="tooltiptext">
+                    Time spent executing JS during page load, in ms.
+                   </span>
+                  </div>
+                 </td>
+                 <td style="background:#ececec;border-bottom-style:solid;">
+                  <div style="font-weight: normal;">
+                   treatment-a
+                  </div>
+                 </td>
+                 <td style="background:#ececec;border-bottom-style:solid;">
+                  <div style="font-weight: normal;">
+                   -0.2%
+                  </div>
+                 </td>
+                 <td style="background:#ececec;border-bottom-style:solid;">
+                  <div style="font-weight: normal;">
+                   None (p=0.60)
+                  </div>
+                 </td>
+                </tr>
+                <tr>
+                </tr>
                </tr>
               </tr>
              </tr>
@@ -1153,7 +1202,7 @@ div.chart {
    </thead>
    <tbody>
     <tr>
-     <td rowspan="1" style="background:#ececec; border-bottom-style:solid; border-right-style:solid;">
+     <td rowspan="1" style="background:white; border-bottom-style:solid; border-right-style:solid;">
       <div class="tooltip">
        <a href="#Windows-perf_page_load_time_ms-mean">
         perf_page_load_time_ms
@@ -1163,17 +1212,17 @@ div.chart {
        </span>
       </div>
      </td>
-     <td style="background:#ececec;border-bottom-style:solid;">
+     <td style="background:white;border-bottom-style:solid;">
       <div style="font-weight: normal;">
        treatment-a
       </div>
      </td>
-     <td style="background:#ececec;border-bottom-style:solid;">
+     <td style="background:white;border-bottom-style:solid;">
       <div style="font-weight: normal;">
        +1.1%
       </div>
      </td>
-     <td style="background:#ececec;border-bottom-style:solid;">
+     <td style="background:white;border-bottom-style:solid;">
       <div style="font-weight: normal;">
        None (p=0.46)
       </div>
@@ -1181,7 +1230,7 @@ div.chart {
     </tr>
     <tr>
      <tr>
-      <td rowspan="1" style="background:white; border-bottom-style:solid; border-right-style:solid;">
+      <td rowspan="1" style="background:#ececec; border-bottom-style:solid; border-right-style:solid;">
        <div class="tooltip">
         <a href="#Windows-perf_page_load_time_from_responsestart_ms-mean">
          perf_page_load_time_from_responsestart_ms
@@ -1191,17 +1240,17 @@ div.chart {
         </span>
        </div>
       </td>
-      <td style="background:white;border-bottom-style:solid;">
+      <td style="background:#ececec;border-bottom-style:solid;">
        <div style="font-weight: normal;">
         treatment-a
        </div>
       </td>
-      <td style="background:white;border-bottom-style:solid;">
+      <td style="background:#ececec;border-bottom-style:solid;">
        <div style="font-weight: normal;">
         +1.2%
        </div>
       </td>
-      <td style="background:white;border-bottom-style:solid;">
+      <td style="background:#ececec;border-bottom-style:solid;">
        <div style="font-weight: normal;">
         None (p=0.42)
        </div>
@@ -1209,7 +1258,7 @@ div.chart {
      </tr>
      <tr>
       <tr>
-       <td rowspan="1" style="background:#ececec; border-bottom-style:solid; border-right-style:solid;">
+       <td rowspan="1" style="background:white; border-bottom-style:solid; border-right-style:solid;">
         <div class="tooltip">
          <a href="#Windows-perf_first_contentful_paint_ms-mean">
           perf_first_contentful_paint_ms
@@ -1219,17 +1268,17 @@ div.chart {
          </span>
         </div>
        </td>
-       <td style="background:#ececec;border-bottom-style:solid;">
+       <td style="background:white;border-bottom-style:solid;">
         <div style="font-weight: normal;">
          treatment-a
         </div>
        </td>
-       <td style="background:#ececec;border-bottom-style:solid;">
+       <td style="background:white;border-bottom-style:solid;">
         <div style="font-weight: normal;">
          +1.6%
         </div>
        </td>
-       <td style="background:#ececec;border-bottom-style:solid;">
+       <td style="background:white;border-bottom-style:solid;">
         <div style="font-weight: normal;">
          Small (r=0.01)
         </div>
@@ -1237,7 +1286,7 @@ div.chart {
       </tr>
       <tr>
        <tr>
-        <td rowspan="1" style="background:white; border-bottom-style:solid; border-right-style:solid;">
+        <td rowspan="1" style="background:#ececec; border-bottom-style:solid; border-right-style:solid;">
          <div class="tooltip">
           <a href="#Windows-perf_first_contentful_paint_from_responsestart_ms-mean">
            perf_first_contentful_paint_from_responsestart_ms
@@ -1247,17 +1296,17 @@ div.chart {
           </span>
          </div>
         </td>
-        <td style="background:white;border-bottom-style:solid;">
+        <td style="background:#ececec;border-bottom-style:solid;">
          <div style="font-weight: normal;">
           treatment-a
          </div>
         </td>
-        <td style="background:white;border-bottom-style:solid;">
+        <td style="background:#ececec;border-bottom-style:solid;">
          <div style="font-weight: normal;">
           +1.7%
          </div>
         </td>
-        <td style="background:white;border-bottom-style:solid;">
+        <td style="background:#ececec;border-bottom-style:solid;">
          <div style="font-weight: normal;">
           None (p=0.55)
          </div>
@@ -1265,7 +1314,7 @@ div.chart {
        </tr>
        <tr>
         <tr>
-         <td rowspan="1" style="background:#ececec; border-bottom-style:solid; border-right-style:solid;">
+         <td rowspan="1" style="background:white; border-bottom-style:solid; border-right-style:solid;">
           <div class="tooltip">
            <a href="#Windows-perf_largest_contentful_paint_ms-mean">
             perf_largest_contentful_paint_ms
@@ -1275,17 +1324,17 @@ div.chart {
            </span>
           </div>
          </td>
-         <td style="background:#ececec;border-bottom-style:solid;">
+         <td style="background:white;border-bottom-style:solid;">
           <div style="font-weight: normal;">
            treatment-a
           </div>
          </td>
-         <td style="background:#ececec;border-bottom-style:solid;">
+         <td style="background:white;border-bottom-style:solid;">
           <div style="font-weight: normal;">
            -1.3%
           </div>
          </td>
-         <td style="background:#ececec;border-bottom-style:solid;">
+         <td style="background:white;border-bottom-style:solid;">
           <div style="font-weight: normal;">
            None (p=0.53)
           </div>
@@ -1293,7 +1342,7 @@ div.chart {
         </tr>
         <tr>
          <tr>
-          <td rowspan="1" style="background:white; border-bottom-style:solid; border-right-style:solid;">
+          <td rowspan="1" style="background:#ececec; border-bottom-style:solid; border-right-style:solid;">
            <div class="tooltip">
             <a href="#Windows-perf_largest_contentful_paint_from_response_start_ms-mean">
              perf_largest_contentful_paint_from_response_start_ms
@@ -1303,17 +1352,17 @@ div.chart {
             </span>
            </div>
           </td>
-          <td style="background:white;border-bottom-style:solid;">
+          <td style="background:#ececec;border-bottom-style:solid;">
            <div style="font-weight: normal;">
             treatment-a
            </div>
           </td>
-          <td style="background:white;border-bottom-style:solid;">
+          <td style="background:#ececec;border-bottom-style:solid;">
            <div style="font-weight: normal;">
             -1.9%
            </div>
           </td>
-          <td style="background:white;border-bottom-style:solid;">
+          <td style="background:#ececec;border-bottom-style:solid;">
            <div style="font-weight: normal;">
             None (p=1.00)
            </div>
@@ -1321,7 +1370,7 @@ div.chart {
          </tr>
          <tr>
           <tr>
-           <td rowspan="1" style="background:#ececec; border-bottom-style:solid; border-right-style:solid;">
+           <td rowspan="1" style="background:white; border-bottom-style:solid; border-right-style:solid;">
             <div class="tooltip">
              <a href="#Windows-http_page_tls_handshake-mean">
               http_page_tls_handshake
@@ -1331,17 +1380,17 @@ div.chart {
              </span>
             </div>
            </td>
-           <td style="background:#ececec;border-bottom-style:solid;">
+           <td style="background:white;border-bottom-style:solid;">
             <div style="font-weight: bold; color: red;">
              treatment-a
             </div>
            </td>
-           <td style="background:#ececec;border-bottom-style:solid;">
+           <td style="background:white;border-bottom-style:solid;">
             <div style="font-weight: bold; color: red;">
              +21.0%
             </div>
            </td>
-           <td style="background:#ececec;border-bottom-style:solid;">
+           <td style="background:white;border-bottom-style:solid;">
             <div style="font-weight: bold; color: red;">
              Large (r=0.11)
             </div>
@@ -1349,55 +1398,55 @@ div.chart {
           </tr>
           <tr>
            <tr>
-            <td rowspan="1" style="background:white; border-bottom-style:solid; border-right-style:solid;">
+            <td rowspan="1" style="background:#ececec; border-bottom-style:solid; border-right-style:solid;">
              <div class="tooltip">
-              <a href="#Windows-fcp_time-mean">
-               fcp_time
+              <a href="#Windows-http_page_dns_issue_time-mean">
+               http_page_dns_issue_time
               </a>
               <span class="tooltiptext">
-               Time between firstContentfulPaint and navigationStart, in ms.
+               HTTP page: open() -&gt; DNS request issued (ms)
               </span>
              </div>
             </td>
-            <td style="background:white;border-bottom-style:solid;">
+            <td style="background:#ececec;border-bottom-style:solid;">
              <div style="font-weight: normal;">
               treatment-a
              </div>
             </td>
-            <td style="background:white;border-bottom-style:solid;">
+            <td style="background:#ececec;border-bottom-style:solid;">
              <div style="font-weight: normal;">
-              +1.8%
+              -4.6%
              </div>
             </td>
-            <td style="background:white;border-bottom-style:solid;">
+            <td style="background:#ececec;border-bottom-style:solid;">
              <div style="font-weight: normal;">
-              Small (r=0.01)
+              None (p=0.03)
              </div>
             </td>
            </tr>
            <tr>
             <tr>
-             <td rowspan="1" style="background:#ececec; border-bottom-style:solid; border-right-style:solid;">
+             <td rowspan="1" style="background:white; border-bottom-style:solid; border-right-style:solid;">
               <div class="tooltip">
-               <a href="#Windows-lcp_time-mean">
-                lcp_time
+               <a href="#Windows-fcp_time-mean">
+                fcp_time
                </a>
                <span class="tooltiptext">
-                Time between largestContentfulPaint and navigationStart, at the point of onLoad firing, in ms. This may differ from the final LCP value as reported through the LCP histogram.
+                Time between firstContentfulPaint and navigationStart, in ms.
                </span>
               </div>
              </td>
-             <td style="background:#ececec;border-bottom-style:solid;">
+             <td style="background:white;border-bottom-style:solid;">
               <div style="font-weight: normal;">
                treatment-a
               </div>
              </td>
-             <td style="background:#ececec;border-bottom-style:solid;">
+             <td style="background:white;border-bottom-style:solid;">
               <div style="font-weight: normal;">
-               +1.4%
+               +1.8%
               </div>
              </td>
-             <td style="background:#ececec;border-bottom-style:solid;">
+             <td style="background:white;border-bottom-style:solid;">
               <div style="font-weight: normal;">
                Small (r=0.01)
               </div>
@@ -1405,89 +1454,118 @@ div.chart {
             </tr>
             <tr>
              <tr>
-              <td rowspan="1" style="background:white; border-bottom-style:solid; border-right-style:solid;">
+              <td rowspan="1" style="background:#ececec; border-bottom-style:solid; border-right-style:solid;">
                <div class="tooltip">
-                <a href="#Windows-load_time-mean">
-                 load_time
+                <a href="#Windows-lcp_time-mean">
+                 lcp_time
                 </a>
                 <span class="tooltiptext">
-                 Time between loadEventStart and navigationStart, in ms.
+                 Time between largestContentfulPaint and navigationStart, at the point of onLoad firing, in ms. This may differ from the final LCP value as reported through the LCP histogram.
                 </span>
                </div>
               </td>
-              <td style="background:white;border-bottom-style:solid;">
+              <td style="background:#ececec;border-bottom-style:solid;">
                <div style="font-weight: normal;">
                 treatment-a
                </div>
               </td>
-              <td style="background:white;border-bottom-style:solid;">
+              <td style="background:#ececec;border-bottom-style:solid;">
                <div style="font-weight: normal;">
-                +0.7%
+                +1.4%
                </div>
               </td>
-              <td style="background:white;border-bottom-style:solid;">
+              <td style="background:#ececec;border-bottom-style:solid;">
                <div style="font-weight: normal;">
-                None (p=0.04)
+                Small (r=0.01)
                </div>
               </td>
              </tr>
              <tr>
               <tr>
-               <td rowspan="1" style="background:#ececec; border-bottom-style:solid; border-right-style:solid;">
+               <td rowspan="1" style="background:white; border-bottom-style:solid; border-right-style:solid;">
                 <div class="tooltip">
-                 <a href="#Windows-response_time-mean">
-                  response_time
+                 <a href="#Windows-load_time-mean">
+                  load_time
                  </a>
                  <span class="tooltiptext">
-                  Time between responseStart and navigationStart, in ms.
+                  Time between loadEventStart and navigationStart, in ms.
                  </span>
                 </div>
                </td>
-               <td style="background:#ececec;border-bottom-style:solid;">
+               <td style="background:white;border-bottom-style:solid;">
                 <div style="font-weight: normal;">
                  treatment-a
                 </div>
                </td>
-               <td style="background:#ececec;border-bottom-style:solid;">
+               <td style="background:white;border-bottom-style:solid;">
                 <div style="font-weight: normal;">
-                 +0.6%
+                 +0.7%
                 </div>
                </td>
-               <td style="background:#ececec;border-bottom-style:solid;">
+               <td style="background:white;border-bottom-style:solid;">
                 <div style="font-weight: normal;">
-                 None (p=0.34)
+                 None (p=0.04)
                 </div>
                </td>
               </tr>
               <tr>
                <tr>
-                <td rowspan="1" style="background:white; border-bottom-style:solid; border-right-style:solid;">
+                <td rowspan="1" style="background:#ececec; border-bottom-style:solid; border-right-style:solid;">
                  <div class="tooltip">
-                  <a href="#Windows-js_exec_time-mean">
-                   js_exec_time
+                  <a href="#Windows-response_time-mean">
+                   response_time
                   </a>
                   <span class="tooltiptext">
-                   Time spent executing JS during page load, in ms.
+                   Time between responseStart and navigationStart, in ms.
                   </span>
                  </div>
                 </td>
-                <td style="background:white;border-bottom-style:solid;">
+                <td style="background:#ececec;border-bottom-style:solid;">
                  <div style="font-weight: normal;">
                   treatment-a
                  </div>
                 </td>
-                <td style="background:white;border-bottom-style:solid;">
+                <td style="background:#ececec;border-bottom-style:solid;">
                  <div style="font-weight: normal;">
-                  -0.1%
+                  +0.6%
                  </div>
                 </td>
-                <td style="background:white;border-bottom-style:solid;">
+                <td style="background:#ececec;border-bottom-style:solid;">
                  <div style="font-weight: normal;">
-                  None (p=0.76)
+                  None (p=0.34)
                  </div>
                 </td>
                </tr>
                <tr>
+                <tr>
+                 <td rowspan="1" style="background:white; border-bottom-style:solid; border-right-style:solid;">
+                  <div class="tooltip">
+                   <a href="#Windows-js_exec_time-mean">
+                    js_exec_time
+                   </a>
+                   <span class="tooltiptext">
+                    Time spent executing JS during page load, in ms.
+                   </span>
+                  </div>
+                 </td>
+                 <td style="background:white;border-bottom-style:solid;">
+                  <div style="font-weight: normal;">
+                   treatment-a
+                  </div>
+                 </td>
+                 <td style="background:white;border-bottom-style:solid;">
+                  <div style="font-weight: normal;">
+                   -0.1%
+                  </div>
+                 </td>
+                 <td style="background:white;border-bottom-style:solid;">
+                  <div style="font-weight: normal;">
+                   None (p=0.76)
+                  </div>
+                 </td>
+                </tr>
+                <tr>
+                </tr>
                </tr>
               </tr>
              </tr>
@@ -1732,11 +1810,11 @@ div.chart {
            <tr>
             <td rowspan="1" style="background:white; border-bottom-style:solid; border-right-style:solid;">
              <div class="tooltip">
-              <a href="#Linux-fcp_time-mean">
-               fcp_time
+              <a href="#Linux-http_page_dns_issue_time-mean">
+               http_page_dns_issue_time
               </a>
               <span class="tooltiptext">
-               Time between firstContentfulPaint and navigationStart, in ms.
+               HTTP page: open() -&gt; DNS request issued (ms)
               </span>
              </div>
             </td>
@@ -1747,12 +1825,12 @@ div.chart {
             </td>
             <td style="background:white;border-bottom-style:solid;">
              <div style="font-weight: normal;">
-              +3.0%
+              -14.4%
              </div>
             </td>
             <td style="background:white;border-bottom-style:solid;">
              <div style="font-weight: normal;">
-              Small (r=0.02)
+              Small (r=-0.02)
              </div>
             </td>
            </tr>
@@ -1760,11 +1838,11 @@ div.chart {
             <tr>
              <td rowspan="1" style="background:#ececec; border-bottom-style:solid; border-right-style:solid;">
               <div class="tooltip">
-               <a href="#Linux-lcp_time-mean">
-                lcp_time
+               <a href="#Linux-fcp_time-mean">
+                fcp_time
                </a>
                <span class="tooltiptext">
-                Time between largestContentfulPaint and navigationStart, at the point of onLoad firing, in ms. This may differ from the final LCP value as reported through the LCP histogram.
+                Time between firstContentfulPaint and navigationStart, in ms.
                </span>
               </div>
              </td>
@@ -1775,7 +1853,7 @@ div.chart {
              </td>
              <td style="background:#ececec;border-bottom-style:solid;">
               <div style="font-weight: normal;">
-               +1.7%
+               +3.0%
               </div>
              </td>
              <td style="background:#ececec;border-bottom-style:solid;">
@@ -1788,27 +1866,27 @@ div.chart {
              <tr>
               <td rowspan="1" style="background:white; border-bottom-style:solid; border-right-style:solid;">
                <div class="tooltip">
-                <a href="#Linux-load_time-mean">
-                 load_time
+                <a href="#Linux-lcp_time-mean">
+                 lcp_time
                 </a>
                 <span class="tooltiptext">
-                 Time between loadEventStart and navigationStart, in ms.
+                 Time between largestContentfulPaint and navigationStart, at the point of onLoad firing, in ms. This may differ from the final LCP value as reported through the LCP histogram.
                 </span>
                </div>
               </td>
               <td style="background:white;border-bottom-style:solid;">
-               <div style="font-weight: bold; color: green;">
+               <div style="font-weight: normal;">
                 treatment-a
                </div>
               </td>
               <td style="background:white;border-bottom-style:solid;">
-               <div style="font-weight: bold; color: green;">
-                -8.5%
+               <div style="font-weight: normal;">
+                +1.7%
                </div>
               </td>
               <td style="background:white;border-bottom-style:solid;">
-               <div style="font-weight: bold; color: green;">
-                Medium (r=-0.07)
+               <div style="font-weight: normal;">
+                Small (r=0.02)
                </div>
               </td>
              </tr>
@@ -1816,27 +1894,27 @@ div.chart {
               <tr>
                <td rowspan="1" style="background:#ececec; border-bottom-style:solid; border-right-style:solid;">
                 <div class="tooltip">
-                 <a href="#Linux-response_time-mean">
-                  response_time
+                 <a href="#Linux-load_time-mean">
+                  load_time
                  </a>
                  <span class="tooltiptext">
-                  Time between responseStart and navigationStart, in ms.
+                  Time between loadEventStart and navigationStart, in ms.
                  </span>
                 </div>
                </td>
                <td style="background:#ececec;border-bottom-style:solid;">
-                <div style="font-weight: normal;">
+                <div style="font-weight: bold; color: green;">
                  treatment-a
                 </div>
                </td>
                <td style="background:#ececec;border-bottom-style:solid;">
-                <div style="font-weight: normal;">
-                 +1.4%
+                <div style="font-weight: bold; color: green;">
+                 -8.5%
                 </div>
                </td>
                <td style="background:#ececec;border-bottom-style:solid;">
-                <div style="font-weight: normal;">
-                 None (p=0.05)
+                <div style="font-weight: bold; color: green;">
+                 Medium (r=-0.07)
                 </div>
                </td>
               </tr>
@@ -1844,11 +1922,11 @@ div.chart {
                <tr>
                 <td rowspan="1" style="background:white; border-bottom-style:solid; border-right-style:solid;">
                  <div class="tooltip">
-                  <a href="#Linux-js_exec_time-mean">
-                   js_exec_time
+                  <a href="#Linux-response_time-mean">
+                   response_time
                   </a>
                   <span class="tooltiptext">
-                   Time spent executing JS during page load, in ms.
+                   Time between responseStart and navigationStart, in ms.
                   </span>
                  </div>
                 </td>
@@ -1859,16 +1937,45 @@ div.chart {
                 </td>
                 <td style="background:white;border-bottom-style:solid;">
                  <div style="font-weight: normal;">
-                  -12.5%
+                  +1.4%
                  </div>
                 </td>
                 <td style="background:white;border-bottom-style:solid;">
                  <div style="font-weight: normal;">
-                  Small (r=-0.05)
+                  None (p=0.05)
                  </div>
                 </td>
                </tr>
                <tr>
+                <tr>
+                 <td rowspan="1" style="background:#ececec; border-bottom-style:solid; border-right-style:solid;">
+                  <div class="tooltip">
+                   <a href="#Linux-js_exec_time-mean">
+                    js_exec_time
+                   </a>
+                   <span class="tooltiptext">
+                    Time spent executing JS during page load, in ms.
+                   </span>
+                  </div>
+                 </td>
+                 <td style="background:#ececec;border-bottom-style:solid;">
+                  <div style="font-weight: normal;">
+                   treatment-a
+                  </div>
+                 </td>
+                 <td style="background:#ececec;border-bottom-style:solid;">
+                  <div style="font-weight: normal;">
+                   -12.5%
+                  </div>
+                 </td>
+                 <td style="background:#ececec;border-bottom-style:solid;">
+                  <div style="font-weight: normal;">
+                   Small (r=-0.05)
+                  </div>
+                 </td>
+                </tr>
+                <tr>
+                </tr>
                </tr>
               </tr>
              </tr>
@@ -1915,7 +2022,7 @@ div.chart {
    </thead>
    <tbody>
     <tr>
-     <td rowspan="1" style="background:#ececec; border-bottom-style:solid; border-right-style:solid;">
+     <td rowspan="1" style="background:white; border-bottom-style:solid; border-right-style:solid;">
       <div class="tooltip">
        <a href="#Mac-perf_page_load_time_ms-mean">
         perf_page_load_time_ms
@@ -1925,17 +2032,17 @@ div.chart {
        </span>
       </div>
      </td>
-     <td style="background:#ececec;border-bottom-style:solid;">
+     <td style="background:white;border-bottom-style:solid;">
       <div style="font-weight: normal;">
        treatment-a
       </div>
      </td>
-     <td style="background:#ececec;border-bottom-style:solid;">
+     <td style="background:white;border-bottom-style:solid;">
       <div style="font-weight: normal;">
        +3.4%
       </div>
      </td>
-     <td style="background:#ececec;border-bottom-style:solid;">
+     <td style="background:white;border-bottom-style:solid;">
       <div style="font-weight: normal;">
        Small (r=0.01)
       </div>
@@ -1943,7 +2050,7 @@ div.chart {
     </tr>
     <tr>
      <tr>
-      <td rowspan="1" style="background:white; border-bottom-style:solid; border-right-style:solid;">
+      <td rowspan="1" style="background:#ececec; border-bottom-style:solid; border-right-style:solid;">
        <div class="tooltip">
         <a href="#Mac-perf_page_load_time_from_responsestart_ms-mean">
          perf_page_load_time_from_responsestart_ms
@@ -1953,17 +2060,17 @@ div.chart {
         </span>
        </div>
       </td>
-      <td style="background:white;border-bottom-style:solid;">
+      <td style="background:#ececec;border-bottom-style:solid;">
        <div style="font-weight: normal;">
         treatment-a
        </div>
       </td>
-      <td style="background:white;border-bottom-style:solid;">
+      <td style="background:#ececec;border-bottom-style:solid;">
        <div style="font-weight: normal;">
         +4.4%
        </div>
       </td>
-      <td style="background:white;border-bottom-style:solid;">
+      <td style="background:#ececec;border-bottom-style:solid;">
        <div style="font-weight: normal;">
         Small (r=0.02)
        </div>
@@ -1971,7 +2078,7 @@ div.chart {
      </tr>
      <tr>
       <tr>
-       <td rowspan="1" style="background:#ececec; border-bottom-style:solid; border-right-style:solid;">
+       <td rowspan="1" style="background:white; border-bottom-style:solid; border-right-style:solid;">
         <div class="tooltip">
          <a href="#Mac-perf_first_contentful_paint_ms-mean">
           perf_first_contentful_paint_ms
@@ -1981,17 +2088,17 @@ div.chart {
          </span>
         </div>
        </td>
-       <td style="background:#ececec;border-bottom-style:solid;">
+       <td style="background:white;border-bottom-style:solid;">
         <div style="font-weight: normal;">
          treatment-a
         </div>
        </td>
-       <td style="background:#ececec;border-bottom-style:solid;">
+       <td style="background:white;border-bottom-style:solid;">
         <div style="font-weight: normal;">
          +2.2%
         </div>
        </td>
-       <td style="background:#ececec;border-bottom-style:solid;">
+       <td style="background:white;border-bottom-style:solid;">
         <div style="font-weight: normal;">
          Small (r=0.01)
         </div>
@@ -1999,7 +2106,7 @@ div.chart {
       </tr>
       <tr>
        <tr>
-        <td rowspan="1" style="background:white; border-bottom-style:solid; border-right-style:solid;">
+        <td rowspan="1" style="background:#ececec; border-bottom-style:solid; border-right-style:solid;">
          <div class="tooltip">
           <a href="#Mac-perf_first_contentful_paint_from_responsestart_ms-mean">
            perf_first_contentful_paint_from_responsestart_ms
@@ -2009,17 +2116,17 @@ div.chart {
           </span>
          </div>
         </td>
-        <td style="background:white;border-bottom-style:solid;">
+        <td style="background:#ececec;border-bottom-style:solid;">
          <div style="font-weight: normal;">
           treatment-a
          </div>
         </td>
-        <td style="background:white;border-bottom-style:solid;">
+        <td style="background:#ececec;border-bottom-style:solid;">
          <div style="font-weight: normal;">
           +5.2%
          </div>
         </td>
-        <td style="background:white;border-bottom-style:solid;">
+        <td style="background:#ececec;border-bottom-style:solid;">
          <div style="font-weight: normal;">
           Small (r=0.03)
          </div>
@@ -2027,7 +2134,7 @@ div.chart {
        </tr>
        <tr>
         <tr>
-         <td rowspan="1" style="background:#ececec; border-bottom-style:solid; border-right-style:solid;">
+         <td rowspan="1" style="background:white; border-bottom-style:solid; border-right-style:solid;">
           <div class="tooltip">
            <a href="#Mac-perf_largest_contentful_paint_ms-mean">
             perf_largest_contentful_paint_ms
@@ -2037,17 +2144,17 @@ div.chart {
            </span>
           </div>
          </td>
-         <td style="background:#ececec;border-bottom-style:solid;">
+         <td style="background:white;border-bottom-style:solid;">
           <div style="font-weight: normal;">
            treatment-a
           </div>
          </td>
-         <td style="background:#ececec;border-bottom-style:solid;">
+         <td style="background:white;border-bottom-style:solid;">
           <div style="font-weight: normal;">
            +4.0%
           </div>
          </td>
-         <td style="background:#ececec;border-bottom-style:solid;">
+         <td style="background:white;border-bottom-style:solid;">
           <div style="font-weight: normal;">
            Small (r=0.01)
           </div>
@@ -2055,7 +2162,7 @@ div.chart {
         </tr>
         <tr>
          <tr>
-          <td rowspan="1" style="background:white; border-bottom-style:solid; border-right-style:solid;">
+          <td rowspan="1" style="background:#ececec; border-bottom-style:solid; border-right-style:solid;">
            <div class="tooltip">
             <a href="#Mac-perf_largest_contentful_paint_from_response_start_ms-mean">
              perf_largest_contentful_paint_from_response_start_ms
@@ -2065,17 +2172,17 @@ div.chart {
             </span>
            </div>
           </td>
-          <td style="background:white;border-bottom-style:solid;">
+          <td style="background:#ececec;border-bottom-style:solid;">
            <div style="font-weight: normal;">
             treatment-a
            </div>
           </td>
-          <td style="background:white;border-bottom-style:solid;">
+          <td style="background:#ececec;border-bottom-style:solid;">
            <div style="font-weight: normal;">
             +5.5%
            </div>
           </td>
-          <td style="background:white;border-bottom-style:solid;">
+          <td style="background:#ececec;border-bottom-style:solid;">
            <div style="font-weight: normal;">
             Small (r=0.02)
            </div>
@@ -2083,7 +2190,7 @@ div.chart {
          </tr>
          <tr>
           <tr>
-           <td rowspan="1" style="background:#ececec; border-bottom-style:solid; border-right-style:solid;">
+           <td rowspan="1" style="background:white; border-bottom-style:solid; border-right-style:solid;">
             <div class="tooltip">
              <a href="#Mac-http_page_tls_handshake-mean">
               http_page_tls_handshake
@@ -2093,17 +2200,17 @@ div.chart {
              </span>
             </div>
            </td>
-           <td style="background:#ececec;border-bottom-style:solid;">
+           <td style="background:white;border-bottom-style:solid;">
             <div style="font-weight: bold; color: red;">
              treatment-a
             </div>
            </td>
-           <td style="background:#ececec;border-bottom-style:solid;">
+           <td style="background:white;border-bottom-style:solid;">
             <div style="font-weight: bold; color: red;">
              +10.2%
             </div>
            </td>
-           <td style="background:#ececec;border-bottom-style:solid;">
+           <td style="background:white;border-bottom-style:solid;">
             <div style="font-weight: bold; color: red;">
              Large (r=0.11)
             </div>
@@ -2111,145 +2218,174 @@ div.chart {
           </tr>
           <tr>
            <tr>
-            <td rowspan="1" style="background:white; border-bottom-style:solid; border-right-style:solid;">
+            <td rowspan="1" style="background:#ececec; border-bottom-style:solid; border-right-style:solid;">
              <div class="tooltip">
-              <a href="#Mac-fcp_time-mean">
-               fcp_time
+              <a href="#Mac-http_page_dns_issue_time-mean">
+               http_page_dns_issue_time
               </a>
               <span class="tooltiptext">
-               Time between firstContentfulPaint and navigationStart, in ms.
+               HTTP page: open() -&gt; DNS request issued (ms)
               </span>
              </div>
             </td>
-            <td style="background:white;border-bottom-style:solid;">
+            <td style="background:#ececec;border-bottom-style:solid;">
              <div style="font-weight: normal;">
               treatment-a
              </div>
             </td>
-            <td style="background:white;border-bottom-style:solid;">
+            <td style="background:#ececec;border-bottom-style:solid;">
              <div style="font-weight: normal;">
-              +1.7%
+              +2.3%
              </div>
             </td>
-            <td style="background:white;border-bottom-style:solid;">
+            <td style="background:#ececec;border-bottom-style:solid;">
              <div style="font-weight: normal;">
-              None (p=0.24)
+              None (p=0.97)
              </div>
             </td>
            </tr>
            <tr>
             <tr>
-             <td rowspan="1" style="background:#ececec; border-bottom-style:solid; border-right-style:solid;">
+             <td rowspan="1" style="background:white; border-bottom-style:solid; border-right-style:solid;">
               <div class="tooltip">
-               <a href="#Mac-lcp_time-mean">
-                lcp_time
+               <a href="#Mac-fcp_time-mean">
+                fcp_time
                </a>
                <span class="tooltiptext">
-                Time between largestContentfulPaint and navigationStart, at the point of onLoad firing, in ms. This may differ from the final LCP value as reported through the LCP histogram.
+                Time between firstContentfulPaint and navigationStart, in ms.
                </span>
               </div>
              </td>
-             <td style="background:#ececec;border-bottom-style:solid;">
+             <td style="background:white;border-bottom-style:solid;">
               <div style="font-weight: normal;">
                treatment-a
               </div>
              </td>
-             <td style="background:#ececec;border-bottom-style:solid;">
+             <td style="background:white;border-bottom-style:solid;">
               <div style="font-weight: normal;">
-               +2.0%
+               +1.7%
               </div>
              </td>
-             <td style="background:#ececec;border-bottom-style:solid;">
+             <td style="background:white;border-bottom-style:solid;">
               <div style="font-weight: normal;">
-               None (p=0.02)
+               None (p=0.24)
               </div>
              </td>
             </tr>
             <tr>
              <tr>
-              <td rowspan="1" style="background:white; border-bottom-style:solid; border-right-style:solid;">
+              <td rowspan="1" style="background:#ececec; border-bottom-style:solid; border-right-style:solid;">
                <div class="tooltip">
-                <a href="#Mac-load_time-mean">
-                 load_time
+                <a href="#Mac-lcp_time-mean">
+                 lcp_time
                 </a>
                 <span class="tooltiptext">
-                 Time between loadEventStart and navigationStart, in ms.
+                 Time between largestContentfulPaint and navigationStart, at the point of onLoad firing, in ms. This may differ from the final LCP value as reported through the LCP histogram.
                 </span>
                </div>
               </td>
-              <td style="background:white;border-bottom-style:solid;">
+              <td style="background:#ececec;border-bottom-style:solid;">
                <div style="font-weight: normal;">
                 treatment-a
                </div>
               </td>
-              <td style="background:white;border-bottom-style:solid;">
+              <td style="background:#ececec;border-bottom-style:solid;">
                <div style="font-weight: normal;">
-                +2.7%
+                +2.0%
                </div>
               </td>
-              <td style="background:white;border-bottom-style:solid;">
+              <td style="background:#ececec;border-bottom-style:solid;">
                <div style="font-weight: normal;">
-                Small (r=0.01)
+                None (p=0.02)
                </div>
               </td>
              </tr>
              <tr>
               <tr>
-               <td rowspan="1" style="background:#ececec; border-bottom-style:solid; border-right-style:solid;">
+               <td rowspan="1" style="background:white; border-bottom-style:solid; border-right-style:solid;">
                 <div class="tooltip">
-                 <a href="#Mac-response_time-mean">
-                  response_time
+                 <a href="#Mac-load_time-mean">
+                  load_time
                  </a>
                  <span class="tooltiptext">
-                  Time between responseStart and navigationStart, in ms.
+                  Time between loadEventStart and navigationStart, in ms.
                  </span>
                 </div>
                </td>
-               <td style="background:#ececec;border-bottom-style:solid;">
+               <td style="background:white;border-bottom-style:solid;">
                 <div style="font-weight: normal;">
                  treatment-a
                 </div>
                </td>
-               <td style="background:#ececec;border-bottom-style:solid;">
+               <td style="background:white;border-bottom-style:solid;">
                 <div style="font-weight: normal;">
-                 -0.1%
+                 +2.7%
                 </div>
                </td>
-               <td style="background:#ececec;border-bottom-style:solid;">
+               <td style="background:white;border-bottom-style:solid;">
                 <div style="font-weight: normal;">
-                 None (p=0.00)
+                 Small (r=0.01)
                 </div>
                </td>
               </tr>
               <tr>
                <tr>
-                <td rowspan="1" style="background:white; border-bottom-style:solid; border-right-style:solid;">
+                <td rowspan="1" style="background:#ececec; border-bottom-style:solid; border-right-style:solid;">
                  <div class="tooltip">
-                  <a href="#Mac-js_exec_time-mean">
-                   js_exec_time
+                  <a href="#Mac-response_time-mean">
+                   response_time
                   </a>
                   <span class="tooltiptext">
-                   Time spent executing JS during page load, in ms.
+                   Time between responseStart and navigationStart, in ms.
                   </span>
                  </div>
                 </td>
-                <td style="background:white;border-bottom-style:solid;">
+                <td style="background:#ececec;border-bottom-style:solid;">
                  <div style="font-weight: normal;">
                   treatment-a
                  </div>
                 </td>
-                <td style="background:white;border-bottom-style:solid;">
+                <td style="background:#ececec;border-bottom-style:solid;">
                  <div style="font-weight: normal;">
-                  +4.0%
+                  -0.1%
                  </div>
                 </td>
-                <td style="background:white;border-bottom-style:solid;">
+                <td style="background:#ececec;border-bottom-style:solid;">
                  <div style="font-weight: normal;">
-                  Small (r=0.01)
+                  None (p=0.00)
                  </div>
                 </td>
                </tr>
                <tr>
+                <tr>
+                 <td rowspan="1" style="background:white; border-bottom-style:solid; border-right-style:solid;">
+                  <div class="tooltip">
+                   <a href="#Mac-js_exec_time-mean">
+                    js_exec_time
+                   </a>
+                   <span class="tooltiptext">
+                    Time spent executing JS during page load, in ms.
+                   </span>
+                  </div>
+                 </td>
+                 <td style="background:white;border-bottom-style:solid;">
+                  <div style="font-weight: normal;">
+                   treatment-a
+                  </div>
+                 </td>
+                 <td style="background:white;border-bottom-style:solid;">
+                  <div style="font-weight: normal;">
+                   +4.0%
+                  </div>
+                 </td>
+                 <td style="background:white;border-bottom-style:solid;">
+                  <div style="font-weight: normal;">
+                   Small (r=0.01)
+                  </div>
+                 </td>
+                </tr>
+                <tr>
+                </tr>
                </tr>
               </tr>
              </tr>
@@ -6784,6 +6920,656 @@ div.chart {
         y: {
           suggestedMax: 268.6994571388834,
           suggestedMin: -268.6994571388834,
+          beginAtZero: true,
+          title: {
+            text: "Difference",
+            display: true
+          }
+        },
+        x: {
+          title: {
+            text: "Quantile",
+            display: true
+          },
+          ticks: {
+            minRotation: 50,
+            callback: function(val, index) {
+              x = this.getLabelForValue(val);
+              if (Math.round(x*100) % 10 === 0 || x==0.99 || x==0.95) {
+                  return x;
+              }
+            }
+          }
+        }
+      },
+      elements: {
+        point:{
+          radius: 0
+        }
+      }
+    },
+  });
+  </script>
+ </div>
+ <div class="cell" id="All-http_page_dns_issue_time">
+  <div class="title">
+   (All) - http_page_dns_issue_time
+  </div>
+  <div class="chart">
+   <canvas height="250px" id="All-http_page_dns_issue_time-mean">
+   </canvas>
+  </div>
+  <script>
+   ctx = document.getElementById('All-http_page_dns_issue_time-mean');
+
+
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['control', 'treatment-a'],
+      datasets: [
+        {
+          data: [
+
+            {
+              x: "control",
+              y: 55.8,
+              
+            },
+
+            {
+              x: "treatment-a",
+              y: 52.9,
+              
+              uplift: -5.1
+              
+            },
+
+          ],
+        },
+      ]
+    },
+    options: {
+      animation: false,
+      maintainAspectRatio: false,
+      responsive: true,
+      plugins: {
+          datalabels: {
+            anchor: 'end',
+            align: 'top',
+            formatter: (n) => {
+                return n.hasOwnProperty('uplift') 
+                  ?  n.y.toFixed(2) + "  (" + (n.uplift > 0 ? "+" : "") + n.uplift.toFixed(1) + ")%" 
+                  :  n.y.toFixed(2);
+            },
+            font: {
+              weight: 'bold',
+                size: 14
+            }
+          },
+          legend: {
+              display: false,
+              position: 'top',
+            },
+          title: {
+              display: true,
+              text: ["http_page_dns_issue_time mean", "segment: All"]
+            }
+      },
+      scales: {
+        y: {
+          grace: '25%',
+          beginAtZero: true,
+          title: {
+            text: "Mean",
+            display: true
+          }
+        },
+        x: {
+          type: "category",
+        }
+      },
+    }
+  });
+  </script>
+  <table border="1" cellpadding="0" cellspacing="0" class="stat-table">
+   <thead>
+    <tr>
+     <th>
+      branch
+     </th>
+     <th>
+      n
+     </th>
+     <th>
+      mean
+     </th>
+     <th>
+      stddev
+     </th>
+     <th>
+      uplift(%)
+     </th>
+    </tr>
+   </thead>
+   <tbody>
+    <tr>
+     <td>
+      control (control)
+     </td>
+     <td>
+      68,481,014
+     </td>
+     <td>
+      55.8
+     </td>
+     <td>
+      505.1
+     </td>
+     <td>
+     </td>
+    </tr>
+    <tr>
+     <td>
+      treatment-a
+     </td>
+     <td>
+      68,458,995
+     </td>
+     <td>
+      52.9
+     </td>
+     <td>
+      513.1
+     </td>
+     <td>
+      -5.1
+     </td>
+    </tr>
+   </tbody>
+  </table>
+  <table border="1" cellpadding="0" cellspacing="0" class="stat-table">
+   <thead>
+    <tr>
+     <th rowspan="2">
+      <div class="tooltip">
+       branch
+       <span class="tooltiptext">
+        All results compared against control.
+       </span>
+      </div>
+     </th>
+     <th colspan="2">
+      <div class="tooltip">
+       t-test
+       <span class="tooltiptext">
+        Student t-test statistic.
+       </span>
+      </div>
+     </th>
+     <th colspan="2">
+      <div class="tooltip">
+       mwu
+       <span class="tooltiptext">
+        Mann-Whitney U test statistic.
+       </span>
+      </div>
+     </th>
+     <th colspan="2">
+      <div class="tooltip">
+       ks
+       <span class="tooltiptext">
+        Kolmogorov-Smirnov test statistic.
+       </span>
+      </div>
+     </th>
+    </tr>
+    <tr>
+     <th>
+      effect
+     </th>
+     <th>
+      p-value
+     </th>
+     <th>
+      effect
+     </th>
+     <th>
+      p-value
+     </th>
+     <th>
+      effect
+     </th>
+     <th>
+      p-value
+     </th>
+    </tr>
+   </thead>
+   <tbody>
+    <tr>
+     <td>
+      treatment-a
+     </td>
+     <td>
+      0.01
+     </td>
+     <td>
+      0.2
+     </td>
+     <td>
+      -0.01
+     </td>
+     <td>
+      0.0067
+     </td>
+     <td>
+      0.01
+     </td>
+     <td>
+      0.0025
+     </td>
+    </tr>
+   </tbody>
+  </table>
+  <div class="chart">
+   <canvas id="All_http_page_dns_issue_time_pdf">
+   </canvas>
+   <button onclick="All_http_page_dns_issue_time_pdf_chart.resetZoom()">
+    Reset Zoom
+   </button>
+  </div>
+  <script>
+   ctx = document.getElementById('All_http_page_dns_issue_time_pdf');
+
+  data = {
+      labels: [0.0, 1.73, 3.45, 5.18, 6.91, 8.64, 10.36, 12.09, 13.82, 15.55, 17.27, 19.0, 20.73, 22.45, 24.18, 25.91, 27.64, 29.36, 31.09, 32.82, 34.55, 36.27, 38.0, 39.73, 41.45, 43.18, 44.91, 46.64, 48.36, 50.09, 51.82, 53.55, 55.27, 57.0, 58.73, 60.45, 62.18, 63.91, 65.64, 67.36, 69.09, 70.82, 72.55, 74.27, 76.0, 77.73, 79.45, 81.18, 82.91, 84.64, 86.36, 88.09, 89.82, 91.55, 93.27, 95.0, 96.73, 98.45, 100.18, 101.91, 103.64, 105.36, 107.09, 108.82, 110.55, 112.27, 114.0, 115.73, 117.45, 119.18, 120.91, 122.64, 124.36, 126.09, 127.82, 129.55, 131.27, 133.0, 134.73, 136.45, 138.18, 139.91, 141.64, 143.36, 145.09, 146.82, 148.55, 150.27, 152.0, 153.73, 155.45, 157.18, 158.91, 160.64, 162.36, 164.09, 165.82, 167.55, 169.27, 171.0],
+      datasets: [
+
+      {
+          label: "control",
+          data: [-0.048744520936597806, 0.08027250141264354, 0.07080428500592721, 0.047783861077354994, 0.05932202482437054, 0.048849963779595044, 0.03274616449927659, 0.0355714363065455, 0.03888694471320062, 0.03631497423722771, 0.03156584586021848, 0.027065000710972703, 0.024392090013104665, 0.023782070439377696, 0.023862257564310485, 0.023568814159530407, 0.02300055853627649, 0.02247180691306775, 0.022150473049766115, 0.02191808412273173, 0.021613470714120744, 0.021096587544116082, 0.020374275634988413, 0.019545201046289876, 0.018711252630102548, 0.01795944132194194, 0.01736358510506834, 0.016909572719304065, 0.016569839132829653, 0.016311303681284146, 0.016106967932657427, 0.015930092485536316, 0.015768713411291293, 0.015612839031380065, 0.015455291547929089, 0.01528893179163731, 0.015103714133988073, 0.01489278396279933, 0.01465580283019787, 0.014400915668132173, 0.014132012524735352, 0.013857412690029878, 0.013584003152324586, 0.013320168247662236, 0.013069693980657366, 0.012840902061930446, 0.012637246463222623, 0.012453284342789571, 0.012286843758110753, 0.012134501612366991, 0.01199362955523709, 0.01185918291256931, 0.011728585205065869, 0.011598413335907581, 0.011466029123028248, 0.011326642101263605, 0.01118028452269716, 0.011029195978657895, 0.010873020971455302, 0.010714031133352472, 0.010553634585208568, 0.010394163893687644, 0.01023516609426802, 0.01007897780795788, 0.009927007155616386, 0.009781489327280497, 0.00964213360102371, 0.009511186724195379, 0.009389855381077986, 0.009276206905069145, 0.00917038320456786, 0.009071795324538895, 0.008980367786316423, 0.00889445135764621, 0.008814007288706956, 0.008738446624463417, 0.008667581138324854, 0.00860000069166592, 0.008535540188961337, 0.008473962501498213, 0.008413965488310205, 0.008355324958335191, 0.008297529719310092, 0.008240760374645245, 0.008184315729984386, 0.008128486545598414, 0.008073231550069103, 0.00801882433208044, 0.007964591176717327, 0.007910808634519298, 0.00785774285228047, 0.007804735713175849, 0.007752055611544744, 0.007699661275968927, 0.0076478122554830014, 0.007595864581654457, 0.00754407909818963, 0.007492414533670289, 0.007441127645357463, 0.007389581001239264],
+          borderWidth: 2
+      },
+
+      {
+          label: "treatment-a",
+          data: [-0.014886328278381615, 0.08001343760760662, 0.0757965636430104, 0.048285291420988724, 0.059329601539176303, 0.049335622801034776, 0.032844841138101856, 0.03455232373885384, 0.037548019556529526, 0.03590038278428761, 0.031594006604500464, 0.026875929447330284, 0.02400708083651751, 0.023490962748102848, 0.023704848816467488, 0.023393966107612144, 0.022740308432815208, 0.02219079879149573, 0.02198396656528559, 0.021939260245545066, 0.021815331578456706, 0.0213990603678046, 0.02069229958397447, 0.01982213672678966, 0.018920511893031445, 0.018103136414844494, 0.017465766839482467, 0.01699229271606988, 0.016648829506836504, 0.016395975722919075, 0.01620048630579229, 0.016030012372702886, 0.015870805089875692, 0.015712417202530696, 0.015547163542413006, 0.015367517458056994, 0.015162799092786691, 0.01492578930829842, 0.014656891419834759, 0.014366297815096206, 0.014059348030073748, 0.013746432852846354, 0.013436312965842037, 0.013139424914901669, 0.01286103504478133, 0.012611505677396545, 0.012394911028510227, 0.012204670084648433, 0.01203761945219718, 0.011889247736239993, 0.011755787195992757, 0.01163119627585856, 0.011511776164896253, 0.011393015468189356, 0.011271131220414001, 0.011140415186274852, 0.011000496116862778, 0.010853830104881276, 0.010700365595575759, 0.010542596721948296, 0.010382185343839022, 0.010221725866471697, 0.010061006345959356, 0.00990262029435937, 0.009748229571511877, 0.00960033633859079, 0.009458874770830602, 0.009326354878983567, 0.0092040780802473, 0.00908999804966476, 0.008984148828953273, 0.008885826372304957, 0.008794837274080413, 0.008709422863138512, 0.008629427148465093, 0.008554146084252269, 0.008483277413129264, 0.008415296422409634, 0.008349922014355905, 0.008286812910515522, 0.008224534625728568, 0.008162754855812826, 0.008100880178188276, 0.008039193523127286, 0.007977052298622425, 0.007914889799491837, 0.007852781099908529, 0.007791159025220695, 0.007729381752638263, 0.007667883068167395, 0.007607090325778935, 0.00754637134608164, 0.007486155743060192, 0.007426518590887603, 0.007367873888276048, 0.007309614433041001, 0.007252158217219094, 0.00719558031498334, 0.007140274446563906, 0.007085672233429663],
+          borderWidth: 2
+      },
+
+      ]
+  };
+
+  var All_http_page_dns_issue_time_pdf_chart = new Chart(ctx, {
+    type: 'line',
+    data,
+    options: {
+      animation: false,
+      responsive: true,
+      plugins: {
+          zoom: zoomOptions,
+          tooltip: {
+              mode: 'interpolate',
+              intersect: false
+          },
+          crosshair: {
+            line: {
+              color: '#F66',  // crosshair line color
+              width: 1        // crosshair line width
+            }
+          },
+          datalabels: { display: false },
+          legend: {
+              display: true,
+              position: 'top',
+            },
+          title: {
+              display: true,
+              text: ["http_page_dns_issue_time pdf", "segment: All"]
+            }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          title: {
+            text: "Density",
+            display: true
+          }
+        },
+        x: {
+          ticks: {
+            maxTicksLimit: 10
+          }
+        }
+      },
+      elements: {
+        point:{
+          radius: 0
+        }
+      }
+    }
+  });
+  </script>
+  <div class="chart">
+   <canvas id="All_http_page_dns_issue_time_cdf">
+   </canvas>
+   <button onclick="All_http_page_dns_issue_time_cdf_chart.resetZoom()">
+    Reset Zoom
+   </button>
+  </div>
+  <script>
+   ctx = document.getElementById('All_http_page_dns_issue_time_cdf');
+
+  data = {
+      labels: [0.0, 1.73, 3.45, 5.18, 6.91, 8.64, 10.36, 12.09, 13.82, 15.55, 17.27, 19.0, 20.73, 22.45, 24.18, 25.91, 27.64, 29.36, 31.09, 32.82, 34.55, 36.27, 38.0, 39.73, 41.45, 43.18, 44.91, 46.64, 48.36, 50.09, 51.82, 53.55, 55.27, 57.0, 58.73, 60.45, 62.18, 63.91, 65.64, 67.36, 69.09, 70.82, 72.55, 74.27, 76.0, 77.73, 79.45, 81.18, 82.91, 84.64, 86.36, 88.09, 89.82, 91.55, 93.27, 95.0, 96.73, 98.45, 100.18, 101.91, 103.64, 105.36, 107.09, 108.82, 110.55, 112.27, 114.0, 115.73, 117.45, 119.18, 120.91, 122.64, 124.36, 126.09, 127.82, 129.55, 131.27, 133.0, 134.73, 136.45, 138.18, 139.91, 141.64, 143.36, 145.09, 146.82, 148.55, 150.27, 152.0, 153.73, 155.45, 157.18, 158.91, 160.64, 162.36, 164.09, 165.82, 167.55, 169.27, 171.0],
+      datasets: [
+
+      {
+          label: "control",
+          data: [0.16035820172267745, 0.29992142662038923, 0.42970161809702, 0.5205182151358353, 0.6105121188237758, 0.6549400191677293, 0.6787539300904498, 0.7126954808997673, 0.7415425711490385, 0.7605467276321447, 0.7735630631478811, 0.7838856965106034, 0.793902014019795, 0.8044090999414857, 0.8144160284815513, 0.8230169873095258, 0.8305250057060537, 0.8374241181157716, 0.8441097818470052, 0.8504096621140019, 0.8561335180936704, 0.8610890057725432, 0.8653883694767346, 0.8691729721784472, 0.872597128784841, 0.875873352383341, 0.8791095156539053, 0.8823022838520095, 0.8854064388175367, 0.8884307792088569, 0.8913295986693122, 0.8940795522767094, 0.8966650433410283, 0.8991227333136292, 0.9014437993995321, 0.9036225731726198, 0.9056909932081866, 0.9076427282076774, 0.9094859011657043, 0.911220145086113, 0.9128750783069878, 0.9144498390134707, 0.915953925617198, 0.917388653647647, 0.9187801586999946, 0.920129307535462, 0.9214338029656072, 0.9227088497909186, 0.9239464770809938, 0.9251464049836545, 0.92630174684711, 0.9274256583733741, 0.9285110325733333, 0.9295575895948098, 0.9305593389960543, 0.9315277333166697, 0.9324579915381471, 0.9333473026489866, 0.9342082887741903, 0.9350379703228004, 0.9358386396222237, 0.9366081877042669, 0.9373578441005749, 0.9380853519794672, 0.9387930036683506, 0.9394791486382479, 0.9401540466171744, 0.9408159239326364, 0.9414623534520284, 0.9421009640106733, 0.9427280035643624, 0.9433435120142368, 0.943944070775642, 0.9445367027991509, 0.945117923191627, 0.9456877718542113, 0.9462430927524627, 0.9467903828152907, 0.947326420621008, 0.9478482445397585, 0.9483619620006882, 0.9488645466772896, 0.9493560733992218, 0.9498340322401281, 0.9503042653824695, 0.9507642488998761, 0.9512142686952308, 0.9516520926048652, 0.9520830961317661, 0.9525049919926463, 0.9529157031817829, 0.9533202899379709, 0.9537166250841691, 0.9541049945232607, 0.9544835051615682, 0.9548568428128772, 0.9552230708131108, 0.9555824750651517, 0.9559333200218494, 0.9562799698030174],
+          borderWidth: 2
+      },
+
+      {
+          label: "treatment-a",
+          data: [0.178635863091484, 0.2973386447175817, 0.43699533489787146, 0.5283966928035754, 0.6182198629251187, 0.6630697262420413, 0.6869385940072601, 0.7198518927653109, 0.7477813077128916, 0.7668235762077882, 0.7798597152350306, 0.7899780132253478, 0.7998131529251031, 0.8102560083273943, 0.8202138444373301, 0.8287084420748196, 0.836098732056936, 0.8429362704646246, 0.8496512017234851, 0.8560382916768846, 0.8618646924247029, 0.8668986074363051, 0.8712456714115553, 0.8750559407810037, 0.8784930852056201, 0.8817791333588718, 0.8850288611266953, 0.8882388819865042, 0.8913625196278684, 0.8944074650323929, 0.8973265634100678, 0.90009517838553, 0.9026966080776274, 0.905166773588172, 0.9074958208609377, 0.9096771539740269, 0.9117418156571506, 0.913682568203899, 0.9155077849242916, 0.91721855089398, 0.9188455470783267, 0.9203893751310398, 0.9218608755477462, 0.923262894433075, 0.9246225226700119, 0.9259421385367768, 0.9272201880267444, 0.9284712802891099, 0.9296872624070743, 0.9308675104565957, 0.9320048940976386, 0.9331120177992757, 0.93418153926684, 0.9352128345762895, 0.9361996559521668, 0.937152952789181, 0.9380679101308068, 0.9389418568592586, 0.9397872914076492, 0.9406013783521893, 0.9413864652497358, 0.9421405877441978, 0.9428748509636428, 0.9435871432369709, 0.9442798121210393, 0.9449513463240751, 0.9456118906451754, 0.946259810873644, 0.9468927560935231, 0.9475181303390384, 0.9481321885827412, 0.9487348982597775, 0.9493228414867257, 0.9499028224045648, 0.9504713572494113, 0.9510284134564116, 0.9515708381606458, 0.9521049062179455, 0.9526273981310727, 0.9531353616725162, 0.9536346709869112, 0.9541223066508082, 0.954598291516948, 0.9550602539558102, 0.9555139216348307, 0.9559569339503579, 0.9563896486439539, 0.9568100075507291, 0.9572232545852775, 0.9576272751547116, 0.9580201676865394, 0.9584068567189017, 0.9587853904429667, 0.959156126600297, 0.9595173436484248, 0.9598735978059136, 0.9602231255534845, 0.9605662846327001, 0.9609015005407473, 0.9612330271573517],
+          borderWidth: 2
+      },
+
+      ]
+  };
+
+  var All_http_page_dns_issue_time_cdf_chart = new Chart(ctx, {
+    type: 'line',
+    data,
+    options: {
+      animation: false,
+      responsive: true,
+      plugins: {
+          zoom: zoomOptions,
+          tooltip: {
+              mode: 'interpolate',
+              intersect: false
+          },
+          crosshair: {
+            sync: {
+              enabled: false
+            },
+          },
+          datalabels: { display: false },
+          annotation: {
+              annotations: {
+                  q25: {
+                      type: 'line',
+                      yMin: 0.25,
+                      yMax: 0.25,
+                      borderWidth: 1,
+                      borderColor: 'orange',
+                      label: {
+                          display: true,
+                          content: '25th',
+                          position: 'end',
+                          color: 'black', 
+                          yAdjust: -5,
+                          backgroundColor: 'transparent',
+                          font: {
+                            size: 12
+                          }
+                      }
+                    },
+                  q50: {
+                      type: 'line',
+                      yMin: 0.5,
+                      yMax: 0.5,
+                      borderWidth: 1,
+                      borderColor: 'magenta',
+                      label: {
+                          display: true,
+                          content: 'median',
+                          position: 'end',
+                          color: 'black', 
+                          yAdjust: -5,
+                          backgroundColor: 'transparent',
+                          font: {
+                            size: 12
+                          }
+                      }
+                    },
+                  q75: {
+                      type: 'line',
+                      yMin: 0.75,
+                      yMax: 0.75,
+                      borderWidth: 1,
+                      borderColor: 'green',
+                      label: {
+                          display: true,
+                          content: '75th',
+                          position: 'end',
+                          color: 'black', 
+                          yAdjust: -5,
+                          backgroundColor: 'transparent',
+                          font: {
+                            size: 12
+                          }
+                      }
+                    },
+                }
+          },
+          legend: {
+              display: true,
+              position: 'top',
+            },
+          title: {
+              display: true,
+              text: ["http_page_dns_issue_time cdf", "segment: All"]
+            }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          title: {
+            text: "CDF",
+            display: true
+          }
+        },
+        x: {
+          ticks: {
+            maxTicksLimit: 10
+          }
+        }
+      },
+      elements: {
+        point:{
+          radius: 0
+        }
+      }
+    }
+  });
+  </script>
+  <div class="chart">
+   <canvas id="All_http_page_dns_issue_time_uplift">
+   </canvas>
+   <button onclick="All_http_page_dns_issue_time_uplift_chart.resetZoom()">
+    Reset Zoom
+   </button>
+  </div>
+  <script>
+   ctx = document.getElementById('All_http_page_dns_issue_time_uplift');
+
+  data = {
+      labels: [0.1, 0.11, 0.12, 0.13, 0.14, 0.15, 0.15, 0.16, 0.17, 0.18, 0.19, 0.2, 0.21, 0.22, 0.23, 0.24, 0.25, 0.25, 0.26, 0.27, 0.28, 0.29, 0.3, 0.31, 0.32, 0.33, 0.34, 0.35, 0.35, 0.36, 0.37, 0.38, 0.39, 0.4, 0.41, 0.42, 0.43, 0.44, 0.45, 0.45, 0.46, 0.47, 0.48, 0.49, 0.5, 0.51, 0.52, 0.53, 0.54, 0.55, 0.55, 0.56, 0.57, 0.58, 0.59, 0.6, 0.61, 0.62, 0.63, 0.64, 0.64, 0.65, 0.66, 0.67, 0.68, 0.69, 0.7, 0.71, 0.72, 0.73, 0.74, 0.74, 0.75, 0.76, 0.77, 0.78, 0.79, 0.8, 0.81, 0.82, 0.83, 0.84, 0.84, 0.85, 0.86, 0.87, 0.88, 0.89, 0.9, 0.91, 0.92, 0.93, 0.94, 0.94, 0.95, 0.96, 0.97, 0.98, 0.99],
+      datasets: [
+
+      {
+          label: "treatment-a",
+          data: [-8.8135045534589, -10.371650905629288, -12.816102765684711, -17.203643044157555, -27.379311787806287, -76.99188885657095, -76.99188885657095, 78.42651483596698, 24.37937892298338, 13.849296329579314, 9.364120542930305, 6.879490606050427, 5.30100643223014, 4.209411788964335, 3.409533245053481, 2.798217423675779, 2.3158174426742084, 2.3158174426742084, 1.9254438236383495, 1.6030561416528304, 1.3323167969675032, 1.1017347213963609, 0.9029923088534635, 0.7299206569128189, 0.5778478105853688, 0.12466311221076311, -0.37320882143775946, -0.8164615443579446, -0.8164615443579446, -1.2136157050083707, -1.5715072512024615, -1.8956841914940885, -2.1906962716146308, -2.4903132820267078, -3.1493059566116246, -3.0835702022893052, -3.02382074345556, -2.9692754695440677, -2.919282828023868, -2.919282828023868, -2.873295673127363, -3.4906598987972477, -3.389067435840206, -3.2843592288450294, -3.188384327932678, -3.1000938575632513, -3.583239391572074, -3.5173170440902424, -3.346322150869647, -3.189447935433163, -3.189447935433163, -2.361337547885798, -2.017430911085016, -1.9682130537503233, -1.921452931324573, -1.8769709346981571, -1.8346045394840143, -3.6815975434312427, -4.728855762206608, -4.520345501425825, -4.520345501425825, -4.334379541877341, -4.41923151800149, -5.142201697656644, -4.791324440564871, -4.4796791997085705, -3.6140952216040607, -3.286275193734017, -2.9859215406680817, -2.9007335998576456, -3.9816007019949877, -3.9816007019949877, -3.7181983607274134, -3.483575829971336, -5.639300839063375, -5.310079117576642, -4.798881284745783, -4.577574042363622, -4.200239410594815, -5.045289274107169, -4.537647381371389, -4.8366893042695445, -4.8366893042695445, -4.757237615919516, -5.557949322996784, -6.35865022358873, -6.882413208539292, -6.519971364450014, -7.572435252355393, -8.407248353868482, -8.479263446227732, -9.252419033702408, -10.738714154797137, -10.738714154797137, -12.002354189231207, -14.24389707096911, -14.059839279534417, -11.63859408451434, -8.821818438909744],
+          borderWidth: 2
+      },
+
+      ]
+  };
+
+  var All_http_page_dns_issue_time_uplift_chart = new Chart(ctx, {
+    type: 'line',
+    data,
+    options: {
+      animation: false,
+      responsive: true,
+      plugins: {
+          zoom: zoomOptions,
+          datalabels: {
+            display: function(context) {
+
+              let num_visible = 0;
+              for (let i =0 ; i < context.chart.data.datasets.length ; i++) {
+                if (context.chart.isDatasetVisible(i)) {
+                  num_visible++;
+                  if (num_visible !== 1) {
+                    return false;
+                  } 
+                }
+              }
+
+              const index = context.dataIndex;
+              const labelValue = context.chart.data.labels[index];
+              return (labelValue == 0.99 || labelValue==0.95 || Math.round(labelValue*100)%10 === 0)
+                  ? true : false;
+            },
+            anchor: 'end',
+            align: 'top',
+            formatter: n => Math.round(n)+"%"
+          },
+          annotation: {
+              annotations: {
+                  line: {
+                      type: 'line',
+                      yMin: 0,
+                      yMax: 0,
+                      borderWidth: 2,
+                      borderColor: 'gray'
+                    }
+                }
+          },
+          legend: {
+              display: true,
+              position: 'top',
+          },
+          title: {
+              display: true,
+              text: ["http_page_dns_issue_time uplift", "segment: All"]
+          }
+      },
+      scales: {
+        y: {
+          suggestedMax: 78.42651483596698,
+          suggestedMin: -78.42651483596698,
+          beginAtZero: true,
+          title: {
+            text: "Uplift (%)",
+            display: true
+          }
+        },
+        x: {
+          title: {
+            text: "Quantile",
+            display: true
+          },
+          ticks: {
+            minRotation: 50,
+            callback: function(val, index) {
+              x = this.getLabelForValue(val);
+              if (Math.round(x*100) % 10 === 0 || x==0.99 || x==0.95) {
+                  return x;
+              }
+            }
+          }
+        }
+      },
+      elements: {
+        point:{
+          radius: 0
+        }
+      }
+    }
+  });
+  </script>
+  <div class="chart">
+   <canvas id="All_http_page_dns_issue_time_diff">
+   </canvas>
+   <button onclick="All_http_page_dns_issue_time_diff_chart.resetZoom()">
+    Reset Zoom
+   </button>
+  </div>
+  <script>
+   ctx = document.getElementById('All_http_page_dns_issue_time_diff');
+
+  data = {
+      labels: [0.1, 0.11, 0.12, 0.13, 0.14, 0.15, 0.15, 0.16, 0.17, 0.18, 0.19, 0.2, 0.21, 0.22, 0.23, 0.24, 0.25, 0.25, 0.26, 0.27, 0.28, 0.29, 0.3, 0.31, 0.32, 0.33, 0.34, 0.35, 0.35, 0.36, 0.37, 0.38, 0.39, 0.4, 0.41, 0.42, 0.43, 0.44, 0.45, 0.45, 0.46, 0.47, 0.48, 0.49, 0.5, 0.51, 0.52, 0.53, 0.54, 0.55, 0.55, 0.56, 0.57, 0.58, 0.59, 0.6, 0.61, 0.62, 0.63, 0.64, 0.64, 0.65, 0.66, 0.67, 0.68, 0.69, 0.7, 0.71, 0.72, 0.73, 0.74, 0.74, 0.75, 0.76, 0.77, 0.78, 0.79, 0.8, 0.81, 0.82, 0.83, 0.84, 0.84, 0.85, 0.86, 0.87, 0.88, 0.89, 0.9, 0.91, 0.92, 0.93, 0.94, 0.94, 0.95, 0.96, 0.97, 0.98, 0.99],
+      datasets: [
+
+      {
+          label: "treatment-a",
+          data: [0.058155315445503675, 0.05602981463594503, 0.05390431382638727, 0.05177881301682907, 0.04965331220727043, 0.04752781139771178, 0.04752781139771178, 0.04540231058815336, 0.04327680977859494, 0.04115130896903674, 0.039025808159478315, 0.03690030734992, 0.03477480654036136, 0.03264930573080305, 0.030523804921244735, 0.0283983041116862, 0.02627280330212778, 0.02627280330212778, 0.024147302492569578, 0.022021801683011155, 0.019896300873452955, 0.017770800063894088, 0.015645299254335665, 0.013519798444777464, 0.011394297635219042, 0.0026165366911281573, -0.008315847350583994, -0.01924823139229659, -0.01924823139229659, -0.03018061543400874, -0.04111299947572089, -0.05204538351743304, -0.06297776755914519, -0.07483450428094729, -0.09962826597711238, -0.10243541662024214, -0.10524256726337278, -0.10804971790650253, -0.11085686854963273, -0.11085686854963273, -0.11366401919276337, -0.144599899575669, -0.14708343393848278, -0.14902438991685507, -0.15096534589522825, -0.15290630187359966, -0.18488838258621598, -0.19003992089072153, -0.18893830294150415, -0.18783668499228856, -0.18783668499228856, -0.1437947049778039, -0.12616808480748531, -0.12632488650266538, -0.12648168819784367, -0.12663848989302284, -0.1267952915882038, -0.26560217942799547, -0.3631677970390781, -0.36819702214823735, -0.36819702214823735, -0.3732262472573993, -0.4021609018619383, -0.4993860091954634, -0.4945987098137632, -0.4898114104320648, -0.4144570412832742, -0.39409478000108855, -0.37373251871890467, -0.37902402210679575, -0.5542486621166294, -0.5542486621166294, -0.5493268488746192, -0.5444050356326091, -0.9527479335143667, -0.9813706105291651, -0.9632123527219036, -0.9955188163197342, -0.9838587990749126, -1.28423845392712, -1.255569416036625, -1.4565977103769505, -1.4565977103769505, -1.5654150469497594, -2.006821161341037, -2.5780565167428477, -3.13134232475565, -3.331189919862773, -4.402630239688371, -5.603213012799259, -6.5840446268832125, -8.563154478299126, -12.222661214362759, -12.222661214362759, -17.36199647994654, -27.50669920757963, -37.933534357986446, -47.50985153518752, -70.20514623533631],
+          borderWidth: 2
+      },
+
+      ]
+  };
+
+  var All_http_page_dns_issue_time_diff_chart = new Chart(ctx, {
+    type: 'line',
+    data,
+    options: {
+      animation: false,
+      responsive: true,
+      plugins: {
+          zoom: zoomOptions,
+          datalabels: {
+            display: function(context) {
+
+              let num_visible = 0;
+              for (let i =0 ; i < context.chart.data.datasets.length ; i++) {
+                if (context.chart.isDatasetVisible(i)) {
+                  num_visible++;
+                  if (num_visible !== 1) {
+                    return false;
+                  } 
+                }
+              }
+
+              const index = context.dataIndex;
+              const labelValue = context.chart.data.labels[index];
+              return (labelValue == 0.99 || labelValue==0.95 || Math.round(labelValue*100)%10 === 0)
+                  ? true : false;
+            },
+            anchor: 'end',
+            align: 'top',
+            formatter: Math.round,
+          },
+          annotation: {
+              annotations: {
+                  line: {
+                      type: 'line',
+                      yMin: 0,
+                      yMax: 0,
+                      borderWidth: 2,
+                      borderColor: 'gray'
+                    }
+                }
+          },
+          legend: {
+              display: true,
+              position: 'top',
+          },
+          title: {
+              display: true,
+              text: ["http_page_dns_issue_time difference", "segment: All"]
+          }
+      },
+      scales: {
+        y: {
+          suggestedMax: 70.20514623533631,
+          suggestedMin: -70.20514623533631,
           beginAtZero: true,
           title: {
             text: "Difference",
@@ -14615,6 +15401,656 @@ div.chart {
   });
   </script>
  </div>
+ <div class="cell" id="Windows-http_page_dns_issue_time">
+  <div class="title">
+   (Windows) - http_page_dns_issue_time
+  </div>
+  <div class="chart">
+   <canvas height="250px" id="Windows-http_page_dns_issue_time-mean">
+   </canvas>
+  </div>
+  <script>
+   ctx = document.getElementById('Windows-http_page_dns_issue_time-mean');
+
+
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['control', 'treatment-a'],
+      datasets: [
+        {
+          data: [
+
+            {
+              x: "control",
+              y: 57.8,
+              
+            },
+
+            {
+              x: "treatment-a",
+              y: 55.2,
+              
+              uplift: -4.6
+              
+            },
+
+          ],
+        },
+      ]
+    },
+    options: {
+      animation: false,
+      maintainAspectRatio: false,
+      responsive: true,
+      plugins: {
+          datalabels: {
+            anchor: 'end',
+            align: 'top',
+            formatter: (n) => {
+                return n.hasOwnProperty('uplift') 
+                  ?  n.y.toFixed(2) + "  (" + (n.uplift > 0 ? "+" : "") + n.uplift.toFixed(1) + ")%" 
+                  :  n.y.toFixed(2);
+            },
+            font: {
+              weight: 'bold',
+                size: 14
+            }
+          },
+          legend: {
+              display: false,
+              position: 'top',
+            },
+          title: {
+              display: true,
+              text: ["http_page_dns_issue_time mean", "segment: Windows"]
+            }
+      },
+      scales: {
+        y: {
+          grace: '25%',
+          beginAtZero: true,
+          title: {
+            text: "Mean",
+            display: true
+          }
+        },
+        x: {
+          type: "category",
+        }
+      },
+    }
+  });
+  </script>
+  <table border="1" cellpadding="0" cellspacing="0" class="stat-table">
+   <thead>
+    <tr>
+     <th>
+      branch
+     </th>
+     <th>
+      n
+     </th>
+     <th>
+      mean
+     </th>
+     <th>
+      stddev
+     </th>
+     <th>
+      uplift(%)
+     </th>
+    </tr>
+   </thead>
+   <tbody>
+    <tr>
+     <td>
+      control (control)
+     </td>
+     <td>
+      62,214,513
+     </td>
+     <td>
+      57.8
+     </td>
+     <td>
+      513.0
+     </td>
+     <td>
+     </td>
+    </tr>
+    <tr>
+     <td>
+      treatment-a
+     </td>
+     <td>
+      61,771,075
+     </td>
+     <td>
+      55.2
+     </td>
+     <td>
+      522.9
+     </td>
+     <td>
+      -4.6
+     </td>
+    </tr>
+   </tbody>
+  </table>
+  <table border="1" cellpadding="0" cellspacing="0" class="stat-table">
+   <thead>
+    <tr>
+     <th rowspan="2">
+      <div class="tooltip">
+       branch
+       <span class="tooltiptext">
+        All results compared against control.
+       </span>
+      </div>
+     </th>
+     <th colspan="2">
+      <div class="tooltip">
+       t-test
+       <span class="tooltiptext">
+        Student t-test statistic.
+       </span>
+      </div>
+     </th>
+     <th colspan="2">
+      <div class="tooltip">
+       mwu
+       <span class="tooltiptext">
+        Mann-Whitney U test statistic.
+       </span>
+      </div>
+     </th>
+     <th colspan="2">
+      <div class="tooltip">
+       ks
+       <span class="tooltiptext">
+        Kolmogorov-Smirnov test statistic.
+       </span>
+      </div>
+     </th>
+    </tr>
+    <tr>
+     <th>
+      effect
+     </th>
+     <th>
+      p-value
+     </th>
+     <th>
+      effect
+     </th>
+     <th>
+      p-value
+     </th>
+     <th>
+      effect
+     </th>
+     <th>
+      p-value
+     </th>
+    </tr>
+   </thead>
+   <tbody>
+    <tr>
+     <td>
+      treatment-a
+     </td>
+     <td>
+      0.01
+     </td>
+     <td>
+      0.15
+     </td>
+     <td>
+      -0.01
+     </td>
+     <td>
+      0.03
+     </td>
+     <td>
+      0.01
+     </td>
+     <td>
+      0.0093
+     </td>
+    </tr>
+   </tbody>
+  </table>
+  <div class="chart">
+   <canvas id="Windows_http_page_dns_issue_time_pdf">
+   </canvas>
+   <button onclick="Windows_http_page_dns_issue_time_pdf_chart.resetZoom()">
+    Reset Zoom
+   </button>
+  </div>
+  <script>
+   ctx = document.getElementById('Windows_http_page_dns_issue_time_pdf');
+
+  data = {
+      labels: [0.0, 1.73, 3.45, 5.18, 6.91, 8.64, 10.36, 12.09, 13.82, 15.55, 17.27, 19.0, 20.73, 22.45, 24.18, 25.91, 27.64, 29.36, 31.09, 32.82, 34.55, 36.27, 38.0, 39.73, 41.45, 43.18, 44.91, 46.64, 48.36, 50.09, 51.82, 53.55, 55.27, 57.0, 58.73, 60.45, 62.18, 63.91, 65.64, 67.36, 69.09, 70.82, 72.55, 74.27, 76.0, 77.73, 79.45, 81.18, 82.91, 84.64, 86.36, 88.09, 89.82, 91.55, 93.27, 95.0, 96.73, 98.45, 100.18, 101.91, 103.64, 105.36, 107.09, 108.82, 110.55, 112.27, 114.0, 115.73, 117.45, 119.18, 120.91, 122.64, 124.36, 126.09, 127.82, 129.55, 131.27, 133.0, 134.73, 136.45, 138.18, 139.91, 141.64, 143.36, 145.09, 146.82, 148.55, 150.27, 152.0, 153.73, 155.45, 157.18, 158.91, 160.64, 162.36, 164.09, 165.82, 167.55, 169.27, 171.0],
+      datasets: [
+
+      {
+          label: "control",
+          data: [-0.0773836161799752, 0.07823659335501396, 0.07287285328872854, 0.04950447548729671, 0.061437368401696967, 0.05056609818339328, 0.03385118040945089, 0.03675916626180693, 0.04013476557922808, 0.03734070007934977, 0.032348826267933034, 0.02767144253248774, 0.024875108083795207, 0.024182456391462773, 0.024210840390148588, 0.023887077100651317, 0.023296780767325824, 0.022740705120038316, 0.022379878683262373, 0.022104878100118328, 0.02176550373879808, 0.02123152416414214, 0.020508569283899675, 0.019688697337530942, 0.01886690985711856, 0.01812357289861009, 0.01752785023181335, 0.017067602872017404, 0.016718493317763556, 0.016450486494590834, 0.01623980211998728, 0.016062293248329963, 0.015905388775418514, 0.015757510736074683, 0.01560982147729936, 0.015453478987532415, 0.015276914896931027, 0.015071623016419778, 0.014836790470818107, 0.014581144048428522, 0.014309172273527588, 0.014029801234463065, 0.013750528160400555, 0.013480384527814306, 0.01322369028876929, 0.012989404701668348, 0.012781312980141478, 0.012593869747349414, 0.012424858528451457, 0.012270782918744207, 0.01212894480974827, 0.011994215338979047, 0.011863952473722177, 0.011734659809274264, 0.011603616837184009, 0.011465976328480997, 0.011321701051600339, 0.01117296119830787, 0.011019374038380087, 0.010863143501542558, 0.010705622902068224, 0.010549072945581753, 0.010393020086706227, 0.01023972928538688, 0.010090553855896663, 0.009947659488258851, 0.009810731423013367, 0.009681946753780273, 0.009562479478767424, 0.009450434175297397, 0.009345959090716213, 0.009248483268853181, 0.009157944658813349, 0.009072722276981743, 0.008992789589680892, 0.008917575640740102, 0.008846909433151728, 0.008779401057747913, 0.00871490185251676, 0.00865319367980105, 0.008592990793629114, 0.00853408750944245, 0.008475988600198889, 0.008418883170164915, 0.008362069775566385, 0.008305844710461682, 0.00825017037933419, 0.008195326634816938, 0.008140638344320387, 0.008086388218566347, 0.008032848851940062, 0.007979360279036776, 0.007926197301641295, 0.007873322324237014, 0.007821001291872614, 0.007768588405820802, 0.007716350950525485, 0.007664251330470055, 0.007612552308366637, 0.007560615318165395],
+          borderWidth: 2
+      },
+
+      {
+          label: "treatment-a",
+          data: [-0.040417213602624194, 0.07782053435715655, 0.07828553865859961, 0.04979812315929326, 0.061583248523384336, 0.0511916849892036, 0.03398346908570286, 0.03565334512711777, 0.0386796940909927, 0.036907622415020096, 0.03240728994696771, 0.027498841236835787, 0.024505893824595764, 0.023945748448719637, 0.024150413313549175, 0.023828387660805805, 0.02315795697949293, 0.022588567805070597, 0.022360787225822642, 0.022296184776324928, 0.022155389387222217, 0.021727041186683962, 0.021012102558615138, 0.020135682675801018, 0.01922768707108113, 0.01840168772560692, 0.01775232879806785, 0.01726507858627559, 0.016908202218134986, 0.01664420875603433, 0.01644201044889208, 0.0162708865527214, 0.01611622274160397, 0.015965969294830476, 0.015810764161460565, 0.015641359614969628, 0.015445538887138063, 0.015214411786253369, 0.014947860366981543, 0.0146565853779571, 0.014346451538707684, 0.01402838100806206, 0.013711670152440972, 0.013407336064385374, 0.013121091613434185, 0.012863869588996341, 0.01264009388672327, 0.01244313964200149, 0.012269909910646293, 0.012115916564870948, 0.011977442555965211, 0.01184841118736756, 0.011725177763924788, 0.01160325415785016, 0.01147889307940295, 0.011346377544129574, 0.01120532209660496, 0.011058112467401229, 0.01090461797046449, 0.010747264376091747, 0.010587640381942764, 0.010428260232463219, 0.010268851723921599, 0.01011192972535955, 0.009959082934436831, 0.009812731507307536, 0.009672754737011669, 0.00954158154025077, 0.009420472041452573, 0.009307403917214224, 0.009202417201457789, 0.009104821122872357, 0.009014432389384418, 0.00892951252146638, 0.008849914969684344, 0.008774948962727392, 0.008704324275531465, 0.008636532243060742, 0.008571303434380105, 0.008508309238907979, 0.008446129718256487, 0.008384445100360084, 0.008322672852785018, 0.008261094998800232, 0.008199066710352382, 0.008137017148128898, 0.008075017867805161, 0.008013497611360667, 0.007951812238369639, 0.0078903914006879, 0.007829658642586695, 0.0077689789805977265, 0.007708778107327583, 0.0076491275784516515, 0.007590438231903632, 0.007532098844814687, 0.0074745240555294905, 0.00741778541972343, 0.007362274470239691, 0.00730741694231483],
+          borderWidth: 2
+      },
+
+      ]
+  };
+
+  var Windows_http_page_dns_issue_time_pdf_chart = new Chart(ctx, {
+    type: 'line',
+    data,
+    options: {
+      animation: false,
+      responsive: true,
+      plugins: {
+          zoom: zoomOptions,
+          tooltip: {
+              mode: 'interpolate',
+              intersect: false
+          },
+          crosshair: {
+            line: {
+              color: '#F66',  // crosshair line color
+              width: 1        // crosshair line width
+            }
+          },
+          datalabels: { display: false },
+          legend: {
+              display: true,
+              position: 'top',
+            },
+          title: {
+              display: true,
+              text: ["http_page_dns_issue_time pdf", "segment: Windows"]
+            }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          title: {
+            text: "Density",
+            display: true
+          }
+        },
+        x: {
+          ticks: {
+            maxTicksLimit: 10
+          }
+        }
+      },
+      elements: {
+        point:{
+          radius: 0
+        }
+      }
+    }
+  });
+  </script>
+  <div class="chart">
+   <canvas id="Windows_http_page_dns_issue_time_cdf">
+   </canvas>
+   <button onclick="Windows_http_page_dns_issue_time_cdf_chart.resetZoom()">
+    Reset Zoom
+   </button>
+  </div>
+  <script>
+   ctx = document.getElementById('Windows_http_page_dns_issue_time_cdf');
+
+  data = {
+      labels: [0.0, 1.73, 3.45, 5.18, 6.91, 8.64, 10.36, 12.09, 13.82, 15.55, 17.27, 19.0, 20.73, 22.45, 24.18, 25.91, 27.64, 29.36, 31.09, 32.82, 34.55, 36.27, 38.0, 39.73, 41.45, 43.18, 44.91, 46.64, 48.36, 50.09, 51.82, 53.55, 55.27, 57.0, 58.73, 60.45, 62.18, 63.91, 65.64, 67.36, 69.09, 70.82, 72.55, 74.27, 76.0, 77.73, 79.45, 81.18, 82.91, 84.64, 86.36, 88.09, 89.82, 91.55, 93.27, 95.0, 96.73, 98.45, 100.18, 101.91, 103.64, 105.36, 107.09, 108.82, 110.55, 112.27, 114.0, 115.73, 117.45, 119.18, 120.91, 122.64, 124.36, 126.09, 127.82, 129.55, 131.27, 133.0, 134.73, 136.45, 138.18, 139.91, 141.64, 143.36, 145.09, 146.82, 148.55, 150.27, 152.0, 153.73, 155.45, 157.18, 158.91, 160.64, 162.36, 164.09, 165.82, 167.55, 169.27, 171.0],
+      datasets: [
+
+      {
+          label: "control",
+          data: [0.14784097201137977, 0.2811587042607715, 0.4139596162054739, 0.5079584050197173, 0.601187468427985, 0.6471772569450578, 0.671783028293974, 0.706863879593911, 0.7366196543130696, 0.7561194370341742, 0.769434332359684, 0.7799730976715064, 0.790164979271216, 0.8008289236153711, 0.8109733206842319, 0.8196884951288036, 0.8272880184324801, 0.8342567596458423, 0.8409938007599881, 0.8473327420549682, 0.8530902156460519, 0.8580799693049264, 0.8624157771941453, 0.8662371967714698, 0.8696967038533187, 0.8730055906366808, 0.8762705283050122, 0.8794890973672216, 0.8826172062275213, 0.8856651893150731, 0.8885884605819891, 0.89136470205525, 0.8939778854697402, 0.8964642894981126, 0.8988142256412672, 0.901021156167209, 0.90311664190238, 0.9050935002987109, 0.9069596445070591, 0.9087148252566346, 0.9103891545568524, 0.9119818949934381, 0.9135027964075811, 0.9149533359877934, 0.9163600834043103, 0.9177240598258664, 0.9190430409296094, 0.9203324430181365, 0.9215842465643043, 0.9227982080303108, 0.9239673968110927, 0.9251051657589842, 0.9262043634210428, 0.9272647462594673, 0.9282802798248668, 0.929262611276802, 0.9302068846817357, 0.9311101886159259, 0.93198528838012, 0.9328291035560027, 0.9336439068450499, 0.934427488157967, 0.9351912206719987, 0.9359327462666189, 0.9366543376433031, 0.9373542449534794, 0.9380428684208727, 0.9387183346285193, 0.9393781264827847, 0.9400300237359985, 0.940670192244898, 0.9412986679363368, 0.9419119547376423, 0.9425172196446854, 0.9431108993071579, 0.943693029651913, 0.9442603812566353, 0.9448195869870037, 0.9453673509725445, 0.9459006415095027, 0.9464256954046286, 0.9469394151278175, 0.947441873065218, 0.9479305025299465, 0.9484112765554629, 0.9488816154148709, 0.9493418118180348, 0.9497895830587693, 0.9502304270809325, 0.9506620050844807, 0.9510821922029756, 0.9514961656346678, 0.9519017494853739, 0.9522992364649587, 0.9526866886473405, 0.9530689025919782, 0.9534438961031236, 0.9538119618906413, 0.9541713219755583, 0.954526446265038],
+          borderWidth: 2
+      },
+
+      {
+          label: "treatment-a",
+          data: [0.16729389293395402, 0.27688626051398413, 0.4205241783533596, 0.5146696822265997, 0.607858277060973, 0.6543928223832955, 0.6790684158605689, 0.713035755058406, 0.741794497021411, 0.7613506024548501, 0.7747010395409266, 0.785033293498834, 0.7950576536896139, 0.8056973821199265, 0.815841469308131, 0.8244937372745863, 0.832017341670086, 0.8389712509962322, 0.8457927630877502, 0.8522769276725496, 0.8581912588528114, 0.8633039332101851, 0.8677223096848664, 0.8715969903134154, 0.8750923516590039, 0.8784321247573774, 0.8817317548034624, 0.8849888596226724, 0.8881575053617631, 0.8912469023390558, 0.8942106305916202, 0.8970248584000216, 0.8996723458177548, 0.9021889173266708, 0.90456381701101, 0.9067895598705391, 0.9088970725452723, 0.9108782399572659, 0.9127412369187157, 0.9144871416769031, 0.9161472485279405, 0.9177221536931154, 0.9192229033980872, 0.9206523940508218, 0.9220382407136466, 0.9233828617852619, 0.9246847241095852, 0.9259588109775014, 0.927196922179235, 0.9283985278987759, 0.9295564741309027, 0.9306836980998265, 0.9317728302010487, 0.9328233406185595, 0.9338289670436003, 0.9348009681468475, 0.9357344601877372, 0.9366266671412203, 0.9374902993551497, 0.9383224143379261, 0.9391253592309488, 0.939897067513169, 0.9406488483851002, 0.9413784870241837, 0.9420883305718185, 0.9427767695355304, 0.9434541448679428, 0.9441187231480915, 0.9447680577873206, 0.9454097419449748, 0.946039933311174, 0.9466585978297319, 0.9472622254599423, 0.9478578012354091, 0.9484417481915332, 0.9490140322721282, 0.9495714127086646, 0.9501203367766815, 0.9506574959974673, 0.9511798535188091, 0.9516934493730449, 0.9521951784083482, 0.9526850625517538, 0.9531606532107074, 0.9536278390006089, 0.9540841820227195, 0.9545300425109752, 0.9549632903794715, 0.9553893218948317, 0.9558059494958678, 0.9562112027387291, 0.9566101523711362, 0.9570007767087496, 0.9573834359855056, 0.9577563436546779, 0.9581241943526659, 0.958485158609327, 0.958839596658597, 0.9591858726306622, 0.9595283714910257],
+          borderWidth: 2
+      },
+
+      ]
+  };
+
+  var Windows_http_page_dns_issue_time_cdf_chart = new Chart(ctx, {
+    type: 'line',
+    data,
+    options: {
+      animation: false,
+      responsive: true,
+      plugins: {
+          zoom: zoomOptions,
+          tooltip: {
+              mode: 'interpolate',
+              intersect: false
+          },
+          crosshair: {
+            sync: {
+              enabled: false
+            },
+          },
+          datalabels: { display: false },
+          annotation: {
+              annotations: {
+                  q25: {
+                      type: 'line',
+                      yMin: 0.25,
+                      yMax: 0.25,
+                      borderWidth: 1,
+                      borderColor: 'orange',
+                      label: {
+                          display: true,
+                          content: '25th',
+                          position: 'end',
+                          color: 'black', 
+                          yAdjust: -5,
+                          backgroundColor: 'transparent',
+                          font: {
+                            size: 12
+                          }
+                      }
+                    },
+                  q50: {
+                      type: 'line',
+                      yMin: 0.5,
+                      yMax: 0.5,
+                      borderWidth: 1,
+                      borderColor: 'magenta',
+                      label: {
+                          display: true,
+                          content: 'median',
+                          position: 'end',
+                          color: 'black', 
+                          yAdjust: -5,
+                          backgroundColor: 'transparent',
+                          font: {
+                            size: 12
+                          }
+                      }
+                    },
+                  q75: {
+                      type: 'line',
+                      yMin: 0.75,
+                      yMax: 0.75,
+                      borderWidth: 1,
+                      borderColor: 'green',
+                      label: {
+                          display: true,
+                          content: '75th',
+                          position: 'end',
+                          color: 'black', 
+                          yAdjust: -5,
+                          backgroundColor: 'transparent',
+                          font: {
+                            size: 12
+                          }
+                      }
+                    },
+                }
+          },
+          legend: {
+              display: true,
+              position: 'top',
+            },
+          title: {
+              display: true,
+              text: ["http_page_dns_issue_time cdf", "segment: Windows"]
+            }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          title: {
+            text: "CDF",
+            display: true
+          }
+        },
+        x: {
+          ticks: {
+            maxTicksLimit: 10
+          }
+        }
+      },
+      elements: {
+        point:{
+          radius: 0
+        }
+      }
+    }
+  });
+  </script>
+  <div class="chart">
+   <canvas id="Windows_http_page_dns_issue_time_uplift">
+   </canvas>
+   <button onclick="Windows_http_page_dns_issue_time_uplift_chart.resetZoom()">
+    Reset Zoom
+   </button>
+  </div>
+  <script>
+   ctx = document.getElementById('Windows_http_page_dns_issue_time_uplift');
+
+  data = {
+      labels: [0.1, 0.11, 0.12, 0.13, 0.14, 0.15, 0.15, 0.16, 0.17, 0.18, 0.19, 0.2, 0.21, 0.22, 0.23, 0.24, 0.25, 0.25, 0.26, 0.27, 0.28, 0.29, 0.3, 0.31, 0.32, 0.33, 0.34, 0.35, 0.35, 0.36, 0.37, 0.38, 0.39, 0.4, 0.41, 0.42, 0.43, 0.44, 0.45, 0.45, 0.46, 0.47, 0.48, 0.49, 0.5, 0.51, 0.52, 0.53, 0.54, 0.55, 0.55, 0.56, 0.57, 0.58, 0.59, 0.6, 0.61, 0.62, 0.63, 0.64, 0.64, 0.65, 0.66, 0.67, 0.68, 0.69, 0.7, 0.71, 0.72, 0.73, 0.74, 0.74, 0.75, 0.76, 0.77, 0.78, 0.79, 0.8, 0.81, 0.82, 0.83, 0.84, 0.84, 0.85, 0.86, 0.87, 0.88, 0.89, 0.9, 0.91, 0.92, 0.93, 0.94, 0.94, 0.95, 0.96, 0.97, 0.98, 0.99],
+      datasets: [
+
+      {
+          label: "treatment-a",
+          data: [-16.626390694461882, -21.95677493911266, -33.33404840586912, -74.5331305151801, 231.96430506381537, 42.90531776997968, 42.90531776997968, 22.876660348616753, 15.22289486510264, 11.181966856558766, 8.684266316092865, 6.987498066140793, 5.75964573037682, 4.829924964292304, 4.10150818804479, 3.515402242277726, 3.033613611169274, 3.033613611169274, 2.630568021718505, 2.2884193283986285, 1.9943354102202957, 1.7388528238355152, 1.514839456377458, 1.002938823647534, 0.4262432957407423, -0.08796774950022616, -0.5493276432440509, -0.9655862606548951, -0.9655862606548951, -1.3430488740694806, -1.6868977641844092, -2.001431573675086, -2.708154921038265, -2.6513578788431302, -2.5996658862791073, -2.5524202646131724, -2.5090709772445186, -2.4691551175342688, -2.5981954213079113, -2.5981954213079113, -2.9236170861926274, -2.818306350786346, -2.7217114067102073, -2.63279323736801, -2.550671663797254, -3.0090988148504803, -2.858163548459492, -2.7196753465329153, -2.592155487403827, -1.688541993972138, -1.688541993972138, -1.654059376122087, -1.6212803287432749, -1.5900816509847995, -1.5603517420753794, -1.5319892674521178, -3.006807712051184, -4.011663790494314, -3.86033088014656, -3.724979139998012, -3.724979139998012, -3.6032040489807926, -4.505024138780401, -4.196771667554744, -3.922499178241549, -3.2836656573150615, -2.8766111598355435, -2.588525082392954, -2.3232832903469793, -3.367068972716906, -3.139988700281989, -3.139988700281989, -2.937796551913709, -2.756613472561556, -4.61709541051283, -4.134466616820552, -3.9172529766222173, -3.631950469349907, -3.3657468307867906, -4.040188414205634, -3.673528373650338, -4.254531962664499, -4.254531962664499, -4.064634656520451, -6.042189408722233, -5.569455687832902, -6.420766090951497, -6.211309447162515, -6.855253549265368, -8.920983001176893, -8.911836385947627, -9.42154719632331, -10.862326317722157, -10.862326317722157, -12.50681047013342, -14.237618389385641, -13.97028536475076, -11.768857937859444, -6.976234292964671],
+          borderWidth: 2
+      },
+
+      ]
+  };
+
+  var Windows_http_page_dns_issue_time_uplift_chart = new Chart(ctx, {
+    type: 'line',
+    data,
+    options: {
+      animation: false,
+      responsive: true,
+      plugins: {
+          zoom: zoomOptions,
+          datalabels: {
+            display: function(context) {
+
+              let num_visible = 0;
+              for (let i =0 ; i < context.chart.data.datasets.length ; i++) {
+                if (context.chart.isDatasetVisible(i)) {
+                  num_visible++;
+                  if (num_visible !== 1) {
+                    return false;
+                  } 
+                }
+              }
+
+              const index = context.dataIndex;
+              const labelValue = context.chart.data.labels[index];
+              return (labelValue == 0.99 || labelValue==0.95 || Math.round(labelValue*100)%10 === 0)
+                  ? true : false;
+            },
+            anchor: 'end',
+            align: 'top',
+            formatter: n => Math.round(n)+"%"
+          },
+          annotation: {
+              annotations: {
+                  line: {
+                      type: 'line',
+                      yMin: 0,
+                      yMax: 0,
+                      borderWidth: 2,
+                      borderColor: 'gray'
+                    }
+                }
+          },
+          legend: {
+              display: true,
+              position: 'top',
+          },
+          title: {
+              display: true,
+              text: ["http_page_dns_issue_time uplift", "segment: Windows"]
+          }
+      },
+      scales: {
+        y: {
+          suggestedMax: 231.96430506381537,
+          suggestedMin: -231.96430506381537,
+          beginAtZero: true,
+          title: {
+            text: "Uplift (%)",
+            display: true
+          }
+        },
+        x: {
+          title: {
+            text: "Quantile",
+            display: true
+          },
+          ticks: {
+            minRotation: 50,
+            callback: function(val, index) {
+              x = this.getLabelForValue(val);
+              if (Math.round(x*100) % 10 === 0 || x==0.99 || x==0.95) {
+                  return x;
+              }
+            }
+          }
+        }
+      },
+      elements: {
+        point:{
+          radius: 0
+        }
+      }
+    }
+  });
+  </script>
+  <div class="chart">
+   <canvas id="Windows_http_page_dns_issue_time_diff">
+   </canvas>
+   <button onclick="Windows_http_page_dns_issue_time_diff_chart.resetZoom()">
+    Reset Zoom
+   </button>
+  </div>
+  <script>
+   ctx = document.getElementById('Windows_http_page_dns_issue_time_diff');
+
+  data = {
+      labels: [0.1, 0.11, 0.12, 0.13, 0.14, 0.15, 0.15, 0.16, 0.17, 0.18, 0.19, 0.2, 0.21, 0.22, 0.23, 0.24, 0.25, 0.25, 0.26, 0.27, 0.28, 0.29, 0.3, 0.31, 0.32, 0.33, 0.34, 0.35, 0.35, 0.36, 0.37, 0.38, 0.39, 0.4, 0.41, 0.42, 0.43, 0.44, 0.45, 0.45, 0.46, 0.47, 0.48, 0.49, 0.5, 0.51, 0.52, 0.53, 0.54, 0.55, 0.55, 0.56, 0.57, 0.58, 0.59, 0.6, 0.61, 0.62, 0.63, 0.64, 0.64, 0.65, 0.66, 0.67, 0.68, 0.69, 0.7, 0.71, 0.72, 0.73, 0.74, 0.74, 0.75, 0.76, 0.77, 0.78, 0.79, 0.8, 0.81, 0.82, 0.83, 0.84, 0.84, 0.85, 0.86, 0.87, 0.88, 0.89, 0.9, 0.91, 0.92, 0.93, 0.94, 0.94, 0.95, 0.96, 0.97, 0.98, 0.99],
+      datasets: [
+
+      {
+          label: "treatment-a",
+          data: [0.07530477724867657, 0.07301977218128419, 0.07073476711389182, 0.06844976204649988, 0.06616475697910751, 0.06387975191171535, 0.06387975191171535, 0.06159474684432298, 0.059309741776930824, 0.05702473670953867, 0.054739731642146405, 0.05245472657475425, 0.050169721507361986, 0.04788471643996972, 0.04559971137257768, 0.04331470630518508, 0.04102970123779315, 0.04102970123779315, 0.03874469617040077, 0.03645969110300862, 0.034174686035616464, 0.03188968096822409, 0.029604675900831934, 0.020844493910818773, 0.009397030471252954, -0.0020504329683128653, -0.013497896407879129, -0.024945359847444948, -0.024945359847444948, -0.03639282328701077, -0.04784028672657614, -0.05928775016614285, -0.08415856946347988, -0.08646209788779347, -0.08876562631210749, -0.09106915473642196, -0.09337268316073599, -0.09567621158505002, -0.1048415958294786, -0.1048415958294786, -0.12354674260357257, -0.12446955929936543, -0.1253923759951583, -0.12631519269095115, -0.1272380093867458, -0.1570851223474392, -0.1559109624492434, -0.1547368025510476, -0.1535626426528518, -0.10312564163083149, -0.10312564163083149, -0.10364472047938733, -0.10416379932794229, -0.10468287817649546, -0.10520195702505042, -0.10572103587360626, -0.21555560944218577, -0.3056363866756371, -0.31146959673629215, -0.317302806796949, -0.317302806796949, -0.3231360168576032, -0.4302067068216555, -0.4255961502462764, -0.4209855936708937, -0.3703349359104653, -0.3390264853320879, -0.31821118417898653, -0.2973958830258798, -0.4547134365976042, -0.4501451394158398, -0.4501451394158398, -0.4455768422340771, -0.4410085450523127, -0.8103228273334615, -0.7898626736551577, -0.8108577184603725, -0.8117907473027017, -0.807917152419531, -1.0582543860928304, -1.0426314870836038, -1.3184591685975349, -1.3184591685975349, -1.372266382307231, -2.261686231052664, -2.3296213351667134, -3.0222768092660672, -3.280081491190714, -4.11677515409729, -6.186408052776933, -7.235650355327763, -9.12054710803389, -12.98991120484655, -12.98991120484655, -19.065467669233755, -28.858057383388655, -39.54276282412485, -50.319023398005356, -57.520316666461554],
+          borderWidth: 2
+      },
+
+      ]
+  };
+
+  var Windows_http_page_dns_issue_time_diff_chart = new Chart(ctx, {
+    type: 'line',
+    data,
+    options: {
+      animation: false,
+      responsive: true,
+      plugins: {
+          zoom: zoomOptions,
+          datalabels: {
+            display: function(context) {
+
+              let num_visible = 0;
+              for (let i =0 ; i < context.chart.data.datasets.length ; i++) {
+                if (context.chart.isDatasetVisible(i)) {
+                  num_visible++;
+                  if (num_visible !== 1) {
+                    return false;
+                  } 
+                }
+              }
+
+              const index = context.dataIndex;
+              const labelValue = context.chart.data.labels[index];
+              return (labelValue == 0.99 || labelValue==0.95 || Math.round(labelValue*100)%10 === 0)
+                  ? true : false;
+            },
+            anchor: 'end',
+            align: 'top',
+            formatter: Math.round,
+          },
+          annotation: {
+              annotations: {
+                  line: {
+                      type: 'line',
+                      yMin: 0,
+                      yMax: 0,
+                      borderWidth: 2,
+                      borderColor: 'gray'
+                    }
+                }
+          },
+          legend: {
+              display: true,
+              position: 'top',
+          },
+          title: {
+              display: true,
+              text: ["http_page_dns_issue_time difference", "segment: Windows"]
+          }
+      },
+      scales: {
+        y: {
+          suggestedMax: 57.520316666461554,
+          suggestedMin: -57.520316666461554,
+          beginAtZero: true,
+          title: {
+            text: "Difference",
+            display: true
+          }
+        },
+        x: {
+          title: {
+            text: "Quantile",
+            display: true
+          },
+          ticks: {
+            minRotation: 50,
+            callback: function(val, index) {
+              x = this.getLabelForValue(val);
+              if (Math.round(x*100) % 10 === 0 || x==0.99 || x==0.95) {
+                  return x;
+              }
+            }
+          }
+        }
+      },
+      elements: {
+        point:{
+          radius: 0
+        }
+      }
+    },
+  });
+  </script>
+ </div>
  <div class="cell" id="Windows-fcp_time">
   <div class="title">
    (Windows) - fcp_time
@@ -22384,6 +23820,656 @@ div.chart {
         y: {
           suggestedMax: 330.6907540188879,
           suggestedMin: -330.6907540188879,
+          beginAtZero: true,
+          title: {
+            text: "Difference",
+            display: true
+          }
+        },
+        x: {
+          title: {
+            text: "Quantile",
+            display: true
+          },
+          ticks: {
+            minRotation: 50,
+            callback: function(val, index) {
+              x = this.getLabelForValue(val);
+              if (Math.round(x*100) % 10 === 0 || x==0.99 || x==0.95) {
+                  return x;
+              }
+            }
+          }
+        }
+      },
+      elements: {
+        point:{
+          radius: 0
+        }
+      }
+    },
+  });
+  </script>
+ </div>
+ <div class="cell" id="Linux-http_page_dns_issue_time">
+  <div class="title">
+   (Linux) - http_page_dns_issue_time
+  </div>
+  <div class="chart">
+   <canvas height="250px" id="Linux-http_page_dns_issue_time-mean">
+   </canvas>
+  </div>
+  <script>
+   ctx = document.getElementById('Linux-http_page_dns_issue_time-mean');
+
+
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['control', 'treatment-a'],
+      datasets: [
+        {
+          data: [
+
+            {
+              x: "control",
+              y: 72.1,
+              
+            },
+
+            {
+              x: "treatment-a",
+              y: 61.7,
+              
+              uplift: -14.4
+              
+            },
+
+          ],
+        },
+      ]
+    },
+    options: {
+      animation: false,
+      maintainAspectRatio: false,
+      responsive: true,
+      plugins: {
+          datalabels: {
+            anchor: 'end',
+            align: 'top',
+            formatter: (n) => {
+                return n.hasOwnProperty('uplift') 
+                  ?  n.y.toFixed(2) + "  (" + (n.uplift > 0 ? "+" : "") + n.uplift.toFixed(1) + ")%" 
+                  :  n.y.toFixed(2);
+            },
+            font: {
+              weight: 'bold',
+                size: 14
+            }
+          },
+          legend: {
+              display: false,
+              position: 'top',
+            },
+          title: {
+              display: true,
+              text: ["http_page_dns_issue_time mean", "segment: Linux"]
+            }
+      },
+      scales: {
+        y: {
+          grace: '25%',
+          beginAtZero: true,
+          title: {
+            text: "Mean",
+            display: true
+          }
+        },
+        x: {
+          type: "category",
+        }
+      },
+    }
+  });
+  </script>
+  <table border="1" cellpadding="0" cellspacing="0" class="stat-table">
+   <thead>
+    <tr>
+     <th>
+      branch
+     </th>
+     <th>
+      n
+     </th>
+     <th>
+      mean
+     </th>
+     <th>
+      stddev
+     </th>
+     <th>
+      uplift(%)
+     </th>
+    </tr>
+   </thead>
+   <tbody>
+    <tr>
+     <td>
+      control (control)
+     </td>
+     <td>
+      1,698,832
+     </td>
+     <td>
+      72.1
+     </td>
+     <td>
+      570.4
+     </td>
+     <td>
+     </td>
+    </tr>
+    <tr>
+     <td>
+      treatment-a
+     </td>
+     <td>
+      1,689,188
+     </td>
+     <td>
+      61.7
+     </td>
+     <td>
+      549.0
+     </td>
+     <td>
+      -14.4
+     </td>
+    </tr>
+   </tbody>
+  </table>
+  <table border="1" cellpadding="0" cellspacing="0" class="stat-table">
+   <thead>
+    <tr>
+     <th rowspan="2">
+      <div class="tooltip">
+       branch
+       <span class="tooltiptext">
+        All results compared against control.
+       </span>
+      </div>
+     </th>
+     <th colspan="2">
+      <div class="tooltip">
+       t-test
+       <span class="tooltiptext">
+        Student t-test statistic.
+       </span>
+      </div>
+     </th>
+     <th colspan="2">
+      <div class="tooltip">
+       mwu
+       <span class="tooltiptext">
+        Mann-Whitney U test statistic.
+       </span>
+      </div>
+     </th>
+     <th colspan="2">
+      <div class="tooltip">
+       ks
+       <span class="tooltiptext">
+        Kolmogorov-Smirnov test statistic.
+       </span>
+      </div>
+     </th>
+    </tr>
+    <tr>
+     <th>
+      effect
+     </th>
+     <th>
+      p-value
+     </th>
+     <th>
+      effect
+     </th>
+     <th>
+      p-value
+     </th>
+     <th>
+      effect
+     </th>
+     <th>
+      p-value
+     </th>
+    </tr>
+   </thead>
+   <tbody>
+    <tr>
+     <td>
+      treatment-a
+     </td>
+     <td>
+      0.02
+     </td>
+     <td>
+      1.4e-05
+     </td>
+     <td>
+      -0.02
+     </td>
+     <td>
+      2.2e-19
+     </td>
+     <td>
+      0.03
+     </td>
+     <td>
+      2.9e-40
+     </td>
+    </tr>
+   </tbody>
+  </table>
+  <div class="chart">
+   <canvas id="Linux_http_page_dns_issue_time_pdf">
+   </canvas>
+   <button onclick="Linux_http_page_dns_issue_time_pdf_chart.resetZoom()">
+    Reset Zoom
+   </button>
+  </div>
+  <script>
+   ctx = document.getElementById('Linux_http_page_dns_issue_time_pdf');
+
+  data = {
+      labels: [0.0, 2.58, 5.15, 7.73, 10.3, 12.88, 15.45, 18.03, 20.61, 23.18, 25.76, 28.33, 30.91, 33.48, 36.06, 38.64, 41.21, 43.79, 46.36, 48.94, 51.52, 54.09, 56.67, 59.24, 61.82, 64.39, 66.97, 69.55, 72.12, 74.7, 77.27, 79.85, 82.42, 85.0, 87.58, 90.15, 92.73, 95.3, 97.88, 100.45, 103.03, 105.61, 108.18, 110.76, 113.33, 115.91, 118.48, 121.06, 123.64, 126.21, 128.79, 131.36, 133.94, 136.52, 139.09, 141.67, 144.24, 146.82, 149.39, 151.97, 154.55, 157.12, 159.7, 162.27, 164.85, 167.42, 170.0, 172.58, 175.15, 177.73, 180.3, 182.88, 185.45, 188.03, 190.61, 193.18, 195.76, 198.33, 200.91, 203.48, 206.06, 208.64, 211.21, 213.79, 216.36, 218.94, 221.52, 224.09, 226.67, 229.24, 231.82, 234.39, 236.97, 239.55, 242.12, 244.7, 247.27, 249.85, 252.42, 255.0],
+      datasets: [
+
+      {
+          label: "control",
+          data: [0.07330501500081503, 0.05914373015435512, 0.034324540211900234, 0.04765550322340591, 0.028115407697670406, 0.033429699178578284, 0.03578673134058058, 0.03145511501260695, 0.02752619897156257, 0.028363247782986302, 0.02901800637185523, 0.028533728781105397, 0.028894768136204573, 0.029821603541923068, 0.02984887408624625, 0.028493649878491366, 0.026558027872617046, 0.02489464566058653, 0.023973822797621027, 0.02356757413742585, 0.023394407200640052, 0.02319614308815686, 0.022905094570669672, 0.022540477460573215, 0.022116829783066422, 0.021654727997013203, 0.021168085283640253, 0.020676313397530587, 0.020198907572252664, 0.019749780270472438, 0.019349943333689553, 0.019006395275019138, 0.01871003017212517, 0.01844272961087371, 0.018189862664071615, 0.01793657484439568, 0.01766508296948799, 0.01736230361784262, 0.017022857638815118, 0.016658366122316245, 0.016275537286298693, 0.015885319794398625, 0.015498776752055812, 0.01512244477001793, 0.014768736583427368, 0.01444434965174237, 0.014156282510530933, 0.013899519403013854, 0.013671878518419295, 0.013470726976150385, 0.01329114026154891, 0.013131168735314608, 0.012986208349840137, 0.012853546263332438, 0.012730279147455649, 0.012612217601569256, 0.012498660415832322, 0.012388188847535632, 0.012281147765202368, 0.012176190008661098, 0.012073221780212647, 0.01197211846664999, 0.01187157911611898, 0.011771871603206635, 0.01167170583832067, 0.01157134680003536, 0.011469499328522047, 0.01136606901731514, 0.011261443665963487, 0.01115512979992716, 0.011048278798003845, 0.01094038807403236, 0.01083262123051531, 0.01072446855411958, 0.010616679013982581, 0.010509995954677661, 0.010403918096990082, 0.010299594990195443, 0.010196543720468194, 0.010095890375161766, 0.009997180598905765, 0.00990114015122119, 0.009808406811408998, 0.009718253289674506, 0.00963126442730813, 0.00954664845039417, 0.00946463406104431, 0.00938540966576334, 0.009308243914503923, 0.00923362076658576, 0.009160844679333984, 0.00909036558366515, 0.00902152018633823, 0.008954471389074284, 0.008889354266320388, 0.0088255472522512, 0.008763430750084185, 0.008702406545126972, 0.008642833468433362, 0.008584133098505326],
+          borderWidth: 2
+      },
+
+      {
+          label: "treatment-a",
+          data: [0.08663004044463138, 0.058663974122130744, 0.04799824394484441, 0.05002489901163208, 0.027925368872865116, 0.033898604410804355, 0.03608787483418782, 0.031007098310660893, 0.02674846445337862, 0.027539854172511948, 0.02830200676582125, 0.02783672087687639, 0.027865081086326484, 0.028282075137366948, 0.02801521874690533, 0.026731538653096232, 0.025061624511913655, 0.023671061596709314, 0.022911573489591053, 0.022559540371924872, 0.022347198077038537, 0.022032647826039593, 0.021570840737274874, 0.02100913564703313, 0.020387508825383694, 0.019754215107429206, 0.019134826172247325, 0.01855054113693111, 0.01802159788071303, 0.017562127878741774, 0.01719383750066564, 0.016921626066361127, 0.016724894008037, 0.016573730452328416, 0.016440555871395836, 0.016297512108816824, 0.016115106098975505, 0.015867476759612597, 0.015546911220914552, 0.015171333165104293, 0.014754236681759975, 0.014313454136879527, 0.01386718476638221, 0.013428372532883641, 0.013016751170751188, 0.012645370678022835, 0.01232478216393886, 0.012047620949526772, 0.011809328835214605, 0.011604745583659185, 0.011426398153889591, 0.011269818503576189, 0.01112790716062932, 0.010995410676829614, 0.010866929778589916, 0.010735893385707934, 0.010601608948484536, 0.010463930573384307, 0.010324869866741334, 0.010184293878608395, 0.010043692887313771, 0.009904557558456031, 0.009766754361370334, 0.009632295870003055, 0.009501084949311844, 0.009375083070325299, 0.00925425890821414, 0.009140008006456713, 0.009032820886308145, 0.008931347480576966, 0.008835846812104189, 0.008745045353359588, 0.00865911939891296, 0.008576869932627277, 0.008498107723321074, 0.008422589526202737, 0.008349197319355692, 0.008277972441908667, 0.008207830282993121, 0.00813878698756777, 0.008069774922056067, 0.008000531958269065, 0.007930865411999381, 0.007860175343005347, 0.007789105382482251, 0.007717198885699894, 0.00764482791822518, 0.007572371739743219, 0.0074993629178354134, 0.00742646334323585, 0.007353202132972485, 0.007280243134278296, 0.007207115001736917, 0.007134198461457861, 0.007061870962229229, 0.006989666073027382, 0.006918239452549938, 0.0068471316805028435, 0.006776989910799568, 0.006707364721984764],
+          borderWidth: 2
+      },
+
+      ]
+  };
+
+  var Linux_http_page_dns_issue_time_pdf_chart = new Chart(ctx, {
+    type: 'line',
+    data,
+    options: {
+      animation: false,
+      responsive: true,
+      plugins: {
+          zoom: zoomOptions,
+          tooltip: {
+              mode: 'interpolate',
+              intersect: false
+          },
+          crosshair: {
+            line: {
+              color: '#F66',  // crosshair line color
+              width: 1        // crosshair line width
+            }
+          },
+          datalabels: { display: false },
+          legend: {
+              display: true,
+              position: 'top',
+            },
+          title: {
+              display: true,
+              text: ["http_page_dns_issue_time pdf", "segment: Linux"]
+            }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          title: {
+            text: "Density",
+            display: true
+          }
+        },
+        x: {
+          ticks: {
+            maxTicksLimit: 10
+          }
+        }
+      },
+      elements: {
+        point:{
+          radius: 0
+        }
+      }
+    }
+  });
+  </script>
+  <div class="chart">
+   <canvas id="Linux_http_page_dns_issue_time_cdf">
+   </canvas>
+   <button onclick="Linux_http_page_dns_issue_time_cdf_chart.resetZoom()">
+    Reset Zoom
+   </button>
+  </div>
+  <script>
+   ctx = document.getElementById('Linux_http_page_dns_issue_time_cdf');
+
+  data = {
+      labels: [0.0, 2.58, 5.15, 7.73, 10.3, 12.88, 15.45, 18.03, 20.61, 23.18, 25.76, 28.33, 30.91, 33.48, 36.06, 38.64, 41.21, 43.79, 46.36, 48.94, 51.52, 54.09, 56.67, 59.24, 61.82, 64.39, 66.97, 69.55, 72.12, 74.7, 77.27, 79.85, 82.42, 85.0, 87.58, 90.15, 92.73, 95.3, 97.88, 100.45, 103.03, 105.61, 108.18, 110.76, 113.33, 115.91, 118.48, 121.06, 123.64, 126.21, 128.79, 131.36, 133.94, 136.52, 139.09, 141.67, 144.24, 146.82, 149.39, 151.97, 154.55, 157.12, 159.7, 162.27, 164.85, 167.42, 170.0, 172.58, 175.15, 177.73, 180.3, 182.88, 185.45, 188.03, 190.61, 193.18, 195.76, 198.33, 200.91, 203.48, 206.06, 208.64, 211.21, 213.79, 216.36, 218.94, 221.52, 224.09, 226.67, 229.24, 231.82, 234.39, 236.97, 239.55, 242.12, 244.7, 247.27, 249.85, 252.42, 255.0],
+      datasets: [
+
+      {
+          label: "control",
+          data: [0.19000658527247222, 0.3680577317692032, 0.47359827838805313, 0.5661061735681324, 0.596934429236092, 0.6404128901844759, 0.6724902461356401, 0.6927132035773164, 0.7097454526573382, 0.7285845167102806, 0.7452927289533522, 0.7592882137946763, 0.7729160190523846, 0.785948315309836, 0.7971216732833144, 0.8059900142507705, 0.8133795292575278, 0.8202724596407684, 0.8271430704343754, 0.8339173475303273, 0.8403779172761893, 0.8463334348072054, 0.8518127128594, 0.8568209082875955, 0.8614451323121541, 0.8656972234523775, 0.8696542875913504, 0.8733397471922512, 0.8767811072999625, 0.8800455181127503, 0.8831478262968743, 0.8861425511586192, 0.8890076854382262, 0.8917614471267042, 0.8943883632430768, 0.8968749254987668, 0.8992364057989937, 0.9014507957190463, 0.903539627465565, 0.9054988453477577, 0.9073562290240074, 0.9091164997015595, 0.9107858827566048, 0.9123899023235801, 0.913928592241656, 0.9154263703346704, 0.9168793700342206, 0.9182998196359614, 0.9196823613137843, 0.9210222243918347, 0.9223302051543244, 0.923596531642218, 0.924831427870543, 0.926030265952941, 0.9271889765023681, 0.9283169847343317, 0.9294064311118481, 0.9304670098510825, 0.9314917153911302, 0.9324897443865526, 0.9334582747808091, 0.9343949414168512, 0.9353082558215824, 0.9361923540180873, 0.9370553384403537, 0.9378917352663696, 0.9387092757132319, 0.9395058645871678, 0.9402794136636805, 0.9410365858256028, 0.9417721455801173, 0.9424924544781444, 0.9431925627886026, 0.9438785561756882, 0.9445483163733778, 0.9451999765491297, 0.9458392453388548, 0.9464618012293647, 0.9470731263640784, 0.9476691158472885, 0.9482550450799448, 0.9488292095874614, 0.9493900456273361, 0.9499422573777537, 0.9504818056082102, 0.9510131316917204, 0.9515343592020487, 0.9520437681282738, 0.9525455652962966, 0.9530361021069899, 0.9535194385215413, 0.9539920690474414, 0.9544579142973576, 0.9549153615208614, 0.9553629280433196, 0.9558043394267891, 0.9562364151790015, 0.9566627603112725, 0.9570803111239782, 0.9574925595938858],
+          borderWidth: 2
+      },
+
+      {
+          label: "treatment-a",
+          data: [0.18971134866406575, 0.35934529019618594, 0.4966473549670028, 0.5961208479285546, 0.6266543997599378, 0.6705690647480312, 0.702837668432334, 0.7226857489125742, 0.7391741585606387, 0.7574872592190027, 0.773816612196073, 0.7874411892312584, 0.8004318729334915, 0.8126540106950619, 0.8231137255079469, 0.8314904938057041, 0.8385373468935944, 0.8451475689651248, 0.8517371579607632, 0.8582117194116208, 0.86434076615877, 0.8699227456898795, 0.874989081974629, 0.879561040672994, 0.8837353422676536, 0.8875400825201242, 0.8910584920447808, 0.8943224695748525, 0.8973676279871695, 0.9002646336695539, 0.9030377439986143, 0.9057422559602292, 0.9083522692225175, 0.9108761150142196, 0.913291447185479, 0.9155776003379368, 0.9177403853881944, 0.9197516859846631, 0.9216285601152273, 0.923370413809399, 0.9250053622933779, 0.9265409953992003, 0.9279864412401797, 0.9293675083666154, 0.9306879755798032, 0.9319725674702831, 0.9332199158278855, 0.9344397975118396, 0.9356266766520066, 0.9367755285497915, 0.9378946752707231, 0.9389748260365417, 0.9400237682736167, 0.9410366106836097, 0.9420090211130903, 0.942948065966303, 0.9438474210287146, 0.9447160372466533, 0.9455491420545253, 0.946355189831526, 0.9471328549929342, 0.9478812515681848, 0.9486081747284368, 0.9493099503038933, 0.9499940106563758, 0.9506570138859151, 0.9513060906240145, 0.9519405368970167, 0.9525589275968107, 0.9531663173666195, 0.9537582218617533, 0.9543394726094278, 0.9549057878930314, 0.9554618001019469, 0.9560055070939935, 0.9565350973206829, 0.95705491737329, 0.9575611617421412, 0.958057995338684, 0.9585417908428272, 0.9590165384666821, 0.9594805602174464, 0.9599323447740226, 0.9603756371117997, 0.9608072300708881, 0.9612307127584809, 0.9616446176700825, 0.962047625649961, 0.9624431033541094, 0.9628282142810477, 0.9632061858100919, 0.9635743171465464, 0.9639357035328363, 0.9642891275274401, 0.9646334950171496, 0.9649717163117295, 0.9653013987578375, 0.9656253383847441, 0.9659412532497078, 0.9662518322412899],
+          borderWidth: 2
+      },
+
+      ]
+  };
+
+  var Linux_http_page_dns_issue_time_cdf_chart = new Chart(ctx, {
+    type: 'line',
+    data,
+    options: {
+      animation: false,
+      responsive: true,
+      plugins: {
+          zoom: zoomOptions,
+          tooltip: {
+              mode: 'interpolate',
+              intersect: false
+          },
+          crosshair: {
+            sync: {
+              enabled: false
+            },
+          },
+          datalabels: { display: false },
+          annotation: {
+              annotations: {
+                  q25: {
+                      type: 'line',
+                      yMin: 0.25,
+                      yMax: 0.25,
+                      borderWidth: 1,
+                      borderColor: 'orange',
+                      label: {
+                          display: true,
+                          content: '25th',
+                          position: 'end',
+                          color: 'black', 
+                          yAdjust: -5,
+                          backgroundColor: 'transparent',
+                          font: {
+                            size: 12
+                          }
+                      }
+                    },
+                  q50: {
+                      type: 'line',
+                      yMin: 0.5,
+                      yMax: 0.5,
+                      borderWidth: 1,
+                      borderColor: 'magenta',
+                      label: {
+                          display: true,
+                          content: 'median',
+                          position: 'end',
+                          color: 'black', 
+                          yAdjust: -5,
+                          backgroundColor: 'transparent',
+                          font: {
+                            size: 12
+                          }
+                      }
+                    },
+                  q75: {
+                      type: 'line',
+                      yMin: 0.75,
+                      yMax: 0.75,
+                      borderWidth: 1,
+                      borderColor: 'green',
+                      label: {
+                          display: true,
+                          content: '75th',
+                          position: 'end',
+                          color: 'black', 
+                          yAdjust: -5,
+                          backgroundColor: 'transparent',
+                          font: {
+                            size: 12
+                          }
+                      }
+                    },
+                }
+          },
+          legend: {
+              display: true,
+              position: 'top',
+            },
+          title: {
+              display: true,
+              text: ["http_page_dns_issue_time cdf", "segment: Linux"]
+            }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          title: {
+            text: "CDF",
+            display: true
+          }
+        },
+        x: {
+          ticks: {
+            maxTicksLimit: 10
+          }
+        }
+      },
+      elements: {
+        point:{
+          radius: 0
+        }
+      }
+    }
+  });
+  </script>
+  <div class="chart">
+   <canvas id="Linux_http_page_dns_issue_time_uplift">
+   </canvas>
+   <button onclick="Linux_http_page_dns_issue_time_uplift_chart.resetZoom()">
+    Reset Zoom
+   </button>
+  </div>
+  <script>
+   ctx = document.getElementById('Linux_http_page_dns_issue_time_uplift');
+
+  data = {
+      labels: [0.1, 0.11, 0.12, 0.13, 0.14, 0.15, 0.15, 0.16, 0.17, 0.18, 0.19, 0.2, 0.21, 0.22, 0.23, 0.24, 0.25, 0.25, 0.26, 0.27, 0.28, 0.29, 0.3, 0.31, 0.32, 0.33, 0.34, 0.35, 0.35, 0.36, 0.37, 0.38, 0.39, 0.4, 0.41, 0.42, 0.43, 0.44, 0.45, 0.45, 0.46, 0.47, 0.48, 0.49, 0.5, 0.51, 0.52, 0.53, 0.54, 0.55, 0.55, 0.56, 0.57, 0.58, 0.59, 0.6, 0.61, 0.62, 0.63, 0.64, 0.64, 0.65, 0.66, 0.67, 0.68, 0.69, 0.7, 0.71, 0.72, 0.73, 0.74, 0.74, 0.75, 0.76, 0.77, 0.78, 0.79, 0.8, 0.81, 0.82, 0.83, 0.84, 0.84, 0.85, 0.86, 0.87, 0.88, 0.89, 0.9, 0.91, 0.92, 0.93, 0.94, 0.94, 0.95, 0.96, 0.97, 0.98, 0.99],
+      datasets: [
+
+      {
+          label: "treatment-a",
+          data: [3.9303292473463496, 3.713170114797941, 3.4438127160942136, 3.1008659254330198, 2.6494011071483676, 2.028230206547586, 2.028230206547586, 1.1195167703087652, -0.3365237849348245, -3.0474744054339826, -9.864216313879105, -59.212540746957224, 36.698679698979944, 18.39250712131013, 13.750459774077783, 11.631641117781674, 10.418406877182672, 10.418406877182672, 9.632409134996168, 9.081759423199015, 8.674518337429424, 8.361117545518193, 8.112472660300316, 7.910392884152256, 7.742917437841943, 7.901821777990847, 7.623236019921391, 6.546882270230868, 6.546882270230868, 5.63252326536598, 4.846147333954964, 4.162641288452527, 3.4888808084267655, 1.6388095003815175, 0.031042922587436586, -1.3790954244576732, -2.6259346390601865, -4.517105081740735, -6.079181149186669, -6.079181149186669, -7.441425794976607, -8.715838036768561, -10.644591772433648, -12.349828790722922, -12.512041547055006, -10.997465843783402, -9.58527288688903, -8.71979766279046, -8.61227147044083, -10.522040365936357, -10.522040365936357, -14.525130729621754, -17.975608787147227, -18.85519059770481, -18.904250780351195, -18.950039494111927, -18.874512038832965, -16.9136077616639, -15.129078531916878, -13.686573647760728, -13.686573647760728, -14.415013206272379, -15.406059509740402, -16.287366139403286, -16.579813459969923, -18.52589222620175, -20.18204372875856, -20.887068743450023, -19.201706985362506, -17.716351017311634, -17.175409500649575, -17.175409500649575, -17.269599567712042, -17.35219450444592, -17.049907742838162, -16.60444298485464, -16.21067363379776, -16.94779877322514, -18.18753011573426, -19.23313995599543, -18.774032138064406, -18.383721462095934, -18.383721462095934, -18.627156483465797, -18.70871006926801, -19.537560634007697, -19.985926866269157, -20.629879611272543, -20.176036880359153, -21.518924326876014, -23.1858107864607, -23.229505431386464, -22.991446715079586, -22.991446715079586, -22.843599560600218, -22.496085769464543, -19.164967246353225, -15.047641215427769, -22.922424179220762],
+          borderWidth: 2
+      },
+
+      ]
+  };
+
+  var Linux_http_page_dns_issue_time_uplift_chart = new Chart(ctx, {
+    type: 'line',
+    data,
+    options: {
+      animation: false,
+      responsive: true,
+      plugins: {
+          zoom: zoomOptions,
+          datalabels: {
+            display: function(context) {
+
+              let num_visible = 0;
+              for (let i =0 ; i < context.chart.data.datasets.length ; i++) {
+                if (context.chart.isDatasetVisible(i)) {
+                  num_visible++;
+                  if (num_visible !== 1) {
+                    return false;
+                  } 
+                }
+              }
+
+              const index = context.dataIndex;
+              const labelValue = context.chart.data.labels[index];
+              return (labelValue == 0.99 || labelValue==0.95 || Math.round(labelValue*100)%10 === 0)
+                  ? true : false;
+            },
+            anchor: 'end',
+            align: 'top',
+            formatter: n => Math.round(n)+"%"
+          },
+          annotation: {
+              annotations: {
+                  line: {
+                      type: 'line',
+                      yMin: 0,
+                      yMax: 0,
+                      borderWidth: 2,
+                      borderColor: 'gray'
+                    }
+                }
+          },
+          legend: {
+              display: true,
+              position: 'top',
+          },
+          title: {
+              display: true,
+              text: ["http_page_dns_issue_time uplift", "segment: Linux"]
+          }
+      },
+      scales: {
+        y: {
+          suggestedMax: 59.212540746957224,
+          suggestedMin: -59.212540746957224,
+          beginAtZero: true,
+          title: {
+            text: "Uplift (%)",
+            display: true
+          }
+        },
+        x: {
+          title: {
+            text: "Quantile",
+            display: true
+          },
+          ticks: {
+            minRotation: 50,
+            callback: function(val, index) {
+              x = this.getLabelForValue(val);
+              if (Math.round(x*100) % 10 === 0 || x==0.99 || x==0.95) {
+                  return x;
+              }
+            }
+          }
+        }
+      },
+      elements: {
+        point:{
+          radius: 0
+        }
+      }
+    }
+  });
+  </script>
+  <div class="chart">
+   <canvas id="Linux_http_page_dns_issue_time_diff">
+   </canvas>
+   <button onclick="Linux_http_page_dns_issue_time_diff_chart.resetZoom()">
+    Reset Zoom
+   </button>
+  </div>
+  <script>
+   ctx = document.getElementById('Linux_http_page_dns_issue_time_diff');
+
+  data = {
+      labels: [0.1, 0.11, 0.12, 0.13, 0.14, 0.15, 0.15, 0.16, 0.17, 0.18, 0.19, 0.2, 0.21, 0.22, 0.23, 0.24, 0.25, 0.25, 0.26, 0.27, 0.28, 0.29, 0.3, 0.31, 0.32, 0.33, 0.34, 0.35, 0.35, 0.36, 0.37, 0.38, 0.39, 0.4, 0.41, 0.42, 0.43, 0.44, 0.45, 0.45, 0.46, 0.47, 0.48, 0.49, 0.5, 0.51, 0.52, 0.53, 0.54, 0.55, 0.55, 0.56, 0.57, 0.58, 0.59, 0.6, 0.61, 0.62, 0.63, 0.64, 0.64, 0.65, 0.66, 0.67, 0.68, 0.69, 0.7, 0.71, 0.72, 0.73, 0.74, 0.74, 0.75, 0.76, 0.77, 0.78, 0.79, 0.8, 0.81, 0.82, 0.83, 0.84, 0.84, 0.85, 0.86, 0.87, 0.88, 0.89, 0.9, 0.91, 0.92, 0.93, 0.94, 0.94, 0.95, 0.96, 0.97, 0.98, 0.99],
+      datasets: [
+
+      {
+          label: "treatment-a",
+          data: [-0.06141272552243504, -0.05239779144969714, -0.04338285737695924, -0.034367923304221115, -0.025352989231483658, -0.01633805515874609, -0.01633805515874609, -0.0073231210860081886, 0.0016918129867293796, 0.01070674705946778, 0.01972168113220621, 0.02873661520494374, 0.037751549277681484, 0.04676648335041922, 0.05578141742315745, 0.06479635149589502, 0.0738112855686327, 0.0738112855686327, 0.08282621964137082, 0.09184115371410861, 0.10085608778684652, 0.10987102185958442, 0.1188859559323221, 0.12790089000506, 0.13691582407779812, 0.15168906313658392, 0.1590799250719952, 0.1487210353011612, 0.1487210353011612, 0.13836214553032766, 0.12800325575949367, 0.11764436598865968, 0.1051400091590109, 0.053108249519261186, 0.0010764898795119215, -0.0509552697602369, -0.1029870293999875, -0.1889475218409875, -0.2712365318138321, -0.2712365318138321, -0.3527624414935424, -0.4377797891410804, -0.569697924622476, -0.7016160601038717, -0.7515804815475438, -0.6845486149741102, -0.6175167484006776, -0.5807468173087704, -0.5923383415600689, -0.763377689843785, -0.763377689843785, -1.138189373122965, -1.5130010564021426, -1.6965774310638437, -1.8335330063983974, -1.970917578335035, -2.092491780822513, -1.9753903714375696, -1.8566793830626658, -1.760807461513501, -1.760807461513501, -1.968659500740447, -2.235001485676305, -2.5013434706121647, -2.7107715318939665, -3.294077570442015, -3.8773836089900744, -4.307753086622522, -4.226785255074386, -4.145817423526257, -4.293477708624501, -4.293477708624501, -4.620046868508069, -4.9466160283916345, -5.1894368875816745, -5.385595525698353, -5.5817541638150345, -6.315052435436925, -7.351529453867705, -8.406190729478965, -8.928693005204998, -9.451195280931032, -9.451195280931032, -10.478278248478631, -11.463493143727582, -13.234298122551273, -14.981097647122688, -17.32069942671845, -18.897346310776953, -23.224559907315538, -28.99233164308336, -34.03918189457825, -40.18087278306339, -40.18087278306339, -49.079345989943505, -61.57059354171005, -69.6182265733064, -79.59737563228401, -215.98337277810435],
+          borderWidth: 2
+      },
+
+      ]
+  };
+
+  var Linux_http_page_dns_issue_time_diff_chart = new Chart(ctx, {
+    type: 'line',
+    data,
+    options: {
+      animation: false,
+      responsive: true,
+      plugins: {
+          zoom: zoomOptions,
+          datalabels: {
+            display: function(context) {
+
+              let num_visible = 0;
+              for (let i =0 ; i < context.chart.data.datasets.length ; i++) {
+                if (context.chart.isDatasetVisible(i)) {
+                  num_visible++;
+                  if (num_visible !== 1) {
+                    return false;
+                  } 
+                }
+              }
+
+              const index = context.dataIndex;
+              const labelValue = context.chart.data.labels[index];
+              return (labelValue == 0.99 || labelValue==0.95 || Math.round(labelValue*100)%10 === 0)
+                  ? true : false;
+            },
+            anchor: 'end',
+            align: 'top',
+            formatter: Math.round,
+          },
+          annotation: {
+              annotations: {
+                  line: {
+                      type: 'line',
+                      yMin: 0,
+                      yMax: 0,
+                      borderWidth: 2,
+                      borderColor: 'gray'
+                    }
+                }
+          },
+          legend: {
+              display: true,
+              position: 'top',
+          },
+          title: {
+              display: true,
+              text: ["http_page_dns_issue_time difference", "segment: Linux"]
+          }
+      },
+      scales: {
+        y: {
+          suggestedMax: 215.98337277810435,
+          suggestedMin: -215.98337277810435,
           beginAtZero: true,
           title: {
             text: "Difference",
@@ -30215,6 +32301,656 @@ div.chart {
   });
   </script>
  </div>
+ <div class="cell" id="Mac-http_page_dns_issue_time">
+  <div class="title">
+   (Mac) - http_page_dns_issue_time
+  </div>
+  <div class="chart">
+   <canvas height="250px" id="Mac-http_page_dns_issue_time-mean">
+   </canvas>
+  </div>
+  <script>
+   ctx = document.getElementById('Mac-http_page_dns_issue_time-mean');
+
+
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['control', 'treatment-a'],
+      datasets: [
+        {
+          data: [
+
+            {
+              x: "control",
+              y: 21.9,
+              
+            },
+
+            {
+              x: "treatment-a",
+              y: 22.4,
+              
+              uplift: 2.3
+              
+            },
+
+          ],
+        },
+      ]
+    },
+    options: {
+      animation: false,
+      maintainAspectRatio: false,
+      responsive: true,
+      plugins: {
+          datalabels: {
+            anchor: 'end',
+            align: 'top',
+            formatter: (n) => {
+                return n.hasOwnProperty('uplift') 
+                  ?  n.y.toFixed(2) + "  (" + (n.uplift > 0 ? "+" : "") + n.uplift.toFixed(1) + ")%" 
+                  :  n.y.toFixed(2);
+            },
+            font: {
+              weight: 'bold',
+                size: 14
+            }
+          },
+          legend: {
+              display: false,
+              position: 'top',
+            },
+          title: {
+              display: true,
+              text: ["http_page_dns_issue_time mean", "segment: Mac"]
+            }
+      },
+      scales: {
+        y: {
+          grace: '25%',
+          beginAtZero: true,
+          title: {
+            text: "Mean",
+            display: true
+          }
+        },
+        x: {
+          type: "category",
+        }
+      },
+    }
+  });
+  </script>
+  <table border="1" cellpadding="0" cellspacing="0" class="stat-table">
+   <thead>
+    <tr>
+     <th>
+      branch
+     </th>
+     <th>
+      n
+     </th>
+     <th>
+      mean
+     </th>
+     <th>
+      stddev
+     </th>
+     <th>
+      uplift(%)
+     </th>
+    </tr>
+   </thead>
+   <tbody>
+    <tr>
+     <td>
+      control (control)
+     </td>
+     <td>
+      4,567,669
+     </td>
+     <td>
+      21.9
+     </td>
+     <td>
+      343.7
+     </td>
+     <td>
+     </td>
+    </tr>
+    <tr>
+     <td>
+      treatment-a
+     </td>
+     <td>
+      4,998,732
+     </td>
+     <td>
+      22.4
+     </td>
+     <td>
+      350.6
+     </td>
+     <td>
+      2.3
+     </td>
+    </tr>
+   </tbody>
+  </table>
+  <table border="1" cellpadding="0" cellspacing="0" class="stat-table">
+   <thead>
+    <tr>
+     <th rowspan="2">
+      <div class="tooltip">
+       branch
+       <span class="tooltiptext">
+        All results compared against control.
+       </span>
+      </div>
+     </th>
+     <th colspan="2">
+      <div class="tooltip">
+       t-test
+       <span class="tooltiptext">
+        Student t-test statistic.
+       </span>
+      </div>
+     </th>
+     <th colspan="2">
+      <div class="tooltip">
+       mwu
+       <span class="tooltiptext">
+        Mann-Whitney U test statistic.
+       </span>
+      </div>
+     </th>
+     <th colspan="2">
+      <div class="tooltip">
+       ks
+       <span class="tooltiptext">
+        Kolmogorov-Smirnov test statistic.
+       </span>
+      </div>
+     </th>
+    </tr>
+    <tr>
+     <th>
+      effect
+     </th>
+     <th>
+      p-value
+     </th>
+     <th>
+      effect
+     </th>
+     <th>
+      p-value
+     </th>
+     <th>
+      effect
+     </th>
+     <th>
+      p-value
+     </th>
+    </tr>
+   </thead>
+   <tbody>
+    <tr>
+     <td>
+      treatment-a
+     </td>
+     <td>
+      -0.00
+     </td>
+     <td>
+      0.75
+     </td>
+     <td>
+      -0.00
+     </td>
+     <td>
+      0.97
+     </td>
+     <td>
+      0.00
+     </td>
+     <td>
+      0.65
+     </td>
+    </tr>
+   </tbody>
+  </table>
+  <div class="chart">
+   <canvas id="Mac_http_page_dns_issue_time_pdf">
+   </canvas>
+   <button onclick="Mac_http_page_dns_issue_time_pdf_chart.resetZoom()">
+    Reset Zoom
+   </button>
+  </div>
+  <script>
+   ctx = document.getElementById('Mac_http_page_dns_issue_time_pdf');
+
+  data = {
+      labels: [0.0, 0.64, 1.27, 1.91, 2.55, 3.18, 3.82, 4.45, 5.09, 5.73, 6.36, 7.0, 7.64, 8.27, 8.91, 9.55, 10.18, 10.82, 11.45, 12.09, 12.73, 13.36, 14.0, 14.64, 15.27, 15.91, 16.55, 17.18, 17.82, 18.45, 19.09, 19.73, 20.36, 21.0, 21.64, 22.27, 22.91, 23.55, 24.18, 24.82, 25.45, 26.09, 26.73, 27.36, 28.0, 28.64, 29.27, 29.91, 30.55, 31.18, 31.82, 32.45, 33.09, 33.73, 34.36, 35.0, 35.64, 36.27, 36.91, 37.55, 38.18, 38.82, 39.45, 40.09, 40.73, 41.36, 42.0, 42.64, 43.27, 43.91, 44.55, 45.18, 45.82, 46.45, 47.09, 47.73, 48.36, 49.0, 49.64, 50.27, 50.91, 51.55, 52.18, 52.82, 53.45, 54.09, 54.73, 55.36, 56.0, 56.64, 57.27, 57.91, 58.55, 59.18, 59.82, 60.45, 61.09, 61.73, 62.36, 63.0],
+      datasets: [
+
+      {
+          label: "control",
+          data: [0.29594457673920205, 0.20733279968914498, 0.14498933125518945, 0.1018441090956292, 0.07391468085081034, 0.05628449569034087, 0.04450850131268283, 0.037053550350514435, 0.030494657069702807, 0.024664081026788274, 0.02813542538057532, 0.03689080798105117, 0.038254671008273386, 0.03335287563080307, 0.026524308884876505, 0.02179383617191414, 0.019681461888097967, 0.019314565446310557, 0.01993709972679518, 0.02102627616827295, 0.02216760941074134, 0.02295936234714967, 0.02328957573229786, 0.023214505551557622, 0.022821745893633692, 0.02217702172851878, 0.021362272850756956, 0.02046308389429022, 0.01951820145966145, 0.018623042137065546, 0.017816475330506492, 0.017181336358353907, 0.01678603132564838, 0.016616165946331626, 0.016623288910348213, 0.016746345435185585, 0.016931523294279556, 0.017119169712165434, 0.017249762428645125, 0.017295735402162685, 0.017268771876927578, 0.017185948982346065, 0.017065332563306723, 0.01692734133304207, 0.016785527731909812, 0.01666014356619684, 0.016570063409841337, 0.016517866672805106, 0.01649605437562233, 0.016494395861317325, 0.01650281887447908, 0.01651124878709207, 0.01650993361126651, 0.016488563253594282, 0.016438076173248044, 0.016346850001609136, 0.0162080452840763, 0.016028529994206807, 0.01580900252575553, 0.015558467372073111, 0.0152878594366015, 0.014994985283076459, 0.014695261592620601, 0.01438557061928764, 0.014077076524432798, 0.013780868956713042, 0.013493941793126105, 0.013227554500685412, 0.012991574262579167, 0.012780903656170399, 0.012597213431050502, 0.012440225479035066, 0.01230239685940586, 0.01218552869733197, 0.012083351696220301, 0.01199527184402863, 0.011919817498593981, 0.011852034087661013, 0.01179060978356485, 0.011733836866979638, 0.01167735382688334, 0.011619491851540657, 0.011558679335635397, 0.01149146604679999, 0.011420229926354199, 0.011343174185665734, 0.01126186097079697, 0.011178117480524153, 0.011089749866855396, 0.010998529782119702, 0.01090640646168368, 0.01081092003120106, 0.010713986132764856, 0.010617610521829452, 0.010519198330699387, 0.010422279960458806, 0.010324243312958127, 0.010227098417347045, 0.010132799785995015, 0.010038818487066378],
+          borderWidth: 2
+      },
+
+      {
+          label: "treatment-a",
+          data: [0.26630298139649194, 0.1951878235426983, 0.14202210621025135, 0.10250349695542743, 0.07495487972252884, 0.056954027592041705, 0.04532330574265727, 0.03782677502981539, 0.030954853472439887, 0.024814773986975583, 0.027960591305776092, 0.03648785331960186, 0.037943068957691534, 0.033362681512297564, 0.02693807707464604, 0.022547158382347235, 0.02066480298586854, 0.020421647457470538, 0.02105714212456088, 0.022081323297637262, 0.02313055118905874, 0.02385385813419396, 0.02415229502751813, 0.024070093476063485, 0.023680456870074997, 0.02303506073785311, 0.022203079607787616, 0.02126771319898773, 0.020267096483902666, 0.019298920211981402, 0.018400279550539855, 0.01765557593203817, 0.017135994883982045, 0.016826029862040362, 0.01668375949609812, 0.016655290013063356, 0.01668668206467577, 0.016725409298454064, 0.01671875635482399, 0.01663796923958456, 0.016499223825182367, 0.016316327234908612, 0.016109506610029484, 0.01590047850314525, 0.015700818840960386, 0.015532300561608176, 0.015414378494180822, 0.015348146458510414, 0.015325015933395905, 0.015332815815633801, 0.015360083155535519, 0.01539449861517033, 0.015425444183814654, 0.01544053918678941, 0.015428389740002867, 0.015376899581733926, 0.015277187162742364, 0.015135143678713507, 0.014952532517298544, 0.014737628755639193, 0.014500717874456837, 0.01424055159800097, 0.013971402487767157, 0.013690998832161974, 0.01340987995623006, 0.013138629711672116, 0.012874909684217775, 0.01262944072437466, 0.012411699048894748, 0.012217223510608102, 0.012047648978648951, 0.011902803145534897, 0.011775810822270994, 0.011668410921799051, 0.011574917014890536, 0.011494861944199734, 0.011426941906083182, 0.011366723800276016, 0.011313060019708669, 0.011264394912161142, 0.011216906645005683, 0.01116908819211215, 0.011119462477957144, 0.011065036876078908, 0.011007584631238798, 0.010945505750244671, 0.010879908574408787, 0.010812120479512327, 0.010740213350139121, 0.010665464877396832, 0.010589329642666326, 0.010509614541965284, 0.010427735049367818, 0.010345241385025575, 0.01025973859004793, 0.010174117862259708, 0.01008588497091486, 0.009996614758711848, 0.009907946647650608, 0.009817289664658956],
+          borderWidth: 2
+      },
+
+      ]
+  };
+
+  var Mac_http_page_dns_issue_time_pdf_chart = new Chart(ctx, {
+    type: 'line',
+    data,
+    options: {
+      animation: false,
+      responsive: true,
+      plugins: {
+          zoom: zoomOptions,
+          tooltip: {
+              mode: 'interpolate',
+              intersect: false
+          },
+          crosshair: {
+            line: {
+              color: '#F66',  // crosshair line color
+              width: 1        // crosshair line width
+            }
+          },
+          datalabels: { display: false },
+          legend: {
+              display: true,
+              position: 'top',
+            },
+          title: {
+              display: true,
+              text: ["http_page_dns_issue_time pdf", "segment: Mac"]
+            }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          title: {
+            text: "Density",
+            display: true
+          }
+        },
+        x: {
+          ticks: {
+            maxTicksLimit: 10
+          }
+        }
+      },
+      elements: {
+        point:{
+          radius: 0
+        }
+      }
+    }
+  });
+  </script>
+  <div class="chart">
+   <canvas id="Mac_http_page_dns_issue_time_cdf">
+   </canvas>
+   <button onclick="Mac_http_page_dns_issue_time_cdf_chart.resetZoom()">
+    Reset Zoom
+   </button>
+  </div>
+  <script>
+   ctx = document.getElementById('Mac_http_page_dns_issue_time_cdf');
+
+  data = {
+      labels: [0.0, 0.64, 1.27, 1.91, 2.55, 3.18, 3.82, 4.45, 5.09, 5.73, 6.36, 7.0, 7.64, 8.27, 8.91, 9.55, 10.18, 10.82, 11.45, 12.09, 12.73, 13.36, 14.0, 14.64, 15.27, 15.91, 16.55, 17.18, 17.82, 18.45, 19.09, 19.73, 20.36, 21.0, 21.64, 22.27, 22.91, 23.55, 24.18, 24.82, 25.45, 26.09, 26.73, 27.36, 28.0, 28.64, 29.27, 29.91, 30.55, 31.18, 31.82, 32.45, 33.09, 33.73, 34.36, 35.0, 35.64, 36.27, 36.91, 37.55, 38.18, 38.82, 39.45, 40.09, 40.73, 41.36, 42.0, 42.64, 43.27, 43.91, 44.55, 45.18, 45.82, 46.45, 47.09, 47.73, 48.36, 49.0, 49.64, 50.27, 50.91, 51.55, 52.18, 52.82, 53.45, 54.09, 54.73, 55.36, 56.0, 56.64, 57.27, 57.91, 58.55, 59.18, 59.82, 60.45, 61.09, 61.73, 62.36, 63.0],
+      datasets: [
+
+      {
+          label: "control",
+          data: [0.31982372513840895, 0.4254816260365024, 0.5041214034257165, 0.5633446366067588, 0.6068856361256032, 0.6394447004245819, 0.6662158669387447, 0.6885693205245833, 0.7066417450445958, 0.7214098187169997, 0.7421104837936656, 0.7660020899062521, 0.7807193873429187, 0.7874744111457566, 0.7911479447394599, 0.7957432687129513, 0.8018367938984542, 0.8089957189595155, 0.8163982733341865, 0.8238476534976559, 0.8308934171873494, 0.8371242626788454, 0.8426464710470032, 0.8474501246720091, 0.8515754763380573, 0.8552536104378412, 0.8585145469182366, 0.8614061411891341, 0.8641075287849286, 0.8666198095569398, 0.8691100713362024, 0.8716259698228122, 0.8742094267770303, 0.8769536450111022, 0.8797695978933089, 0.8825620472112665, 0.8853692889565754, 0.888096016325223, 0.8906522024591783, 0.893093117696482, 0.8953587131364568, 0.8975417541835912, 0.8996263516547958, 0.9016027450564004, 0.9035545187758034, 0.9054708664630204, 0.9073427983602625, 0.9092368729787512, 0.9111143532320215, 0.9129366133265009, 0.9147516721153506, 0.9164931826073327, 0.9182066001761647, 0.919853934851915, 0.9214013107119511, 0.9228880201258016, 0.9242818973570405, 0.9255680875759212, 0.9267952095647863, 0.9279500704125332, 0.9290239758874987, 0.9300588055738062, 0.9310298465788912, 0.9319757129481498, 0.9328885204063757, 0.9337624427892777, 0.9346330110113895, 0.93549406631601, 0.9363399222492619, 0.9372009906882239, 0.9380624653216666, 0.9389092302670442, 0.9397664949554613, 0.9406058326117303, 0.9414522168799997, 0.9422905903603158, 0.9431063943712122, 0.9439238554569853, 0.9447282502716448, 0.9455056689211377, 0.946279119366858, 0.947034448058305, 0.9477586384157123, 0.9484738125615718, 0.9491581367997359, 0.9498340023277209, 0.9504910665896686, 0.951120157518696, 0.9517419128739336, 0.9523468825656113, 0.9529266615098676, 0.9535003220059999, 0.9540592124410483, 0.9545956007248992, 0.9551271816755669, 0.9556379961553405, 0.956144927115439, 0.9566404438342838, 0.9571177261936953, 0.9575925926331351],
+          borderWidth: 2
+      },
+
+      {
+          label: "treatment-a",
+          data: [0.3150498800712335, 0.4217466886252425, 0.5010901314476912, 0.5608301622191997, 0.6048153910481915, 0.6378636363896882, 0.6651917803744507, 0.687971837273955, 0.7062880586059419, 0.7211020582238992, 0.7416098630833496, 0.7652374642209265, 0.7799118297110835, 0.7868330166653896, 0.7908037126196532, 0.7957483402148658, 0.8022015603184182, 0.8097220053801827, 0.8174581758778202, 0.8252163047588876, 0.832539277500522, 0.8390112921771747, 0.8447477587649189, 0.8497381761402089, 0.8540239833002281, 0.8578448767879264, 0.8612311340494847, 0.8642284965687379, 0.8670175457488772, 0.8695947673912513, 0.8721273965373465, 0.8746599427405451, 0.8772329260633702, 0.8799399384652492, 0.8826947231109152, 0.8854063638181257, 0.8881134433732553, 0.8907246699634274, 0.8931549847849432, 0.8954583447672203, 0.8975813382420083, 0.8996145622427958, 0.9015467293688667, 0.9033728436020867, 0.9051740772381175, 0.9069444032864614, 0.9086792972035518, 0.9104421678368569, 0.9121963623175497, 0.913904768258283, 0.9156115581531109, 0.9172535412916709, 0.9188727815076313, 0.9204326894278347, 0.9219003694621851, 0.9233123520124703, 0.9246375067620063, 0.9258614664043969, 0.9270303762327133, 0.9281315687056936, 0.9291565920842264, 0.9301452762244352, 0.93107386271274, 0.9319791199166847, 0.9328533554427512, 0.9336908081786363, 0.9345253533568869, 0.9353509173427764, 0.936161874212962, 0.9369873300858967, 0.9378131854689802, 0.9386250518899976, 0.9394472043036697, 0.9402524830033535, 0.9410649538097594, 0.9418702801224944, 0.9426545701277578, 0.9434412233385009, 0.9442162009086241, 0.9449661908690691, 0.9457135038424745, 0.9464446100283119, 0.9471469959574562, 0.9478421348861352, 0.9485086407227558, 0.9491681340364982, 0.949810362138907, 0.950426147202096, 0.9510354996119615, 0.951628982676897, 0.952198147665001, 0.9527615249597866, 0.9533104287760447, 0.95383707438741, 0.9543586423559117, 0.9548592857436581, 0.9553553596452623, 0.9558392840762768, 0.956304235427987, 0.9567654357144972],
+          borderWidth: 2
+      },
+
+      ]
+  };
+
+  var Mac_http_page_dns_issue_time_cdf_chart = new Chart(ctx, {
+    type: 'line',
+    data,
+    options: {
+      animation: false,
+      responsive: true,
+      plugins: {
+          zoom: zoomOptions,
+          tooltip: {
+              mode: 'interpolate',
+              intersect: false
+          },
+          crosshair: {
+            sync: {
+              enabled: false
+            },
+          },
+          datalabels: { display: false },
+          annotation: {
+              annotations: {
+                  q25: {
+                      type: 'line',
+                      yMin: 0.25,
+                      yMax: 0.25,
+                      borderWidth: 1,
+                      borderColor: 'orange',
+                      label: {
+                          display: true,
+                          content: '25th',
+                          position: 'end',
+                          color: 'black', 
+                          yAdjust: -5,
+                          backgroundColor: 'transparent',
+                          font: {
+                            size: 12
+                          }
+                      }
+                    },
+                  q50: {
+                      type: 'line',
+                      yMin: 0.5,
+                      yMax: 0.5,
+                      borderWidth: 1,
+                      borderColor: 'magenta',
+                      label: {
+                          display: true,
+                          content: 'median',
+                          position: 'end',
+                          color: 'black', 
+                          yAdjust: -5,
+                          backgroundColor: 'transparent',
+                          font: {
+                            size: 12
+                          }
+                      }
+                    },
+                  q75: {
+                      type: 'line',
+                      yMin: 0.75,
+                      yMax: 0.75,
+                      borderWidth: 1,
+                      borderColor: 'green',
+                      label: {
+                          display: true,
+                          content: '75th',
+                          position: 'end',
+                          color: 'black', 
+                          yAdjust: -5,
+                          backgroundColor: 'transparent',
+                          font: {
+                            size: 12
+                          }
+                      }
+                    },
+                }
+          },
+          legend: {
+              display: true,
+              position: 'top',
+            },
+          title: {
+              display: true,
+              text: ["http_page_dns_issue_time cdf", "segment: Mac"]
+            }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          title: {
+            text: "CDF",
+            display: true
+          }
+        },
+        x: {
+          ticks: {
+            maxTicksLimit: 10
+          }
+        }
+      },
+      elements: {
+        point:{
+          radius: 0
+        }
+      }
+    }
+  });
+  </script>
+  <div class="chart">
+   <canvas id="Mac_http_page_dns_issue_time_uplift">
+   </canvas>
+   <button onclick="Mac_http_page_dns_issue_time_uplift_chart.resetZoom()">
+    Reset Zoom
+   </button>
+  </div>
+  <script>
+   ctx = document.getElementById('Mac_http_page_dns_issue_time_uplift');
+
+  data = {
+      labels: [0.1, 0.11, 0.12, 0.13, 0.14, 0.15, 0.15, 0.16, 0.17, 0.18, 0.19, 0.2, 0.21, 0.22, 0.23, 0.24, 0.25, 0.25, 0.26, 0.27, 0.28, 0.29, 0.3, 0.31, 0.32, 0.33, 0.34, 0.35, 0.35, 0.36, 0.37, 0.38, 0.39, 0.4, 0.41, 0.42, 0.43, 0.44, 0.45, 0.45, 0.46, 0.47, 0.48, 0.49, 0.5, 0.51, 0.52, 0.53, 0.54, 0.55, 0.55, 0.56, 0.57, 0.58, 0.59, 0.6, 0.61, 0.62, 0.63, 0.64, 0.64, 0.65, 0.66, 0.67, 0.68, 0.69, 0.7, 0.71, 0.72, 0.73, 0.74, 0.74, 0.75, 0.76, 0.77, 0.78, 0.79, 0.8, 0.81, 0.82, 0.83, 0.84, 0.84, 0.85, 0.86, 0.87, 0.88, 0.89, 0.9, 0.91, 0.92, 0.93, 0.94, 0.94, 0.95, 0.96, 0.97, 0.98, 0.99],
+      datasets: [
+
+      {
+          label: "treatment-a",
+          data: [-2.3605206969630226, -2.416575636998541, -2.4770087554899476, -2.54235383533426, -2.6132351061477705, -2.6903872488382525, -2.6903872488382525, -2.774680955327322, -2.8671559304995444, -2.9690639934338656, -3.0819260773913677, -3.2076086544299107, -3.3484277725413354, -3.507293090374366, -3.687911077920224, -3.895077821652145, -4.13511118865821, -4.13511118865821, -4.416506398524887, -4.750962445811094, -5.155049601688142, -5.653039408539192, -6.281966968038411, -7.101290772914619, -8.212890336700752, -9.807110813730354, -12.285410082740643, -16.665330425007934, -16.665330425007934, -26.49795797582942, -68.75409640989673, 103.76714348334662, 28.67768940956552, 16.33303332634369, 11.263874802818114, 8.502294568267093, 6.764756786341514, 5.570752624193481, 4.699736528128458, 4.699736528128458, 4.0362661192459255, 3.5140574915909073, 3.092336522744779, 2.7446439772329563, 2.453060341703846, 2.2050178121222035, 1.991441220626727, 1.8056135830199544, 1.64245685473257, 1.4980607948305977, 1.4980607948305977, 1.3693655157176106, 1.911937469057306, 1.7631763541974625, 1.554949273135713, 1.3743178466672954, 1.2161372456056814, 1.0764667225402955, 1.147233420861768, 1.122280377238683, 1.122280377238683, 0.9087247305596167, 0.7226783026656686, 0.5591473211821409, 0.5694604270352484, 0.4191046875892403, 0.2883970251854549, 0.28973056183650747, 0.2644181410426382, 0.16895725466096792, 0.20923548180789736, 0.20923548180789736, 0.2461881395204437, 0.2802107623209898, 0.7238943604443471, 0.4818956004264734, 0.28240707359500117, -0.18147254379111669, -0.6805649862837472, -0.8598708704747783, -1.0761084947006627, -1.8870438278758424, -1.8870438278758424, -2.0522554231129706, -3.6710327148879824, -3.520024694285442, -3.1133731109538996, -2.5446502435129066, -2.208493659465434, -1.532769863689751, -0.6848484360174708, -0.17103940736490084, 0.5552552651679201, 0.5552552651679201, 1.3516241899994998, 2.487614102441724, 3.897491154858832, 5.584911942666085, 7.2859022677121255],
+          borderWidth: 2
+      },
+
+      ]
+  };
+
+  var Mac_http_page_dns_issue_time_uplift_chart = new Chart(ctx, {
+    type: 'line',
+    data,
+    options: {
+      animation: false,
+      responsive: true,
+      plugins: {
+          zoom: zoomOptions,
+          datalabels: {
+            display: function(context) {
+
+              let num_visible = 0;
+              for (let i =0 ; i < context.chart.data.datasets.length ; i++) {
+                if (context.chart.isDatasetVisible(i)) {
+                  num_visible++;
+                  if (num_visible !== 1) {
+                    return false;
+                  } 
+                }
+              }
+
+              const index = context.dataIndex;
+              const labelValue = context.chart.data.labels[index];
+              return (labelValue == 0.99 || labelValue==0.95 || Math.round(labelValue*100)%10 === 0)
+                  ? true : false;
+            },
+            anchor: 'end',
+            align: 'top',
+            formatter: n => Math.round(n)+"%"
+          },
+          annotation: {
+              annotations: {
+                  line: {
+                      type: 'line',
+                      yMin: 0,
+                      yMax: 0,
+                      borderWidth: 2,
+                      borderColor: 'gray'
+                    }
+                }
+          },
+          legend: {
+              display: true,
+              position: 'top',
+          },
+          title: {
+              display: true,
+              text: ["http_page_dns_issue_time uplift", "segment: Mac"]
+          }
+      },
+      scales: {
+        y: {
+          suggestedMax: 103.76714348334662,
+          suggestedMin: -103.76714348334662,
+          beginAtZero: true,
+          title: {
+            text: "Uplift (%)",
+            display: true
+          }
+        },
+        x: {
+          title: {
+            text: "Quantile",
+            display: true
+          },
+          ticks: {
+            minRotation: 50,
+            callback: function(val, index) {
+              x = this.getLabelForValue(val);
+              if (Math.round(x*100) % 10 === 0 || x==0.99 || x==0.95) {
+                  return x;
+              }
+            }
+          }
+        }
+      },
+      elements: {
+        point:{
+          radius: 0
+        }
+      }
+    }
+  });
+  </script>
+  <div class="chart">
+   <canvas id="Mac_http_page_dns_issue_time_diff">
+   </canvas>
+   <button onclick="Mac_http_page_dns_issue_time_diff_chart.resetZoom()">
+    Reset Zoom
+   </button>
+  </div>
+  <script>
+   ctx = document.getElementById('Mac_http_page_dns_issue_time_diff');
+
+  data = {
+      labels: [0.1, 0.11, 0.12, 0.13, 0.14, 0.15, 0.15, 0.16, 0.17, 0.18, 0.19, 0.2, 0.21, 0.22, 0.23, 0.24, 0.25, 0.25, 0.26, 0.27, 0.28, 0.29, 0.3, 0.31, 0.32, 0.33, 0.34, 0.35, 0.35, 0.36, 0.37, 0.38, 0.39, 0.4, 0.41, 0.42, 0.43, 0.44, 0.45, 0.45, 0.46, 0.47, 0.48, 0.49, 0.5, 0.51, 0.52, 0.53, 0.54, 0.55, 0.55, 0.56, 0.57, 0.58, 0.59, 0.6, 0.61, 0.62, 0.63, 0.64, 0.64, 0.65, 0.66, 0.67, 0.68, 0.69, 0.7, 0.71, 0.72, 0.73, 0.74, 0.74, 0.75, 0.76, 0.77, 0.78, 0.79, 0.8, 0.81, 0.82, 0.83, 0.84, 0.84, 0.85, 0.86, 0.87, 0.88, 0.89, 0.9, 0.91, 0.92, 0.93, 0.94, 0.94, 0.95, 0.96, 0.97, 0.98, 0.99],
+      datasets: [
+
+      {
+          label: "treatment-a",
+          data: [0.06710119797887071, 0.0662062912025787, 0.06531138442628492, 0.06441647764999248, 0.0635215708736987, 0.06262666409740492, 0.06262666409740492, 0.061731757321112024, 0.060836850544818244, 0.05994194376852491, 0.059047036992232016, 0.058152130215938236, 0.05725722343964601, 0.05636231666335223, 0.055467409887058894, 0.054572503110765114, 0.053677596334472444, 0.053677596334472444, 0.052782689558178664, 0.05188778278188533, 0.050992876005592436, 0.05009796922929877, 0.04920306245300543, 0.048308155676712095, 0.04741324890041887, 0.046518342124125145, 0.04562343534783225, 0.04472852857153897, 0.04472852857153897, 0.04383362179524525, 0.04293871501895196, 0.04204380824265867, 0.04114890146636538, 0.04025399469007207, 0.03935908791377901, 0.03846418113748551, 0.03756927436119217, 0.036674367584898726, 0.03577946080860539, 0.03577946080860539, 0.034884554032312276, 0.03398964725601883, 0.03309474047972549, 0.03219983370343216, 0.0313049269271386, 0.030410020150845485, 0.02951511337455215, 0.028620206598258813, 0.027725299821965477, 0.026830393045672363, 0.026830393045672363, 0.025935486269378805, 0.038180404496798825, 0.03808661559608417, 0.03615439954277022, 0.034222183489456715, 0.032289967436142764, 0.030357751382828813, 0.03424644271513211, 0.036096622944233214, 0.036096622944233214, 0.03138874511508982, 0.026680867285946874, 0.021972989456803482, 0.02405196847103319, 0.019031930793821594, 0.014011893116609997, 0.015138014467779293, 0.01488793808654254, 0.01017813793007516, 0.01317170989879024, 0.01317170989879024, 0.016165281867504433, 0.019158853836220402, 0.052927140440897524, 0.038987598211278396, 0.025048055981661932, -0.017888097889919408, -0.07409241306022096, -0.10136972334679228, -0.1363993894339579, -0.26156686748200464, -0.26156686748200464, -0.3123624543922716, -0.6242442212638615, -0.6814811919062969, -0.6753458341327345, -0.6111948747840792, -0.5969602915797978, -0.463962386344722, -0.23243736657156688, -0.06729851146302224, 0.25612514090020966, 0.25612514090020966, 0.7390740997030107, 1.6660537532673914, 3.3598190709201248, 6.837499708110727, 16.184796698483126],
+          borderWidth: 2
+      },
+
+      ]
+  };
+
+  var Mac_http_page_dns_issue_time_diff_chart = new Chart(ctx, {
+    type: 'line',
+    data,
+    options: {
+      animation: false,
+      responsive: true,
+      plugins: {
+          zoom: zoomOptions,
+          datalabels: {
+            display: function(context) {
+
+              let num_visible = 0;
+              for (let i =0 ; i < context.chart.data.datasets.length ; i++) {
+                if (context.chart.isDatasetVisible(i)) {
+                  num_visible++;
+                  if (num_visible !== 1) {
+                    return false;
+                  } 
+                }
+              }
+
+              const index = context.dataIndex;
+              const labelValue = context.chart.data.labels[index];
+              return (labelValue == 0.99 || labelValue==0.95 || Math.round(labelValue*100)%10 === 0)
+                  ? true : false;
+            },
+            anchor: 'end',
+            align: 'top',
+            formatter: Math.round,
+          },
+          annotation: {
+              annotations: {
+                  line: {
+                      type: 'line',
+                      yMin: 0,
+                      yMax: 0,
+                      borderWidth: 2,
+                      borderColor: 'gray'
+                    }
+                }
+          },
+          legend: {
+              display: true,
+              position: 'top',
+          },
+          title: {
+              display: true,
+              text: ["http_page_dns_issue_time difference", "segment: Mac"]
+          }
+      },
+      scales: {
+        y: {
+          suggestedMax: 16.184796698483126,
+          suggestedMin: -16.184796698483126,
+          beginAtZero: true,
+          title: {
+            text: "Difference",
+            display: true
+          }
+        },
+        x: {
+          title: {
+            text: "Quantile",
+            display: true
+          },
+          ticks: {
+            minRotation: 50,
+            callback: function(val, index) {
+              x = this.getLabelForValue(val);
+              if (Math.round(x*100) % 10 === 0 || x==0.99 || x==0.95) {
+                  return x;
+              }
+            }
+          }
+        }
+      },
+      elements: {
+        point:{
+          radius: 0
+        }
+      }
+    },
+  });
+  </script>
+ </div>
  <div class="cell" id="Mac-fcp_time">
   <div class="title">
    (Mac) - fcp_time
@@ -33516,6 +36252,11 @@ div.chart {
             "glean": false,
             "desc": "HTTP page channel: After TCP SYN to Ready for HTTP (ms)",
             "kind": "numerical"
+        },
+        "payload.processes.content.histograms.http_page_dns_issue_time": {
+            "glean": false,
+            "desc": "HTTP page: open() -&gt; DNS request issued (ms)",
+            "kind": "numerical"
         }
     },
     "pageload_event_metrics": {
@@ -33570,6 +36311,632 @@ div.chart {
    </div>
   </section>
   <section class="accordion">
+   <input id="Pageload event: fcp_time-query" name="collapse" type="checkbox"/>
+   <h1 class="handle">
+    <label for="Pageload event: fcp_time-query">
+     Pageload event: fcp_time
+    </label>
+   </h1>
+   <div class="content">
+    <code>
+     <pre>
+  with eventdata as (
+SELECT
+  normalized_os as segment,
+  mozfun.map.get_key(ping_info.experiments, "post-quantum-key-exchange-for-tls").branch as branch,
+  SAFE_CAST((SELECT value FROM UNNEST(event.extra) WHERE key = 'fcp_time') AS int) AS fcp_time,
+FROM
+  `moz-fx-data-shared-prod.firefox_desktop.pageload`
+CROSS JOIN
+  UNNEST(events) AS event
+WHERE
+  normalized_channel = "release"
+  AND DATE(submission_timestamp) &gt;= DATE('2024-05-20')
+  AND DATE(submission_timestamp) &lt;= DATE('2024-06-06')  
+  AND mozfun.map.get_key(ping_info.experiments, "post-quantum-key-exchange-for-tls").branch is not null
+)
+SELECT
+  segment,
+  branch,
+  fcp_time as bucket,
+  COUNT(*) as counts
+FROM
+  eventdata
+WHERE
+  fcp_time &gt;= 0 AND fcp_time &lt;= 10000
+GROUP BY
+  segment, branch, bucket
+ORDER BY
+  segment, branch, bucket
+  </pre>
+    </code>
+   </div>
+  </section>
+  <section class="accordion">
+   <input id="Pageload event: lcp_time-query" name="collapse" type="checkbox"/>
+   <h1 class="handle">
+    <label for="Pageload event: lcp_time-query">
+     Pageload event: lcp_time
+    </label>
+   </h1>
+   <div class="content">
+    <code>
+     <pre>
+  with eventdata as (
+SELECT
+  normalized_os as segment,
+  mozfun.map.get_key(ping_info.experiments, "post-quantum-key-exchange-for-tls").branch as branch,
+  SAFE_CAST((SELECT value FROM UNNEST(event.extra) WHERE key = 'lcp_time') AS int) AS lcp_time,
+FROM
+  `moz-fx-data-shared-prod.firefox_desktop.pageload`
+CROSS JOIN
+  UNNEST(events) AS event
+WHERE
+  normalized_channel = "release"
+  AND DATE(submission_timestamp) &gt;= DATE('2024-05-20')
+  AND DATE(submission_timestamp) &lt;= DATE('2024-06-06')  
+  AND mozfun.map.get_key(ping_info.experiments, "post-quantum-key-exchange-for-tls").branch is not null
+)
+SELECT
+  segment,
+  branch,
+  lcp_time as bucket,
+  COUNT(*) as counts
+FROM
+  eventdata
+WHERE
+  lcp_time &gt;= 0 AND lcp_time &lt;= 10000
+GROUP BY
+  segment, branch, bucket
+ORDER BY
+  segment, branch, bucket
+  </pre>
+    </code>
+   </div>
+  </section>
+  <section class="accordion">
+   <input id="Pageload event: load_time-query" name="collapse" type="checkbox"/>
+   <h1 class="handle">
+    <label for="Pageload event: load_time-query">
+     Pageload event: load_time
+    </label>
+   </h1>
+   <div class="content">
+    <code>
+     <pre>
+  with eventdata as (
+SELECT
+  normalized_os as segment,
+  mozfun.map.get_key(ping_info.experiments, "post-quantum-key-exchange-for-tls").branch as branch,
+  SAFE_CAST((SELECT value FROM UNNEST(event.extra) WHERE key = 'load_time') AS int) AS load_time,
+FROM
+  `moz-fx-data-shared-prod.firefox_desktop.pageload`
+CROSS JOIN
+  UNNEST(events) AS event
+WHERE
+  normalized_channel = "release"
+  AND DATE(submission_timestamp) &gt;= DATE('2024-05-20')
+  AND DATE(submission_timestamp) &lt;= DATE('2024-06-06')  
+  AND mozfun.map.get_key(ping_info.experiments, "post-quantum-key-exchange-for-tls").branch is not null
+)
+SELECT
+  segment,
+  branch,
+  load_time as bucket,
+  COUNT(*) as counts
+FROM
+  eventdata
+WHERE
+  load_time &gt;= 0 AND load_time &lt;= 30000
+GROUP BY
+  segment, branch, bucket
+ORDER BY
+  segment, branch, bucket
+  </pre>
+    </code>
+   </div>
+  </section>
+  <section class="accordion">
+   <input id="Pageload event: response_time-query" name="collapse" type="checkbox"/>
+   <h1 class="handle">
+    <label for="Pageload event: response_time-query">
+     Pageload event: response_time
+    </label>
+   </h1>
+   <div class="content">
+    <code>
+     <pre>
+  with eventdata as (
+SELECT
+  normalized_os as segment,
+  mozfun.map.get_key(ping_info.experiments, "post-quantum-key-exchange-for-tls").branch as branch,
+  SAFE_CAST((SELECT value FROM UNNEST(event.extra) WHERE key = 'response_time') AS int) AS response_time,
+FROM
+  `moz-fx-data-shared-prod.firefox_desktop.pageload`
+CROSS JOIN
+  UNNEST(events) AS event
+WHERE
+  normalized_channel = "release"
+  AND DATE(submission_timestamp) &gt;= DATE('2024-05-20')
+  AND DATE(submission_timestamp) &lt;= DATE('2024-06-06')  
+  AND mozfun.map.get_key(ping_info.experiments, "post-quantum-key-exchange-for-tls").branch is not null
+)
+SELECT
+  segment,
+  branch,
+  response_time as bucket,
+  COUNT(*) as counts
+FROM
+  eventdata
+WHERE
+  response_time &gt;= 0 AND response_time &lt;= 10000
+GROUP BY
+  segment, branch, bucket
+ORDER BY
+  segment, branch, bucket
+  </pre>
+    </code>
+   </div>
+  </section>
+  <section class="accordion">
+   <input id="Pageload event: js_exec_time-query" name="collapse" type="checkbox"/>
+   <h1 class="handle">
+    <label for="Pageload event: js_exec_time-query">
+     Pageload event: js_exec_time
+    </label>
+   </h1>
+   <div class="content">
+    <code>
+     <pre>
+  with eventdata as (
+SELECT
+  normalized_os as segment,
+  mozfun.map.get_key(ping_info.experiments, "post-quantum-key-exchange-for-tls").branch as branch,
+  SAFE_CAST((SELECT value FROM UNNEST(event.extra) WHERE key = 'js_exec_time') AS int) AS js_exec_time,
+FROM
+  `moz-fx-data-shared-prod.firefox_desktop.pageload`
+CROSS JOIN
+  UNNEST(events) AS event
+WHERE
+  normalized_channel = "release"
+  AND DATE(submission_timestamp) &gt;= DATE('2024-05-20')
+  AND DATE(submission_timestamp) &lt;= DATE('2024-06-06')  
+  AND mozfun.map.get_key(ping_info.experiments, "post-quantum-key-exchange-for-tls").branch is not null
+)
+SELECT
+  segment,
+  branch,
+  js_exec_time as bucket,
+  COUNT(*) as counts
+FROM
+  eventdata
+WHERE
+  js_exec_time &gt;= 0 AND js_exec_time &lt;= 10000
+GROUP BY
+  segment, branch, bucket
+ORDER BY
+  segment, branch, bucket
+  </pre>
+    </code>
+   </div>
+  </section>
+  <section class="accordion">
+   <input id="Histogram: payload.processes.content.histograms.perf_page_load_time_ms-query" name="collapse" type="checkbox"/>
+   <h1 class="handle">
+    <label for="Histogram: payload.processes.content.histograms.perf_page_load_time_ms-query">
+     Histogram: payload.processes.content.histograms.perf_page_load_time_ms
+    </label>
+   </h1>
+   <div class="content">
+    <code>
+     <pre>
+  with json_strings as (
+    SELECT 
+        normalized_os as segment,
+        mozfun.map.get_key(environment.experiments, "post-quantum-key-exchange-for-tls").branch as branch,
+        JSON_EXTRACT(payload.processes.content.histograms.perf_page_load_time_ms, '$.values') as hist
+    FROM
+        `moz-fx-data-shared-prod.telemetry.main`
+    WHERE
+        DATE(submission_timestamp) &gt;= DATE('2024-05-20')
+        AND DATE(submission_timestamp) &lt;= DATE('2024-06-06')
+        AND normalized_channel = "release"
+        AND normalized_app_name = "Firefox"
+        AND payload.processes.content.histograms.perf_page_load_time_ms is not null
+        AND payload.processes.parent.scalars.browser_engagement_total_uri_count &gt; 0
+        AND mozfun.map.get_key(environment.experiments, "post-quantum-key-exchange-for-tls").branch is not null
+)
+,
+keyValuePairs as (
+SELECT
+    segment,
+    branch,
+    SAFE_CAST(key AS float64) as bucket,
+    INT64(PARSE_JSON(hist)[key]) as count
+FROM
+    json_strings,
+    UNNEST(bqutil.fn.json_extract_keys(hist)) as key
+)
+SELECT
+    segment,
+    branch,
+    bucket,
+    SUM(count) as counts
+FROM
+    keyValuePairs
+GROUP BY
+   segment, branch, bucket
+ORDER BY
+   segment, branch, bucket
+  </pre>
+    </code>
+   </div>
+  </section>
+  <section class="accordion">
+   <input id="Histogram: payload.processes.content.histograms.perf_page_load_time_from_responsestart_ms-query" name="collapse" type="checkbox"/>
+   <h1 class="handle">
+    <label for="Histogram: payload.processes.content.histograms.perf_page_load_time_from_responsestart_ms-query">
+     Histogram: payload.processes.content.histograms.perf_page_load_time_from_responsestart_ms
+    </label>
+   </h1>
+   <div class="content">
+    <code>
+     <pre>
+  with json_strings as (
+    SELECT 
+        normalized_os as segment,
+        mozfun.map.get_key(environment.experiments, "post-quantum-key-exchange-for-tls").branch as branch,
+        JSON_EXTRACT(payload.processes.content.histograms.perf_page_load_time_from_responsestart_ms, '$.values') as hist
+    FROM
+        `moz-fx-data-shared-prod.telemetry.main`
+    WHERE
+        DATE(submission_timestamp) &gt;= DATE('2024-05-20')
+        AND DATE(submission_timestamp) &lt;= DATE('2024-06-06')
+        AND normalized_channel = "release"
+        AND normalized_app_name = "Firefox"
+        AND payload.processes.content.histograms.perf_page_load_time_from_responsestart_ms is not null
+        AND payload.processes.parent.scalars.browser_engagement_total_uri_count &gt; 0
+        AND mozfun.map.get_key(environment.experiments, "post-quantum-key-exchange-for-tls").branch is not null
+)
+,
+keyValuePairs as (
+SELECT
+    segment,
+    branch,
+    SAFE_CAST(key AS float64) as bucket,
+    INT64(PARSE_JSON(hist)[key]) as count
+FROM
+    json_strings,
+    UNNEST(bqutil.fn.json_extract_keys(hist)) as key
+)
+SELECT
+    segment,
+    branch,
+    bucket,
+    SUM(count) as counts
+FROM
+    keyValuePairs
+GROUP BY
+   segment, branch, bucket
+ORDER BY
+   segment, branch, bucket
+  </pre>
+    </code>
+   </div>
+  </section>
+  <section class="accordion">
+   <input id="Histogram: payload.processes.content.histograms.perf_first_contentful_paint_ms-query" name="collapse" type="checkbox"/>
+   <h1 class="handle">
+    <label for="Histogram: payload.processes.content.histograms.perf_first_contentful_paint_ms-query">
+     Histogram: payload.processes.content.histograms.perf_first_contentful_paint_ms
+    </label>
+   </h1>
+   <div class="content">
+    <code>
+     <pre>
+  with json_strings as (
+    SELECT 
+        normalized_os as segment,
+        mozfun.map.get_key(environment.experiments, "post-quantum-key-exchange-for-tls").branch as branch,
+        JSON_EXTRACT(payload.processes.content.histograms.perf_first_contentful_paint_ms, '$.values') as hist
+    FROM
+        `moz-fx-data-shared-prod.telemetry.main`
+    WHERE
+        DATE(submission_timestamp) &gt;= DATE('2024-05-20')
+        AND DATE(submission_timestamp) &lt;= DATE('2024-06-06')
+        AND normalized_channel = "release"
+        AND normalized_app_name = "Firefox"
+        AND payload.processes.content.histograms.perf_first_contentful_paint_ms is not null
+        AND payload.processes.parent.scalars.browser_engagement_total_uri_count &gt; 0
+        AND mozfun.map.get_key(environment.experiments, "post-quantum-key-exchange-for-tls").branch is not null
+)
+,
+keyValuePairs as (
+SELECT
+    segment,
+    branch,
+    SAFE_CAST(key AS float64) as bucket,
+    INT64(PARSE_JSON(hist)[key]) as count
+FROM
+    json_strings,
+    UNNEST(bqutil.fn.json_extract_keys(hist)) as key
+)
+SELECT
+    segment,
+    branch,
+    bucket,
+    SUM(count) as counts
+FROM
+    keyValuePairs
+GROUP BY
+   segment, branch, bucket
+ORDER BY
+   segment, branch, bucket
+  </pre>
+    </code>
+   </div>
+  </section>
+  <section class="accordion">
+   <input id="Histogram: payload.processes.content.histograms.perf_first_contentful_paint_from_responsestart_ms-query" name="collapse" type="checkbox"/>
+   <h1 class="handle">
+    <label for="Histogram: payload.processes.content.histograms.perf_first_contentful_paint_from_responsestart_ms-query">
+     Histogram: payload.processes.content.histograms.perf_first_contentful_paint_from_responsestart_ms
+    </label>
+   </h1>
+   <div class="content">
+    <code>
+     <pre>
+  with json_strings as (
+    SELECT 
+        normalized_os as segment,
+        mozfun.map.get_key(environment.experiments, "post-quantum-key-exchange-for-tls").branch as branch,
+        JSON_EXTRACT(payload.processes.content.histograms.perf_first_contentful_paint_from_responsestart_ms, '$.values') as hist
+    FROM
+        `moz-fx-data-shared-prod.telemetry.main`
+    WHERE
+        DATE(submission_timestamp) &gt;= DATE('2024-05-20')
+        AND DATE(submission_timestamp) &lt;= DATE('2024-06-06')
+        AND normalized_channel = "release"
+        AND normalized_app_name = "Firefox"
+        AND payload.processes.content.histograms.perf_first_contentful_paint_from_responsestart_ms is not null
+        AND payload.processes.parent.scalars.browser_engagement_total_uri_count &gt; 0
+        AND mozfun.map.get_key(environment.experiments, "post-quantum-key-exchange-for-tls").branch is not null
+)
+,
+keyValuePairs as (
+SELECT
+    segment,
+    branch,
+    SAFE_CAST(key AS float64) as bucket,
+    INT64(PARSE_JSON(hist)[key]) as count
+FROM
+    json_strings,
+    UNNEST(bqutil.fn.json_extract_keys(hist)) as key
+)
+SELECT
+    segment,
+    branch,
+    bucket,
+    SUM(count) as counts
+FROM
+    keyValuePairs
+GROUP BY
+   segment, branch, bucket
+ORDER BY
+   segment, branch, bucket
+  </pre>
+    </code>
+   </div>
+  </section>
+  <section class="accordion">
+   <input id="Histogram: payload.processes.content.histograms.perf_largest_contentful_paint_ms-query" name="collapse" type="checkbox"/>
+   <h1 class="handle">
+    <label for="Histogram: payload.processes.content.histograms.perf_largest_contentful_paint_ms-query">
+     Histogram: payload.processes.content.histograms.perf_largest_contentful_paint_ms
+    </label>
+   </h1>
+   <div class="content">
+    <code>
+     <pre>
+  with json_strings as (
+    SELECT 
+        normalized_os as segment,
+        mozfun.map.get_key(environment.experiments, "post-quantum-key-exchange-for-tls").branch as branch,
+        JSON_EXTRACT(payload.processes.content.histograms.perf_largest_contentful_paint_ms, '$.values') as hist
+    FROM
+        `moz-fx-data-shared-prod.telemetry.main`
+    WHERE
+        DATE(submission_timestamp) &gt;= DATE('2024-05-20')
+        AND DATE(submission_timestamp) &lt;= DATE('2024-06-06')
+        AND normalized_channel = "release"
+        AND normalized_app_name = "Firefox"
+        AND payload.processes.content.histograms.perf_largest_contentful_paint_ms is not null
+        AND payload.processes.parent.scalars.browser_engagement_total_uri_count &gt; 0
+        AND mozfun.map.get_key(environment.experiments, "post-quantum-key-exchange-for-tls").branch is not null
+)
+,
+keyValuePairs as (
+SELECT
+    segment,
+    branch,
+    SAFE_CAST(key AS float64) as bucket,
+    INT64(PARSE_JSON(hist)[key]) as count
+FROM
+    json_strings,
+    UNNEST(bqutil.fn.json_extract_keys(hist)) as key
+)
+SELECT
+    segment,
+    branch,
+    bucket,
+    SUM(count) as counts
+FROM
+    keyValuePairs
+GROUP BY
+   segment, branch, bucket
+ORDER BY
+   segment, branch, bucket
+  </pre>
+    </code>
+   </div>
+  </section>
+  <section class="accordion">
+   <input id="Histogram: payload.processes.content.histograms.perf_largest_contentful_paint_from_response_start_ms-query" name="collapse" type="checkbox"/>
+   <h1 class="handle">
+    <label for="Histogram: payload.processes.content.histograms.perf_largest_contentful_paint_from_response_start_ms-query">
+     Histogram: payload.processes.content.histograms.perf_largest_contentful_paint_from_response_start_ms
+    </label>
+   </h1>
+   <div class="content">
+    <code>
+     <pre>
+  with json_strings as (
+    SELECT 
+        normalized_os as segment,
+        mozfun.map.get_key(environment.experiments, "post-quantum-key-exchange-for-tls").branch as branch,
+        JSON_EXTRACT(payload.processes.content.histograms.perf_largest_contentful_paint_from_response_start_ms, '$.values') as hist
+    FROM
+        `moz-fx-data-shared-prod.telemetry.main`
+    WHERE
+        DATE(submission_timestamp) &gt;= DATE('2024-05-20')
+        AND DATE(submission_timestamp) &lt;= DATE('2024-06-06')
+        AND normalized_channel = "release"
+        AND normalized_app_name = "Firefox"
+        AND payload.processes.content.histograms.perf_largest_contentful_paint_from_response_start_ms is not null
+        AND payload.processes.parent.scalars.browser_engagement_total_uri_count &gt; 0
+        AND mozfun.map.get_key(environment.experiments, "post-quantum-key-exchange-for-tls").branch is not null
+)
+,
+keyValuePairs as (
+SELECT
+    segment,
+    branch,
+    SAFE_CAST(key AS float64) as bucket,
+    INT64(PARSE_JSON(hist)[key]) as count
+FROM
+    json_strings,
+    UNNEST(bqutil.fn.json_extract_keys(hist)) as key
+)
+SELECT
+    segment,
+    branch,
+    bucket,
+    SUM(count) as counts
+FROM
+    keyValuePairs
+GROUP BY
+   segment, branch, bucket
+ORDER BY
+   segment, branch, bucket
+  </pre>
+    </code>
+   </div>
+  </section>
+  <section class="accordion">
+   <input id="Histogram: payload.processes.content.histograms.http_page_open_to_first_sent-query" name="collapse" type="checkbox"/>
+   <h1 class="handle">
+    <label for="Histogram: payload.processes.content.histograms.http_page_open_to_first_sent-query">
+     Histogram: payload.processes.content.histograms.http_page_open_to_first_sent
+    </label>
+   </h1>
+   <div class="content">
+    <code>
+     <pre>
+  with json_strings as (
+    SELECT 
+        normalized_os as segment,
+        mozfun.map.get_key(environment.experiments, "post-quantum-key-exchange-for-tls").branch as branch,
+        JSON_EXTRACT(payload.processes.content.histograms.http_page_open_to_first_sent, '$.values') as hist
+    FROM
+        `moz-fx-data-shared-prod.telemetry.main`
+    WHERE
+        DATE(submission_timestamp) &gt;= DATE('2024-05-20')
+        AND DATE(submission_timestamp) &lt;= DATE('2024-06-06')
+        AND normalized_channel = "release"
+        AND normalized_app_name = "Firefox"
+        AND payload.processes.content.histograms.http_page_open_to_first_sent is not null
+        AND payload.processes.parent.scalars.browser_engagement_total_uri_count &gt; 0
+        AND mozfun.map.get_key(environment.experiments, "post-quantum-key-exchange-for-tls").branch is not null
+)
+,
+keyValuePairs as (
+SELECT
+    segment,
+    branch,
+    SAFE_CAST(key AS float64) as bucket,
+    INT64(PARSE_JSON(hist)[key]) as count
+FROM
+    json_strings,
+    UNNEST(bqutil.fn.json_extract_keys(hist)) as key
+)
+SELECT
+    segment,
+    branch,
+    bucket,
+    SUM(count) as counts
+FROM
+    keyValuePairs
+GROUP BY
+   segment, branch, bucket
+ORDER BY
+   segment, branch, bucket
+  </pre>
+    </code>
+   </div>
+  </section>
+  <section class="accordion">
+   <input id="Histogram: payload.processes.content.histograms.http_page_tls_handshake-query" name="collapse" type="checkbox"/>
+   <h1 class="handle">
+    <label for="Histogram: payload.processes.content.histograms.http_page_tls_handshake-query">
+     Histogram: payload.processes.content.histograms.http_page_tls_handshake
+    </label>
+   </h1>
+   <div class="content">
+    <code>
+     <pre>
+  with json_strings as (
+    SELECT 
+        normalized_os as segment,
+        mozfun.map.get_key(environment.experiments, "post-quantum-key-exchange-for-tls").branch as branch,
+        JSON_EXTRACT(payload.processes.content.histograms.http_page_tls_handshake, '$.values') as hist
+    FROM
+        `moz-fx-data-shared-prod.telemetry.main`
+    WHERE
+        DATE(submission_timestamp) &gt;= DATE('2024-05-20')
+        AND DATE(submission_timestamp) &lt;= DATE('2024-06-06')
+        AND normalized_channel = "release"
+        AND normalized_app_name = "Firefox"
+        AND payload.processes.content.histograms.http_page_tls_handshake is not null
+        AND payload.processes.parent.scalars.browser_engagement_total_uri_count &gt; 0
+        AND mozfun.map.get_key(environment.experiments, "post-quantum-key-exchange-for-tls").branch is not null
+)
+,
+keyValuePairs as (
+SELECT
+    segment,
+    branch,
+    SAFE_CAST(key AS float64) as bucket,
+    INT64(PARSE_JSON(hist)[key]) as count
+FROM
+    json_strings,
+    UNNEST(bqutil.fn.json_extract_keys(hist)) as key
+)
+SELECT
+    segment,
+    branch,
+    bucket,
+    SUM(count) as counts
+FROM
+    keyValuePairs
+GROUP BY
+   segment, branch, bucket
+ORDER BY
+   segment, branch, bucket
+  </pre>
+    </code>
+   </div>
+  </section>
+  <section class="accordion">
    <input id="Histogram: payload.processes.content.histograms.http_sub_tls_handshake-query" name="collapse" type="checkbox"/>
    <h1 class="handle">
     <label for="Histogram: payload.processes.content.histograms.http_sub_tls_handshake-query">
@@ -33592,6 +36959,58 @@ div.chart {
         AND normalized_channel = "release"
         AND normalized_app_name = "Firefox"
         AND payload.processes.content.histograms.http_sub_tls_handshake is not null
+        AND payload.processes.parent.scalars.browser_engagement_total_uri_count &gt; 0
+        AND mozfun.map.get_key(environment.experiments, "post-quantum-key-exchange-for-tls").branch is not null
+)
+,
+keyValuePairs as (
+SELECT
+    segment,
+    branch,
+    SAFE_CAST(key AS float64) as bucket,
+    INT64(PARSE_JSON(hist)[key]) as count
+FROM
+    json_strings,
+    UNNEST(bqutil.fn.json_extract_keys(hist)) as key
+)
+SELECT
+    segment,
+    branch,
+    bucket,
+    SUM(count) as counts
+FROM
+    keyValuePairs
+GROUP BY
+   segment, branch, bucket
+ORDER BY
+   segment, branch, bucket
+  </pre>
+    </code>
+   </div>
+  </section>
+  <section class="accordion">
+   <input id="Histogram: payload.processes.content.histograms.http_page_dns_issue_time-query" name="collapse" type="checkbox"/>
+   <h1 class="handle">
+    <label for="Histogram: payload.processes.content.histograms.http_page_dns_issue_time-query">
+     Histogram: payload.processes.content.histograms.http_page_dns_issue_time
+    </label>
+   </h1>
+   <div class="content">
+    <code>
+     <pre>
+  with json_strings as (
+    SELECT 
+        normalized_os as segment,
+        mozfun.map.get_key(environment.experiments, "post-quantum-key-exchange-for-tls").branch as branch,
+        JSON_EXTRACT(payload.processes.content.histograms.http_page_dns_issue_time, '$.values') as hist
+    FROM
+        `moz-fx-data-shared-prod.telemetry.main`
+    WHERE
+        DATE(submission_timestamp) &gt;= DATE('2024-05-20')
+        AND DATE(submission_timestamp) &lt;= DATE('2024-06-06')
+        AND normalized_channel = "release"
+        AND normalized_app_name = "Firefox"
+        AND payload.processes.content.histograms.http_page_dns_issue_time is not null
         AND payload.processes.parent.scalars.browser_engagement_total_uri_count &gt; 0
         AND mozfun.map.get_key(environment.experiments, "post-quantum-key-exchange-for-tls").branch is not null
 )
