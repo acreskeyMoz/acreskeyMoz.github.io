@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delayed Page Load</title>
+    <script>
+        window.onload = function() {
+            // Delay page load completion for 30 seconds
+            const start = new Date().getTime();
+            while (new Date().getTime() - start < 30000) {
+                // Busy-wait for 30 seconds
+            }
+            alert("30 seconds have passed since the page started loading!");
+        };
+    </script>
+</head>
+<body>
+    <h1>Welcome to the Delayed Onload Event Example</h1>
+    <p>This page will complete loading and trigger an alert 30 seconds after it starts loading.</p>
+</body>
+</html>
