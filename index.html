@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>fetchPriority</title>
+</head>
+<body>
+    <h1>Optimizing Image Loading with fetchPriority</h1>
+    
+    <p>In scenarios where you have one primary image and several smaller, less important images, you can use the <code>fetchPriority="high"</code> attribute to prioritize the loading of the most important image first. This improves the perceived performance and user experience.</p>
+    
+
+    <h2>Other Images (Low Priority)</h2>
+    <p>These images are less critical, and can be loaded with the default priority:</p>
+    
+    <img src="other-image1.jpg" alt="Other Image 1" width="150" height="100">
+    <img src="other-image2.jpg" alt="Other Image 2" width="150" height="100">
+    <img src="other-image3.jpg" alt="Other Image 3" width="150" height="100">
+
+    <h2>Primary Image (High Priority)</h2>
+    <p>This is the primary image, which is most important to display immediately for the user:</p>
+    <img src="large_image.jpg" alt="Primary Image" width="600" height="400" fetchPriority="high">
+    
+    
+    <p>By assigning <code>fetchPriority="high</code> to the primary image, we ensure that the browser prioritizes loading it before the other, less important images, improving the user experience especially on slower connections.</p>
+</body>
+</html>
