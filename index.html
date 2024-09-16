@@ -30,24 +30,21 @@
     <!--<link rel="preload" href="https://fonts.gstatic.com/s/roboto/v20/KFOlCnqEu92Fr1MmWUlfBBc9.ttf" as="font" type="font/ttf" crossorigin="anonymous">-->
     <link rel="preload" href="https://cdn.jsdelivr.net/npm/@fontsource/roboto/files/roboto-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin="anonymous">
 
+    <h2>Preload Image (Lower Priority)</h2>
+    <link rel="preload" as="image" href="other-image2.jpg">
 </head>
 <body>
 
     <h1>Resource Prioritization Test Page</h1>
 
-    <!-- Fonts (Preload) -->
-    <h2>Preload Font</h2>
-    <p>This page also uses preloaded fonts from Google Fonts.</p>
-
-    <!-- Images (Above the Fold) -->
-    <h2>Above the Fold Image (High Priority)</h2>
-    <p>This image is critical and loaded with high priority.</p>
+    <img src="other-image1.jpg" alt="Other Image" width="600" height="400" >
+    
     <img src="large_image.jpg" alt="Primary Image" width="600" height="400" fetchPriority="high">
 
+    <img src="other-image2.jpg" alt="Primary Image" width="600" height="400" fetchPriority="low">
+
     <!-- Images (rel=preload) -->
-    <h2>Preload Image (Lower Priority)</h2>
-    <link rel="preload" as="image" href="preload_image.jpg">
-    <img src="preload_image.jpg" alt="Preload Image" width="300" height="200">
+    <img src="other-image2.jpg" alt="Preload Image" width="300" height="200">
 
     <!-- Fetch Requests -->
     <h2>Fetch API Requests</h2>
