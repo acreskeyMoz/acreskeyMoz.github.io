@@ -1,17 +1,18 @@
+## Firefox Network Prioritization and Scheduling
 
-\
-For multiplexed HTTP/2 and HTTP/3 connections, request priority is determined using the Extensible Prioritization Scheme, which considers Urgency (ranging from 0 to 7) and whether the request is Incremental (true/false). 
+For multiplexed HTTP/2 and HTTP/3 connections, request priority is determined using the Extensible Prioritization Scheme, which considers Urgency (ranging from `0` to `7`) and whether the request is Incremental (true/false).
+
 Resources with a low numerical urgency should be delivered before resources with higher numerical urgencies. e.g. all resources with urgency 2 should be transferred before resources with urgency 3 begin. 
 
 The incremental flag specifies whether a bandwidth should be split between this resource and others other resources of the same urgency. i.e. should resources of the same urgency be sent sequentially (i=false) or incrementally (i=true).
 
  These priorities are calculated based on the following factors:
 
-    Resource type and its placement within the document or viewport
-    DOM preload scanner behavior
-    Assigned Class of Service
-    Use of the SupportsPriority interface
-    Application of PriorityHints (e.g., fetchpriority="high")
+    • Resource type and its placement within the document or viewport
+    • DOM preload scanner behavior
+    • Assigned Class of Service
+    • Use of the SupportsPriority interface
+    • Application of PriorityHints (e.g., fetchpriority="high")
 
 
 Class of Service may also affect scheduling of resources (e.g. delaying trackers which are classified as `ClassOfService::Tail`)
