@@ -26,14 +26,13 @@ https://searchfox.org/mozilla-central/rev/c414b4538dd3c7e1dc674f7b66176e7c309afa
 | **CSS (body)**                                   | `Leader (1)`       | `PRIORITY_NORMAL, 0`  |   `2`    | `false`         |                                   |
 | **JavaScript (blocking)**                        | `Leader (1)`       | `PRIORITY_NORMAL, 0` |  `2`  | `false`     |                                     |
 | **JavaScript (rel=preload)**                     | `Unblocked (16)`   | `PRIORITY_HIGHEST, -20` | `1`  |`false`          |                                  |
-| **JavaScript (async)**                           | `TailAllowed (512) Unblocked (16)` | `PRIORITY_NORMAL, 0` | 3 |      | `false`     |                                     |
-| **JavaScript (defer)**                           | `Unblocked (16)` | `PRIORITY_NORMAL, 0` | 3 | `false`     |     |
-| **Font**                      |                  |                  |      | `false`     |                                     |
-| **Font (rel=preload)**                          |                  |                  |      | `false`     |                                   |
-| **Font (Non-render-blocking)**                  |                  |                  |      | `false`     |                                     |
-| **Image**                      |                  |                  |      | `true`     | See:  image_layout_network_priority |
+| **JavaScript (async)**                           | `TailAllowed (512) Unblocked (16)` | `PRIORITY_NORMAL, 0` | 3 |  `false`     |                                     |
+| **JavaScript (defer)**                           | `Unblocked (16)` | `PRIORITY_NORMAL, 0` | `3` | `false`     |     |
+| **Font**                                         | `Leader (1)` |  `PRIORITY_NORMAL, 0` | `2`     |  `false`   |     |
+| **Font (rel=preload)**                          | `TailForbidden (1024),  Unblocked (16) |`PRIORITY_HIGH, -10` |  `2`    | `false`     |                                   |
+| **Image**                                        | `(0)`      |  `PRIORITY_LOW, 10`  |  `5`<br>`fetchpriority=high`: 3     | `true`     |  |
 | **Image (rendered)**                      |                  |                  |      | `true`     | See:  image_layout_network_priority |
 | **Image (rel=preload)**                         |                  |                  |      | `true`     |                                     |
 | **Fetch**                                        |                  |                  |      | `false`     |                                     |
-| Trackers                                         | Tail             |                  |      |             |                                     |
+| **Tracker**                                         | `Tail (256)`            |                  |      |             |                                     |
 
