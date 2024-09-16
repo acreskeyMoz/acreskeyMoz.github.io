@@ -3,27 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>fetchPriority</title>
+    <title>Resource Priority Testing</title>
 
-      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
-      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
-    
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>    
-</head>
-<body>
-    <h1>Optimizing Image Loading with fetchPriority</h1>
-    
-    <p>These images are less critical, and can be loaded with the default priority:</p>
-    
-    <img src="other-image1.jpg" alt="Other Image 1" width="150" height="100">
-    <img src="other-image2.jpg" alt="Other Image 2" width="150" height="100">
-    <img src="other-image3.jpg" alt="Other Image 3" width="150" height="100">
+    <!-- Google Font (for fonts testing) -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
 
-    <h2>Primary Image (High Priority)</h2>
-    <p>This is the primary image, which is most important to display immediately for the user:</p>
-    <img src="large_image.jpg" alt="Primary Image" width="600" height="400" fetchPriority="high">
+    <!-- Render-blocking CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
 
-    <!-- Regular (render-blocking) JavaScript in body -->
+    <!-- Preload CSS -->
+    <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- Render-blocking JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js"></script>
 
     <!-- Async JavaScript -->
@@ -31,7 +23,44 @@
 
     <!-- Defer JavaScript -->
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
-    
-    <p>By assigning <code>fetchPriority="high</code> to the primary image, we ensure that the browser prioritizes loading it before the other, less important images, improving the user experience especially on slower connections.</p>
+
+    <!-- Preload JavaScript -->
+    <link rel="preload" as="script" href="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js">
+
+    <!-- Preload Fonts -->
+    <link rel="preload" href="https://fonts.gstatic.com/s/roboto/v20/KFOlCnqEu92Fr1MmWUlfBBc9.ttf" as="font" type="font/ttf" crossorigin="anonymous">
+</head>
+<body>
+
+    <h1>Resource Prioritization Test Page</h1>
+
+    <!-- Fonts (Preload) -->
+    <h2>Preload Font</h2>
+    <p>This page also uses preloaded fonts from Google Fonts.</p>
+
+    <!-- Images (Above the Fold) -->
+    <h2>Above the Fold Image (High Priority)</h2>
+    <p>This image is critical and loaded with high priority.</p>
+    <img src="large_image.jpg" alt="Primary Image" width="600" height="400" fetchPriority="high">
+
+    <!-- Images (rel=preload) -->
+    <h2>Preload Image (Lower Priority)</h2>
+    <link rel="preload" as="image" href="preload_image.jpg">
+    <img src="preload_image.jpg" alt="Preload Image" width="300" height="200">
+
+    <!-- Fetch Requests -->
+    <h2>Fetch API Requests</h2>
+    <script>
+        fetch('https://jsonplaceholder.typicode.com/todos/1')
+            .then(response => response.json())
+            .then(data => console.log('Fetch request with default priority:', data));
+    </script>
+
+    <!-- Tracker -->
+
+    <h2>Trackers (Tail Priority)</h2>
+    <script> src="https://logx.optimizely.com/v1/events"
+    </script>
+
 </body>
 </html>
