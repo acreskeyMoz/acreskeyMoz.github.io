@@ -20,21 +20,20 @@ https://searchfox.org/mozilla-central/rev/c414b4538dd3c7e1dc674f7b66176e7c309afa
 
 | Resource Type                                    | Class of Service | supportsPriority | Urgency | Incremental | Notes                               |
 | ------------------------------------------------ | ---------------- | ---------------- | ------- | ----------- | ----------------------------------- |
-| **HTML,** root document                          |                  |                  | `0`     | `true`        |                                     |
-| **CSS (**`<head>`, blocking render-blocking)\*\* |                  |                  |       | `false`     |                                     |
-| **CSS (rel=preload)**                            |                  |                  |         | `false`         |                                   |
+| **HTML,** root document                          | UrgentStart (64) | PRIORITY_HIGHEST, -20 | `0`     | `true`        |                                     |
+| **CSS (**`<head>`, render-blocking)\*\*          | Leader (1)       | PRIORITY_NORMAL, 0  |   `2`    | `false`     |                                     |
+| **CSS (rel=preload)**                            | Leader (1)       | PRIORITY_HIGHEST, -20 | `0` | `false`         |                                   |
+| **CSS (body)**                            |                  |                  |         | `false`         |                                   |
 | **JavaScript (blocking)**                        |                  |                  |      | `false`     |                                     |
 | **JavaScript (blocking, rel=preload)**           |                  |                  |      |`false`          |                                  |
 | **JavaScript (async)**                           |                  |                  |      | `false`     |                                     |
-| **JavaScript (async, rel=preload)**              |                  |                  |      | `false`          |                                 |
 | **JavaScript (defer)**                           |                  |                  |      | `false`     |     |
-| **JavaScript (defer, rel=preload)**              |                  |                  |      | `false`     |                                   |
-| **Fonts (Render-blocking)**                      |                  |                  |      | `false`     |                                     |
-| **Fonts (rel=preload)**                          |                  |                  |      | `false`     |                                   |
-| **Fonts (Non-render-blocking)**                  |                  |                  |      | `false`     |                                     |
-| **Fonts (Non-render-blocking, rel=preload)**     |                  |                  |      | `false`     |                                   |
-| **Images (rendered)**                      |                  |                  |      | `true`     | See:  image_layout_network_priority |
-| **Images (rel=preload)**                         |                  |                  |      | `true`     |                                     |
+| **Font**                      |                  |                  |      | `false`     |                                     |
+| **Font (rel=preload)**                          |                  |                  |      | `false`     |                                   |
+| **Font (Non-render-blocking)**                  |                  |                  |      | `false`     |                                     |
+| **Image**                      |                  |                  |      | `true`     | See:  image_layout_network_priority |
+| **Image (rendered)**                      |                  |                  |      | `true`     | See:  image_layout_network_priority |
+| **Image (rel=preload)**                         |                  |                  |      | `true`     |                                     |
 | **Fetch**                                        |                  |                  |      | `false`     |                                     |
 | Trackers                                         | Tail             |                  |      |             |                                     |
 
