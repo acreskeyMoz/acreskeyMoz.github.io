@@ -50,8 +50,6 @@
         fetch('https://jsonplaceholder.typicode.com/posts/1', )
             .then(response => response.json())
             .then(data => {
-                console.log('Normal priority fetch:', data);
-                document.getElementById('normalFetchOutput').innerText = JSON.stringify(data, null, 2);
             })
             .catch(error => console.error('Error in normal priority fetch:', error));
 
@@ -59,8 +57,6 @@
         fetch('https://jsonplaceholder.typicode.com/todos/1', { priority: 'high' })
             .then(response => response.json())
             .then(data => {
-                console.log('High priority fetch:', data);
-                document.getElementById('highPriorityFetchOutput').innerText = JSON.stringify(data, null, 2);
             })
             .catch(error => console.error('Error in high priority fetch:', error));
 
@@ -68,8 +64,6 @@
         fetch('https://jsonplaceholder.typicode.com/users/1', { priority: 'low' })
             .then(response => response.json())
             .then(data => {
-                console.log('Low priority fetch:', data);
-                document.getElementById('lowPriorityFetchOutput').innerText = JSON.stringify(data, null, 2);
             })
             .catch(error => console.error('Error in low priority fetch:', error));
     </script>
