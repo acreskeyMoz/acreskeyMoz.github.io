@@ -45,11 +45,33 @@
     <img src="other-image2.jpg" alt="Preload Image" width="300" height="200">
 
     <!-- Fetch Requests -->
-    <h2>Fetch API Requests</h2>
-    <script>
-        fetch('https://jsonplaceholder.typicode.com/todos/1')
+    <h2>Fetch API Requests</h2> <script>
+        // Normal priority fetch
+        fetch('https://jsonplaceholder.typicode.com/posts/1', )
             .then(response => response.json())
-            .then(data => console.log('Fetch request with default priority:', data));
+            .then(data => {
+                console.log('Normal priority fetch:', data);
+                document.getElementById('normalFetchOutput').innerText = JSON.stringify(data, null, 2);
+            })
+            .catch(error => console.error('Error in normal priority fetch:', error));
+
+        // High priority fetch
+        fetch('https://jsonplaceholder.typicode.com/todos/1', { priority: 'high' })
+            .then(response => response.json())
+            .then(data => {
+                console.log('High priority fetch:', data);
+                document.getElementById('highPriorityFetchOutput').innerText = JSON.stringify(data, null, 2);
+            })
+            .catch(error => console.error('Error in high priority fetch:', error));
+
+        // Low priority fetch
+        fetch('https://jsonplaceholder.typicode.com/users/1', { priority: 'low' })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Low priority fetch:', data);
+                document.getElementById('lowPriorityFetchOutput').innerText = JSON.stringify(data, null, 2);
+            })
+            .catch(error => console.error('Error in low priority fetch:', error));
     </script>
 
     <!-- Tracker -->
