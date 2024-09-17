@@ -46,7 +46,7 @@ The incremental flag specifies whether a bandwidth should be split between this 
 | **JavaScript (defer)**                           | `Unblocked (16)` | `PRIORITY_NORMAL, 0` | `3` | `false`     |     |
 | **Font**                                         | `Leader (1)` |  `PRIORITY_NORMAL, 0` | `2`     |  `false`   |     |
 | **Font (rel=preload)**                           | `TailForbidden (1024),  Unblocked (16)` |`PRIORITY_HIGH, -10` |  `2`| `false`     |                                   |
-| **Image**                                        | `(0)`            |  `PRIORITY_LOW, 10`<br>`fetchpriority=high: PRIORITY_HIGH = -10` <br>`fetchpriority=low: PRIORITY_LOW = 10`        |`5`<br>`fetchpriority=high: 3`<br>`fetchpriority=high: 5`| `true`     |  |
+| **Image**                                        | `(0)`            |  `PRIORITY_LOW, 10`<br>`fetchpriority=high: PRIORITY_HIGH = -10` <br>`fetchpriority=low: PRIORITY_LOW = 10`        |`5`<br>`fetchpriority=high: 3`<br>`fetchpriority=low: 5`| `true`      |  |
 | **Image (rendered)**                             |                  |                  |      | `true`     | See:  image_layout_network_priority |
 | **Image (rel=preload)**                          |     `(0)`         |  `PRIORITY_LOW, 10`     | `5`  | `true`     |                                     |
 | **Fetch**                                        |    `(0)`         |  `PRIORITY_NORMAL, 0`<br>`fetchpriority=high: PRIORITY_HIGH = -10` <br>`fetchpriority=low: PRIORITY_LOW = 10`| `4`<br>`fetchpriority=high: 3`<br>`fetchpriority=low: 5`   | `false`     |                                     |
