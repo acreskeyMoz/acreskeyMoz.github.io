@@ -6,14 +6,13 @@ Firefox employs several techniques to orchestrate network request scheduling:
 DOM Preload Scanner (speculative loader)
     Runs on a background thread, scans HTML for resource URLs to preload
     Adds discovered resources to a speculative load queue
-    https://searchfox.org/mozilla-central/source/parser/html/nsHtml5SpeculativeLoad.h
 
 See [MDN Documentation on HTML Parser Threading (archived)](https://web.archive.org/web/20201021003137/https://developer.mozilla.org/en-US/docs/Mozilla/Gecko/HTML_parser_threading)
 
 DOM Parser (non-speculative)
     As the tree is constructed.
 
-Class of Service
+[Class of Service](https://searchfox.org/mozilla-central/rev/f549a50b1e39b1e6bea19912d92545c4c0a06b7b/netwerk/base/nsIClassOfService.idl#7-15)
     Categorizes requests (e.g., Leader, Normal, Follower, Speculative)
     May defer scheduling of certain requests (e.g., trackers classified as ClassOfService::Tail)
     
@@ -28,7 +27,7 @@ The incremental flag specifies whether a bandwidth should be split between this 
 
     • Resource type and its placement within the document or viewport
     • Assigned Class of Service
-    • Use of the SupportsPriority interface
+    • Use of the [SupportsPriority](https://searchfox.org/mozilla-central/rev/f549a50b1e39b1e6bea19912d92545c4c0a06b7b/xpcom/threads/nsISupportsPriority.idl#8-16) interface
     • Application of PriorityHints (e.g., fetchpriority="high")
     • Backgrounding tabs will lower their priority
 
