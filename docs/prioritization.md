@@ -46,9 +46,9 @@ The incremental flag specifies whether a bandwidth should be split between this 
 | **JavaScript (defer)**                           | `Unblocked (16)` | `PRIORITY_NORMAL, 0` | `3` | `false`     |     |
 | **Font**                                         | `Leader (1)` |  `PRIORITY_NORMAL, 0` | `2`     |  `false`   |     |
 | **Font (rel=preload)**                           | `TailForbidden (1024),  Unblocked (16)` |`PRIORITY_HIGH, -10` |  `2`| `false`     |                                   |
-| **Image**                                        | `(0)`            |  `PRIORITY_LOW, 10`<br>`fetchpriority=high: PRIORITY_HIGH = -10` <br>`fetchpriority=low: PRIORITY_LOW = 10`        |`5`<br>`fetchpriority=high: 3`<br>`fetchpriority=low: 5`| `true`      |  |
-| **Image (rendered)**                             |                  |                  |      | `true`     | See:  image_layout_network_priority |
+| **Image**                                        | `(0)`            |  `PRIORITY_LOW, 10`<br>`fetchpriority=high: PRIORITY_HIGH, -10` <br>`fetchpriority=low: PRIORITY_LOW, 10`        |`5`<br>`fetchpriority=high: 3`<br>`fetchpriority=low: 5`| `true`      |  |
+| **Image (about to be rendered)**                             |    `(0)`           |   `PRIORITY_HIGH, -10`      |  `3` ** not confirmed **    | `true`     | See:  image_layout_network_priority |
 | **Image (rel=preload)**                          |     `(0)`         |  `PRIORITY_LOW, 10`     | `5`  | `true`     |                                     |
-| **Fetch**                                        |    `(0)`         |  `PRIORITY_NORMAL, 0`<br>`fetchpriority=high: PRIORITY_HIGH = -10` <br>`fetchpriority=low: PRIORITY_LOW = 10`| `4`<br>`fetchpriority=high: 3`<br>`fetchpriority=low: 5`   | `false`     |                                     |
+| **Fetch**                                        |    `(0)`         |  `PRIORITY_NORMAL, 0`<br>`fetchpriority=high: PRIORITY_HIGH, -10` <br>`fetchpriority=low: PRIORITY_LOW, 10`| `4`<br>`fetchpriority=high: 3`<br>`fetchpriority=low: 5`   | `false`     |                                     |
 | **Tracker (script)**                                         | `Tail (256), Unblocked (16)`     | `PRIORITY_NORMAL, 0`   |  `3`  |  Request is tailed, i.e. deferred by a constant * number of pending requests |
 
