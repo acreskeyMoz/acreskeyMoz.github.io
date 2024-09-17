@@ -2,13 +2,14 @@
 
 # Scheduling
 Firefox employs several techniques to optimize network request scheduling:
+
 DOM Speculative Load Scanner
 
-   https://web.archive.org/web/20201021003137/https://developer.mozilla.org/en-US/docs/Mozilla/Gecko/HTML_parser_threading
     Runs on a background thread
     Scans HTML for resource URLs to preload
     Adds discovered resources to a speculative load queue
 
+See: https://web.archive.org/web/20201021003137/https://developer.mozilla.org/en-US/docs/Mozilla/Gecko/HTML_parser_threading
 
 Class of Service
 
