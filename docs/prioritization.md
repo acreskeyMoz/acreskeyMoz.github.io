@@ -31,6 +31,7 @@ The incremental flag specifies whether a bandwidth should be split between this 
     • Assigned Class of Service
     • Use of the SupportsPriority interface
     • Application of PriorityHints (e.g., fetchpriority="high")
+    • Backgrounding tabs will lower their priority
 
 
 
