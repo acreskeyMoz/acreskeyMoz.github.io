@@ -1,14 +1,14 @@
 # Firefox Network Scheduling and Prioritization
 
 ### Scheduling
-Firefox employs several techniques to optimize network request scheduling:
+Firefox employs several techniques to orchestrate network request scheduling:
 
 DOM Preload Scanner (speculative loader)
     Runs on a background thread, scans HTML for resource URLs to preload
     Adds discovered resources to a speculative load queue
     https://searchfox.org/mozilla-central/source/parser/html/nsHtml5SpeculativeLoad.h
 
-See: https://web.archive.org/web/20201021003137/https://developer.mozilla.org/en-US/docs/Mozilla/Gecko/HTML_parser_threading
+See [MDN Documentation on HTML Parser Threading (archived)](https://web.archive.org/web/20201021003137/https://developer.mozilla.org/en-US/docs/Mozilla/Gecko/HTML_parser_threading)
 
 DOM Parser (non-speculative)
     As the tree is constructed.
@@ -16,7 +16,7 @@ DOM Parser (non-speculative)
 Class of Service
     Categorizes requests (e.g., Leader, Normal, Follower, Speculative)
     May defer scheduling of certain requests (e.g., trackers classified as ClassOfService::Tail)
-
+    
 ### Priority
 For multiplexed HTTP/2 and HTTP/3 connections, request priority is determined using the Extensible Prioritization Scheme, which considers Urgency (ranging from `0` to `7`) and whether the request is Incremental (true/false).
 
@@ -47,8 +47,8 @@ The incremental flag specifies whether a bandwidth should be split between this 
 | **Font**                                         | `Leader (1)` |  `PRIORITY_NORMAL, 0` | `2`     |  `false`   |     |
 | **Font (rel=preload)**                           | `TailForbidden (1024),  Unblocked (16)` |`PRIORITY_HIGH, -10` |  `2`| `false`     |                                   |
 | **Image**                                        | `(0)`            |  `PRIORITY_LOW, 10`<br>`fetchpriority=high: PRIORITY_HIGH, -10` <br>`fetchpriority=low: PRIORITY_LOW, 10`        |`5`<br>`fetchpriority=high: 3`<br>`fetchpriority=low: 5`| `true`      |  |
-| **Image (about to be rendered)**                             |    `(0)`           |   `PRIORITY_HIGH, -10`      |  `3` ** not confirmed **    | `true`     | See:  image_layout_network_priority |
 | **Image (rel=preload)**                          |     `(0)`         |  `PRIORITY_LOW, 10`     | `5`  | `true`     |                                     |
+| **Image (about to be rendered)**                             |    `(0)`           |   `PRIORITY_HIGH, -10`      |  `3` ** not confirmed **    | `true`     | See:  image_layout_network_priority |
 | **Fetch**                                        |    `(0)`         |  `PRIORITY_NORMAL, 0`<br>`fetchpriority=high: PRIORITY_HIGH, -10` <br>`fetchpriority=low: PRIORITY_LOW, 10`| `4`<br>`fetchpriority=high: 3`<br>`fetchpriority=low: 5`   | `false`     |                                     |
 | **Tracker (script)**                                         | `Tail (256), Unblocked (16)`     | `PRIORITY_NORMAL, 0`   |  `3`  |  Request is tailed, i.e. deferred by a constant * number of pending requests |
 
