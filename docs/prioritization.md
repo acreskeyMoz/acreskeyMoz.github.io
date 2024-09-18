@@ -16,7 +16,7 @@ Firefox employs several techniques to orchestrate network request scheduling:
     - May defer scheduling of certain requests (e.g., trackers classified as ClassOfService::Tail)
     
 ### Priority
-For multiplexed HTTP/2 and HTTP/3 connections, request priority is determined using the Extensible Prioritization Scheme, which considers Urgency (ranging from `0` to `7`) and whether the request is Incremental (true/false).
+For multiplexed HTTP/2 and HTTP/3 connections, request priority is expressed using the Extensible Prioritization Scheme, which adds Urgency (ranging from `0` to `7`) and whether the request is Incremental (true/false) as a Priority header.
 
 Resources with a low numerical urgency should be delivered before resources with higher numerical urgencies. e.g. all resources with urgency 2 should be transferred before resources with urgency 3 begin. 
 
