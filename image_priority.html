@@ -9,10 +9,12 @@
             font-family: Arial, sans-serif;
             padding: 20px;
         }
+        /* Hide images by positioning them off-screen */
         img {
-            display: block;
-            margin-bottom: 20px;
-            border: 2px solid #ccc;
+            position: absolute;
+            left: -9999px;
+            width: 600px;
+            height: 400px;
         }
         p {
             font-weight: bold;
@@ -23,7 +25,7 @@
 <body>
 
     <h1>Image Fetch Priority Test Page</h1>
-    <p>This page tests how different `fetchPriority` values affect image loading behavior.</p>
+    <p>This page tests how different <code>fetchPriority</code> values affect image loading behavior.</p>
 
     <p>Other Image 1 (Default Priority)</p>
     <img src="other-image1.jpg" alt="Other Image 1" width="600" height="400">
@@ -31,8 +33,8 @@
     <p>Primary Image (High Priority)</p>
     <img src="large_image.jpg" alt="Primary Image" width="600" height="400" fetchPriority="high">
 
-    <p>Other Image 2 (Low Priority)</p>
-    <img src="other-image2.jpg" alt="Other Image 3" width="600" height="400" fetchPriority="low">
+    <p>Other Image 3 (Low Priority)</p>
+    <img src="other-image3.jpg" alt="Other Image 3" width="600" height="400" fetchPriority="low">
 
 </body>
 </html>
