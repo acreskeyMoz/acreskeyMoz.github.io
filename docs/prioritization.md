@@ -3,15 +3,15 @@
 ### Scheduling
 Firefox employs several techniques to orchestrate network request scheduling:
 
-DOM Preload Scanner (speculative loader)
+#### DOM Preload Scanner (speculative loader)
     - Runs on a background thread, scans HTML for resource URLs to preload
     - Adds discovered resources to a speculative load queue
     - See [MDN Documentation on HTML Parser Threading (archived)](https://web.archive.org/web/20201021003137/https://developer.mozilla.org/en-US/docs/Mozilla/Gecko/HTML_parser_threading)
 
-DOM Parser (non-speculative)
+#### DOM Parser (non-speculative)
     - Makes requests for elemements as the tree is constructed.
 
-[Class of Service](https://searchfox.org/mozilla-central/rev/f549a50b1e39b1e6bea19912d92545c4c0a06b7b/netwerk/base/nsIClassOfService.idl#7-15)
+#### [Class of Service](https://searchfox.org/mozilla-central/rev/f549a50b1e39b1e6bea19912d92545c4c0a06b7b/netwerk/base/nsIClassOfService.idl#7-15)
     - Categorizes requests (e.g., Leader, Normal, Follower, Speculative)
     - May defer scheduling of certain requests (e.g., trackers classified as ClassOfService::Tail)
     
