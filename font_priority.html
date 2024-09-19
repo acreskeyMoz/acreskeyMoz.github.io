@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Font Loading Priorities Example</title>
+  
+  <!-- 1. Preload Font with Default Priority -->
+  <link
+    rel="preload"
+    href="https://fontlibrary.org/assets/fonts/open-sans/open-sans-latin-regular.woff2"
+    as="font"
+    type="font/woff2"
+    crossorigin
+  >
+  
+  <!-- 2. Preload Font with fetchpriority="low" -->
+  <link
+    rel="preload"
+    href="https://fontlibrary.org/assets/fonts/lato/lato-latin-regular.woff2"
+    as="font"
+    type="font/woff2"
+    crossorigin
+    fetchpriority="low"
+  >
+  
+  <!-- 3. Preload Font with fetchpriority="high" -->
+  <link
+    rel="preload"
+    href="https://fontlibrary.org/assets/fonts/montserrat/montserrat-latin-regular.woff2"
+    as="font"
+    type="font/woff2"
+    crossorigin
+    fetchpriority="high"
+  >
+  
+  <style>
+    /* 4. Font-face Load */
+    @font-face {
+      font-family: 'Roboto';
+      src: url('https://fontlibrary.org/assets/fonts/roboto/roboto-latin-regular.woff2') format('woff2');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap; /* Ensures text is displayed immediately with fallback */
+    }
+    
+    /* Styling for headers using different fonts */
+    .preload-normal {
+      font-family: 'Open Sans', sans-serif;
+      font-size: 2em;
+      margin: 20px;
+    }
+    
+    .preload-low {
+      font-family: 'Lato', sans-serif;
+      font-size: 2em;
+      margin: 20px;
+    }
+    
+    .preload-high {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 2em;
+      margin: 20px;
+    }
+    
+    .fontface {
+      font-family: 'Roboto', sans-serif;
+      font-size: 2em;
+      margin: 20px;
+    }
+    
+    /* Optional: Adding distinct colors for clarity */
+    .preload-normal {
+      color: #2E86C1; /* Blue */
+    }
+    
+    .preload-low {
+      color: #28B463; /* Green */
+    }
+    
+    .preload-high {
+      color: #E67E22; /* Orange */
+    }
+    
+    .fontface {
+      color: #8E44AD; /* Purple */
+    }
+  </style>
+  
+</head>
+<body>
+  
+  <!-- 1. Header with Preloaded Font (Default Priority) -->
+  <h1 class="preload-normal">Priority</h1>
+  
+  <!-- 2. Header with Preloaded Font (Low Priority) -->
+  <h1 class="preload-low">Priority</h1>
+  
+  <!-- 3. Header with Preloaded Font (High Priority) -->
+  <h1 class="preload-high">Priority</h1>
+  
+  <!-- 4. Header with Font Loaded via @font-face -->
+  <h1 class="fontface">Priority</h1>
+  
+</body>
+</html>
