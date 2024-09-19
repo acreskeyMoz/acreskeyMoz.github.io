@@ -4,29 +4,29 @@
   <meta charset="UTF-8">
   <title>Font Loading Priorities Example</title>
   
-  <!-- 1. Preload Font with Default Priority -->
+  <!-- 1. Preload Font with Default Priority (Google Fonts: Open Sans) -->
   <link
     rel="preload"
-    href="https://fontlibrary.org/assets/fonts/open-sans/open-sans-latin-regular.woff2"
+    href="https://fonts.gstatic.com/s/opensans/v34/mem8YaGs126MiZpBA-UFVZ0e.ttf"
     as="font"
-    type="font/woff2"
+    type="font/ttf"
     crossorigin
   >
   
-  <!-- 2. Preload Font with fetchpriority="low" -->
+  <!-- 2. Preload Font with fetchpriority="low" (Google Fonts: Lato) -->
   <link
     rel="preload"
-    href="https://fontlibrary.org/assets/fonts/lato/lato-latin-regular.woff2"
+    href="https://fonts.gstatic.com/s/lato/v22/S6uyw4BMUTPHjxAwXiWtFCc.woff2"
     as="font"
     type="font/woff2"
     crossorigin
     fetchpriority="low"
   >
   
-  <!-- 3. Preload Font with fetchpriority="high" -->
+  <!-- 3. Preload Font with fetchpriority="high" (Cloudflare CDN: Montserrat) -->
   <link
     rel="preload"
-    href="https://fontlibrary.org/assets/fonts/montserrat/montserrat-latin-regular.woff2"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/webfonts/montserrat-v15-latin-regular.woff2"
     as="font"
     type="font/woff2"
     crossorigin
@@ -34,10 +34,10 @@
   >
   
   <style>
-    /* 4. Font-face Load */
+    /* 4. Font-face Load (Google Fonts: Roboto) */
     @font-face {
       font-family: 'Roboto';
-      src: url('https://fontlibrary.org/assets/fonts/roboto/roboto-latin-regular.woff2') format('woff2');
+      src: url('https://fonts.gstatic.com/s/roboto/v30/KFOmCnqEu92Fr1Me5Q.ttf') format('truetype');
       font-weight: normal;
       font-style: normal;
       font-display: swap; /* Ensures text is displayed immediately with fallback */
@@ -48,40 +48,27 @@
       font-family: 'Open Sans', sans-serif;
       font-size: 2em;
       margin: 20px;
+      color: #2E86C1; /* Blue */
     }
     
     .preload-low {
       font-family: 'Lato', sans-serif;
       font-size: 2em;
       margin: 20px;
+      color: #28B463; /* Green */
     }
     
     .preload-high {
       font-family: 'Montserrat', sans-serif;
       font-size: 2em;
       margin: 20px;
+      color: #E67E22; /* Orange */
     }
     
     .fontface {
       font-family: 'Roboto', sans-serif;
       font-size: 2em;
       margin: 20px;
-    }
-    
-    /* Optional: Adding distinct colors for clarity */
-    .preload-normal {
-      color: #2E86C1; /* Blue */
-    }
-    
-    .preload-low {
-      color: #28B463; /* Green */
-    }
-    
-    .preload-high {
-      color: #E67E22; /* Orange */
-    }
-    
-    .fontface {
       color: #8E44AD; /* Purple */
     }
   </style>
