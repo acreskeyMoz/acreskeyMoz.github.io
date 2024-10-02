@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Connection Reuse</title>
+    <style>
+        #imageContainer img {
+            display: block;
+            margin: 10px 0;
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Connection Reuse test</h1>
+<button id="loadImageButton">Load New Image</button>
+<div id="imageContainer"></div>
+
+<script>
+    let imageNumber = 1;
+
+    document.getElementById('loadImageButton').addEventListener('click', function() {
+        // Create a new image element
+        const img = document.createElement('img');
+        img.src = 'other-image' + imageNumber + '.jpg';
+        img.alt = 'Image ' + imageNumber;
+        img.onerror = function() {
+            alert('Image ' + imageNumber + '.jpg does not exist.');
+            this.remove();
+        };
+
+        // Append the image to the container
+        document.getElementById('imageContainer').appendChild(img);
+
+        imageNumber++;
+    });
+</script>
+
+</body>
+</html>
