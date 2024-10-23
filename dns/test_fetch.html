@@ -18,11 +18,16 @@
 <ul id="log"></ul>
 
 <script>
-  const rtts = [];
   const rttStatusSpan = document.getElementById('rttStatusSpan');
   const logList = document.getElementById('log');
 
   const testRTT = async () => {
+    // Clear previous logs and reset RTT calculations
+    const rtts = [];
+    logList.innerHTML = '';
+    rttStatusSpan.textContent = 'Calculating...';
+    rttStatusSpan.classList.add('light');
+
     const tlds = [
       'com', 'net', 'org',
       'br', 'ca', 'co', 'de', 'eu', 'fr',
