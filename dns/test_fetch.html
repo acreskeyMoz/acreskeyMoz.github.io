@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Random Domain Fetches</title>
+<style>
+  .green { color: green; }
+  .yellow { color: orange; }
+  .red { color: red; }
+  .light { opacity: 0.5; }
+</style>
+</head>
+<body>
+
+<h1>Random Domain Fetches</h1>
+<p>Average RTT: <span id="rttStatusSpan" class="light">Calculating...</span></p>
+<button id="startButton">Start Test</button>
+<ul id="log"></ul>
+
+<script>
+  const rtts = [];
+  const rttStatusSpan = document.getElementById('rttStatusSpan');
+  const logList = document.getElementById('log');
+
+  const testRTT = async () => {
+    const tlds = [
+      'com', 'net', 'org',
+      'br', 'ca', 'co', 'de', 'eu', 'fr',
+      'in', 'io', 'jp', 'nl', 'uk', 'us',
+      'app', 'biz', 'dev', 'info', 'xyz',
+    ];
+    let rand, start, avg;
+    for (const tld of [...tlds, ...tlds]) {
+      rand = Math.random().toString(36).slice(2);
+      start = Date.now();
+      try {
+        const response = await fetch(`https://nxdomain-${rand}.${tld}/`, { mode: 'no-cors' });
+        const li = document.createElement('li');
+        li.textContent = `Fetched https://nxdomain-${rand}.${tld}/`;
+        logList.appendChild(li);
+      } catch (error) {
+        const li = document.createElement('li');
+        li.textContent = `Error fetching https://nxdomain-${rand}.${tld}/: ${error.message}`;
+        logList.appendChild(li);
+      }
+      rtts.push(Date.now() - start);
+      avg = Math.round(rtts.reduce((sum, x) => sum + x, 0) / rtts.length);
+      rttStatusSpan.innerHTML = `<span class="${avg <= 150 ? 'green' : avg <= 500 ? 'yellow' : 'red'}">${avg}ms</span>`;
+    }
+    rttStatusSpan.classList.remove('light');
+  };
+
+  document.getElementById('startButton').addEventListener('click', testRTT);
+</script>
+
+</body>
+</html>
