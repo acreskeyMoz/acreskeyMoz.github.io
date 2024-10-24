@@ -16,6 +16,9 @@
 <p>Average RTT: <span id="rttStatusSpan" class="light">Calculating...</span></p>
 <button id="startButton">Start Test</button>
 <button id="singleFetchButton">Single Fetch</button>
+<br><br>
+<button id="startValidTestButton">Start Valid Domains Test</button>
+<button id="singleValidFetchButton">Single Valid Domain Fetch</button>
 <ul id="log"></ul>
 
 <script>
@@ -86,8 +89,74 @@
     rttStatusSpan.classList.remove('light');
   };
 
+  // List of top 50 popular domains
+  const popularDomains = [
+    'youtube.com', 'facebook.com', 'baidu.com', 'wikipedia.org',
+    'qq.com', 'taobao.com', 'tmall.com', 'amazon.com', 'twitter.com',
+    'sohu.com', 'jd.com', 'live.com', 'vk.com', 'instagram.com',
+    'sina.com.cn', 'weibo.com', 'reddit.com', 'login.tmall.com', 'blogspot.com',
+    'netflix.com', 'linkedin.com', 'yahoo.com', 'google.co.in', 'google.co.jp',
+    'google.de', 'google.co.uk', 'google.com.br', 'google.ru', 'google.fr',
+    'google.com.hk', 'google.it', 'google.es', 'google.ca', 'google.com.au',
+    '360.cn', 'aliexpress.com', 'office.com', 'microsoft.com', 'apple.com',
+    'imdb.com', 'bing.com', 'paypal.com', 'stackoverflow.com', 'ebay.com',
+    'adobe.com', 'whatsapp.com', 'pinterest.com', 'github.com', 'wordpress.com',
+  ];
+
+  const testValidDomainsRTT = async () => {
+    // Clear previous logs and reset RTT calculations
+    rtts = [];
+    logList.innerHTML = '';
+    rttStatusSpan.textContent = 'Calculating...';
+    rttStatusSpan.classList.add('light');
+
+    let start, avg;
+    for (let i = 0; i < 20; i++) { // Adjust the number of fetches as needed
+      const domain = popularDomains[Math.floor(Math.random() * popularDomains.length)];
+      start = Date.now();
+      try {
+        await fetch(`https://${domain}/`, { mode: 'no-cors' });
+      } catch (error) {
+        // CORS errors may occur, but we can still measure RTT
+      }
+      const rtt = Date.now() - start;
+      rtts.push(rtt);
+      avg = Math.round(rtts.reduce((sum, x) => sum + x, 0) / rtts.length);
+
+      const li = document.createElement('li');
+      li.textContent = `RTT for https://${domain}/: ${rtt}ms`;
+      logList.appendChild(li);
+
+      rttStatusSpan.innerHTML = `<span class="${avg <= 150 ? 'green' : avg <= 500 ? 'yellow' : 'red'}">${avg}ms</span>`;
+    }
+    rttStatusSpan.classList.remove('light');
+  };
+
+  const singleValidFetch = async () => {
+    const domain = popularDomains[Math.floor(Math.random() * popularDomains.length)];
+    const start = Date.now();
+
+    try {
+      await fetch(`https://${domain}/`, { mode: 'no-cors' });
+    } catch (error) {
+      // CORS errors may occur, but we can still measure RTT
+    }
+    const rtt = Date.now() - start;
+    rtts.push(rtt);
+    const avg = Math.round(rtts.reduce((sum, x) => sum + x, 0) / rtts.length);
+
+    const li = document.createElement('li');
+    li.textContent = `RTT for https://${domain}/: ${rtt}ms`;
+    logList.appendChild(li);
+
+    rttStatusSpan.innerHTML = `<span class="${avg <= 150 ? 'green' : avg <= 500 ? 'yellow' : 'red'}">${avg}ms</span>`;
+    rttStatusSpan.classList.remove('light');
+  };
+
   document.getElementById('startButton').addEventListener('click', testRTT);
   document.getElementById('singleFetchButton').addEventListener('click', singleFetch);
+  document.getElementById('startValidTestButton').addEventListener('click', testValidDomainsRTT);
+  document.getElementById('singleValidFetchButton').addEventListener('click', singleValidFetch);
 </script>
 
 </body>
