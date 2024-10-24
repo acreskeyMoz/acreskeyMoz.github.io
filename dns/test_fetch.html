@@ -15,15 +15,17 @@
 <h1>Random Domain Fetches</h1>
 <p>Average RTT: <span id="rttStatusSpan" class="light">Calculating...</span></p>
 <button id="startButton">Start Test</button>
+<button id="singleFetchButton">Single Fetch</button>
 <ul id="log"></ul>
 
 <script>
   const rttStatusSpan = document.getElementById('rttStatusSpan');
   const logList = document.getElementById('log');
+  let rtts = []; // Moved to global scope to accumulate RTTs across tests
 
   const testRTT = async () => {
     // Clear previous logs and reset RTT calculations
-    const rtts = [];
+    rtts = [];
     logList.innerHTML = '';
     rttStatusSpan.textContent = 'Calculating...';
     rttStatusSpan.classList.add('light');
@@ -56,7 +58,36 @@
     rttStatusSpan.classList.remove('light');
   };
 
+  const singleFetch = async () => {
+    const tlds = [
+      'com', 'net', 'org',
+      'br', 'ca', 'co', 'de', 'eu', 'fr',
+      'in', 'io', 'jp', 'nl', 'uk', 'us',
+      'app', 'biz', 'dev', 'info', 'xyz',
+    ];
+    const rand = Math.random().toString(36).slice(2);
+    const tld = tlds[Math.floor(Math.random() * tlds.length)];
+    const start = Date.now();
+
+    try {
+      await fetch(`https://nxdomain-${rand}.${tld}/`, { mode: 'no-cors' });
+    } catch (error) {
+      // The fetch will likely fail due to the domain not existing
+    }
+    const rtt = Date.now() - start;
+    rtts.push(rtt);
+    const avg = Math.round(rtts.reduce((sum, x) => sum + x, 0) / rtts.length);
+
+    const li = document.createElement('li');
+    li.textContent = `RTT for https://nxdomain-${rand}.${tld}/: ${rtt}ms`;
+    logList.appendChild(li);
+
+    rttStatusSpan.innerHTML = `<span class="${avg <= 150 ? 'green' : avg <= 500 ? 'yellow' : 'red'}">${avg}ms</span>`;
+    rttStatusSpan.classList.remove('light');
+  };
+
   document.getElementById('startButton').addEventListener('click', testRTT);
+  document.getElementById('singleFetchButton').addEventListener('click', singleFetch);
 </script>
 
 </body>
