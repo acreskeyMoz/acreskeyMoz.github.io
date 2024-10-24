@@ -42,13 +42,13 @@
     let rand, start, avg;
     for (const tld of [...tlds, ...tlds]) {
       rand = Math.random().toString(36).slice(2);
-      start = Date.now();
+      start = performance.now();
       try {
         await fetch(`https://nxdomain-${rand}.${tld}/`, { mode: 'no-cors' });
       } catch (error) {
         // The fetch will likely fail due to the domain not existing
       }
-      const rtt = Date.now() - start;
+      const rtt = Math.round(performance.now() - start);
       rtts.push(rtt);
       avg = Math.round(rtts.reduce((sum, x) => sum + x, 0) / rtts.length);
 
@@ -70,14 +70,14 @@
     ];
     const rand = Math.random().toString(36).slice(2);
     const tld = tlds[Math.floor(Math.random() * tlds.length)];
-    const start = Date.now();
+    const start = performance.now();
 
     try {
       await fetch(`https://nxdomain-${rand}.${tld}/`, { mode: 'no-cors' });
     } catch (error) {
       // The fetch will likely fail due to the domain not existing
     }
-    const rtt = Date.now() - start;
+    const rtt = Math.round(performance.now() - start);
     rtts.push(rtt);
     const avg = Math.round(rtts.reduce((sum, x) => sum + x, 0) / rtts.length);
 
@@ -89,18 +89,20 @@
     rttStatusSpan.classList.remove('light');
   };
 
-  // List of top 50 popular domains
-  const popularDomains = [
-    'youtube.com', 'facebook.com', 'baidu.com', 'wikipedia.org',
-    'qq.com', 'taobao.com', 'tmall.com', 'amazon.com', 'twitter.com',
-    'sohu.com', 'jd.com', 'live.com', 'vk.com', 'instagram.com',
-    'sina.com.cn', 'weibo.com', 'reddit.com', 'login.tmall.com', 'blogspot.com',
-    'netflix.com', 'linkedin.com', 'yahoo.com', 'google.co.in', 'google.co.jp',
-    'google.de', 'google.co.uk', 'google.com.br', 'google.ru', 'google.fr',
-    'google.com.hk', 'google.it', 'google.es', 'google.ca', 'google.com.au',
-    '360.cn', 'aliexpress.com', 'office.com', 'microsoft.com', 'apple.com',
-    'imdb.com', 'bing.com', 'paypal.com', 'stackoverflow.com', 'ebay.com',
-    'adobe.com', 'whatsapp.com', 'pinterest.com', 'github.com', 'wordpress.com',
+  // List of at least 10 URLs that can be fetched successfully
+  const fetchableUrls = [
+    'https://api.github.com',                        // GitHub API
+    'https://jsonplaceholder.typicode.com/posts/1',  // JSONPlaceholder API
+    'https://api.coindesk.com/v1/bpi/currentprice.json', // Coindesk Bitcoin Price Index
+    'https://api.spacexdata.com/v4/launches/latest', // SpaceX API
+    'https://dog.ceo/api/breeds/image/random',       // Dog CEO API
+    'https://api.thecatapi.com/v1/images/search',    // Cat API
+    'https://official-joke-api.appspot.com/random_joke', // Official Joke API
+    'https://www.boredapi.com/api/activity',         // Bored API
+    'https://api.chucknorris.io/jokes/random',       // Chuck Norris Jokes API
+    'https://type.fit/api/quotes',                   // Quotes API
+    'https://www.themealdb.com/api/json/v1/1/random.php', // TheMealDB API
+    'https://www.thecocktaildb.com/api/json/v1/1/random.php', // TheCocktailDB API
   ];
 
   const testValidDomainsRTT = async () => {
@@ -111,20 +113,23 @@
     rttStatusSpan.classList.add('light');
 
     let start, avg;
-    for (let i = 0; i < 20; i++) { // Adjust the number of fetches as needed
-      const domain = popularDomains[Math.floor(Math.random() * popularDomains.length)];
-      start = Date.now();
+    for (let i = 0; i < fetchableUrls.length; i++) {
+      const url = fetchableUrls[i];
+      start = performance.now();
       try {
-        await fetch(`https://${domain}/`, { mode: 'no-cors' });
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
       } catch (error) {
-        // CORS errors may occur, but we can still measure RTT
+        console.error(`Error fetching ${url}: ${error}`);
       }
-      const rtt = Date.now() - start;
+      const rtt = Math.round(performance.now() - start);
       rtts.push(rtt);
       avg = Math.round(rtts.reduce((sum, x) => sum + x, 0) / rtts.length);
 
       const li = document.createElement('li');
-      li.textContent = `RTT for https://${domain}/: ${rtt}ms`;
+      li.textContent = `RTT for ${url}: ${rtt}ms`;
       logList.appendChild(li);
 
       rttStatusSpan.innerHTML = `<span class="${avg <= 150 ? 'green' : avg <= 500 ? 'yellow' : 'red'}">${avg}ms</span>`;
@@ -133,20 +138,23 @@
   };
 
   const singleValidFetch = async () => {
-    const domain = popularDomains[Math.floor(Math.random() * popularDomains.length)];
-    const start = Date.now();
+    const url = fetchableUrls[Math.floor(Math.random() * fetchableUrls.length)];
+    const start = performance.now();
 
     try {
-      await fetch(`https://${domain}/`, { mode: 'no-cors' });
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
     } catch (error) {
-      // CORS errors may occur, but we can still measure RTT
+      console.error(`Error fetching ${url}: ${error}`);
     }
-    const rtt = Date.now() - start;
+    const rtt = Math.round(performance.now() - start);
     rtts.push(rtt);
     const avg = Math.round(rtts.reduce((sum, x) => sum + x, 0) / rtts.length);
 
     const li = document.createElement('li');
-    li.textContent = `RTT for https://${domain}/: ${rtt}ms`;
+    li.textContent = `RTT for ${url}: ${rtt}ms`;
     logList.appendChild(li);
 
     rttStatusSpan.innerHTML = `<span class="${avg <= 150 ? 'green' : avg <= 500 ? 'yellow' : 'red'}">${avg}ms</span>`;
