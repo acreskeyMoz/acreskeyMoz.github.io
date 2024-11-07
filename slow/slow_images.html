@@ -1,31 +1,67 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Slow Load Test Page with Large Images and Delayed Resources</title>
+    <title>Page Load Stages Test</title>
     <script>
-        // Event listener for DOMContentLoaded
+        // Function to create and style text elements
+        function addText(message, color) {
+            var textElement = document.createElement('p');
+            textElement.textContent = message;
+            textElement.style.fontSize = '18px';
+            textElement.style.color = color;
+            document.body.appendChild(textElement);
+        }
+
+        // Document readyState changes
+        document.onreadystatechange = function() {
+            console.log('ReadyState changed to:', document.readyState);
+            addText('readyState: ' + document.readyState, 'orange');
+        };
+
+        // DOMContentLoaded event
         document.addEventListener('DOMContentLoaded', function() {
             console.log('DOMContentLoaded event fired');
-            var domContentText = document.createElement('p');
-            domContentText.textContent = 'DOMContentLoaded';
-            domContentText.style.fontSize = '18px';
-            domContentText.style.color = 'blue';
-            document.body.appendChild(domContentText);
+            addText('DOMContentLoaded', 'blue');
         });
 
-        // Event listener for window.onload
+        // window.onload event
         window.onload = function() {
             console.log('window.onload event fired');
-            var onLoadText = document.createElement('p');
-            onLoadText.textContent = 'window.onload';
-            onLoadText.style.fontSize = '18px';
-            onLoadText.style.color = 'green';
-            document.body.appendChild(onLoadText);
+            addText('window.onload', 'darkgreen');
+
+            // Performance Timing API
+            if (performance && performance.timing) {
+                var timing = performance.timing;
+                var pageLoadTime = timing.loadEventEnd - timing.navigationStart;
+                console.log('Total page load time: ' + pageLoadTime + ' ms');
+                addText('Total page load time: ' + pageLoadTime + ' ms', 'red');
+            }
+
+            // Paint Timing API
+            if ('performance' in window && 'getEntriesByType' in performance) {
+                var paintEntries = performance.getEntriesByType('paint');
+                paintEntries.forEach(function(paintEntry) {
+                    console.log(paintEntry.name + ': ' + paintEntry.startTime + ' ms');
+                    addText(paintEntry.name + ': ' + paintEntry.startTime.toFixed(2) + ' ms', 'brown');
+                });
+            }
         };
+
+        // beforeunload event
+        window.addEventListener('beforeunload', function(event) {
+            console.log('beforeunload event fired');
+            // Note: Adding text to the body here won't be visible as the page is unloading
+        });
+
+        // unload event
+        window.addEventListener('unload', function(event) {
+            console.log('unload event fired');
+            // Note: Adding text to the body here won't be visible as the page is unloading
+        });
     </script>
 </head>
 <body>
-    <h1>Testing Delayed Load Event with Large Images and Delayed Resources</h1>
+    <h1>Testing Page Load Stages with Large Images and Delayed Resources</h1>
 
     <!-- Large Images from Wikipedia Commons -->
     <img src="https://upload.wikimedia.org/wikipedia/commons/4/4a/Google_Earth_Midtown_Manhattan.jpg" alt="Large Image 1" width="800">
@@ -36,5 +72,46 @@
     <img src="https://httpbin.org/stream-bytes/5000000?chunk_size=1024&content_type=image/png" alt="Delayed Resource 1">
     <img src="https://httpbin.org/stream-bytes/10000000?chunk_size=1024&content_type=image/png" alt="Delayed Resource 2">
     <img src="https://httpbin.org/stream-bytes/15000000?chunk_size=1024&content_type=image/png" alt="Delayed Resource 3">
+
+    <!-- Individual Image Load Events -->
+    <script>
+        // Get all images on the page
+        var images = document.images;
+
+        // Track loaded images
+        var loadedImages = 0;
+
+        // Function to handle image load event
+        function imageLoaded() {
+            loadedImages++;
+            console.log('Image loaded:', this.alt);
+            addText('Loaded: ' + this.alt, 'teal');
+
+            // Optionally, check if all images are loaded
+            if (loadedImages === images.length) {
+                console.log('All images have loaded');
+                addText('All images have loaded', 'darkblue');
+            }
+        }
+
+        // Attach load event listener to each image
+        for (var i = 0; i < images.length; i++) {
+            images[i].addEventListener('load', imageLoaded);
+        }
+
+        // Performance Observer for First Paint
+        if ('PerformanceObserver' in window) {
+            var observer = new PerformanceObserver(function(list) {
+                var entries = list.getEntries();
+                entries.forEach(function(entry) {
+                    if (entry.entryType === 'paint') {
+                        console.log(entry.name + ': ' + entry.startTime + ' ms');
+                        addText(entry.name + ': ' + entry.startTime.toFixed(2) + ' ms', 'brown');
+                    }
+                });
+            });
+            observer.observe({ entryTypes: ['paint'] });
+        }
+    </script>
 </body>
 </html>
