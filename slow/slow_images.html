@@ -7,13 +7,11 @@
         // Blocking script to delay DOMContentLoaded
         console.log('Starting heavy computation to delay DOMContentLoaded');
 
-        // Heavy computation (e.g., calculating Fibonacci numbers)
-        function fibonacci(n) {
-            if (n <= 1) return n;
-            return fibonacci(n - 1) + fibonacci(n - 2);
+        let n = 10000000;
+        let result = 0;
+        for (let i = 0; i < n; i++) {
+            result += Math.sqrt(i);
         }
-
-        var result = fibonacci(4000000);
         console.log('Heavy computation finished, result:', result);
     </script>
 
