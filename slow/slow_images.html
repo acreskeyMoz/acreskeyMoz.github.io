@@ -32,6 +32,9 @@
             // Performance Timing API
             if (performance && performance.timing) {
                 var timing = performance.timing;
+
+                console.log('navigationStart:', timing.navigationStart);
+                console.log('loadEventEnd:', timing.loadEventEnd);
                 var pageLoadTime = timing.loadEventEnd - timing.navigationStart;
                 console.log('Total page load time: ' + pageLoadTime + ' ms');
                 addText('Total page load time: ' + pageLoadTime + ' ms', 'red');
