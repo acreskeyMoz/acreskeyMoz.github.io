@@ -63,15 +63,15 @@
 <body>
     <h1>Testing Page Load Stages with Large Images and Delayed Resources</h1>
 
-    <!-- Large Images from Wikipedia Commons -->
-    <img src="https://upload.wikimedia.org/wikipedia/commons/4/4a/Google_Earth_Midtown_Manhattan.jpg" alt="Large Image 1" width="800">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/2/2c/Rotating_earth_%28large%29.gif" alt="Large Image 2" width="800">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/1/1a/Bachalpsee_reflection.jpg" alt="Large Image 3" width="800">
+    <!-- Large Images from Wikimedia Commons -->
+    <img src="https://upload.wikimedia.org/wikipedia/commons/3/3f/Fronalpstock_big.jpg" alt="Large Image 1" width="400">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/e/e4/Golden_Gate_Bridge_0002.jpg" alt="Large Image 2" width="400">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/5/5a/Hubble2005-01-barred-spiral-galaxy-NGC1300.jpg" alt="Large Image 3" width="400">
 
     <!-- Slow Loading Resources using httpbin.org -->
-    <img src="https://httpbin.org/stream-bytes/5000000?chunk_size=1024&content_type=image/png" alt="Delayed Resource 1">
-    <img src="https://httpbin.org/stream-bytes/10000000?chunk_size=1024&content_type=image/png" alt="Delayed Resource 2">
-    <img src="https://httpbin.org/stream-bytes/15000000?chunk_size=1024&content_type=image/png" alt="Delayed Resource 3">
+    <img src="https://httpbin.org/stream-bytes/5000000?chunk_size=1024&content_type=image/png" alt="Delayed Resource 1" width="400">
+    <img src="https://httpbin.org/stream-bytes/10000000?chunk_size=1024&content_type=image/png" alt="Delayed Resource 2" width="400">
+    <img src="https://httpbin.org/stream-bytes/15000000?chunk_size=1024&content_type=image/png" alt="Delayed Resource 3" width="400">
 
     <!-- Individual Image Load Events -->
     <script>
