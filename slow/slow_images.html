@@ -1,18 +1,40 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Slow Load Test Page</title>
+    <title>Slow Load Test Page with Large Images and Delayed Resources</title>
     <script>
+        // Event listener for DOMContentLoaded
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOMContentLoaded event fired');
+            var domContentText = document.createElement('p');
+            domContentText.textContent = 'DOMContentLoaded';
+            domContentText.style.fontSize = '18px';
+            domContentText.style.color = 'blue';
+            document.body.appendChild(domContentText);
+        });
+
+        // Event listener for window.onload
         window.onload = function() {
-            console.log('Page fully loaded');
-            alert('Page fully loaded');
+            console.log('window.onload event fired');
+            var onLoadText = document.createElement('p');
+            onLoadText.textContent = 'window.onload';
+            onLoadText.style.fontSize = '18px';
+            onLoadText.style.color = 'green';
+            document.body.appendChild(onLoadText);
         };
     </script>
 </head>
 <body>
-    <h1>Testing Delayed Load Event with httpbin.org</h1>
-    <img src="https://httpbin.org/stream-bytes/150000000?chunk_size=1024&content_type=image/png" alt="Delayed Image 1">
-    <img src="https://httpbin.org/stream-bytes/200000000?chunk_size=1024&content_type=image/png" alt="Delayed Image 2">
-    <img src="https://httpbin.org/stream-bytes/450000000?chunk_size=1024&content_type=image/png" alt="Delayed Image 3">
+    <h1>Testing Delayed Load Event with Large Images and Delayed Resources</h1>
+
+    <!-- Large Images from Wikipedia Commons -->
+    <img src="https://upload.wikimedia.org/wikipedia/commons/4/4a/Google_Earth_Midtown_Manhattan.jpg" alt="Large Image 1" width="800">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/2/2c/Rotating_earth_%28large%29.gif" alt="Large Image 2" width="800">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/1/1a/Bachalpsee_reflection.jpg" alt="Large Image 3" width="800">
+
+    <!-- Slow Loading Resources using httpbin.org -->
+    <img src="https://httpbin.org/stream-bytes/5000000?chunk_size=1024&content_type=image/png" alt="Delayed Resource 1">
+    <img src="https://httpbin.org/stream-bytes/10000000?chunk_size=1024&content_type=image/png" alt="Delayed Resource 2">
+    <img src="https://httpbin.org/stream-bytes/15000000?chunk_size=1024&content_type=image/png" alt="Delayed Resource 3">
 </body>
 </html>
