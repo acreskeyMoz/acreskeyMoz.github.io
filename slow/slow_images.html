@@ -2,6 +2,21 @@
 <html>
 <head>
     <title>Page Load Stages Test</title>
+
+  <script>
+        // Blocking script to delay DOMContentLoaded
+        console.log('Starting heavy computation to delay DOMContentLoaded');
+
+        // Heavy computation (e.g., calculating Fibonacci numbers)
+        function fibonacci(n) {
+            if (n <= 1) return n;
+            return fibonacci(n - 1) + fibonacci(n - 2);
+        }
+
+        var result = fibonacci(4000000);
+        console.log('Heavy computation finished, result:', result);
+    </script>
+
     <script>
         // Function to create and style text elements
         function addText(message, color) {
@@ -33,11 +48,9 @@
             if (performance && performance.timing) {
                 var timing = performance.timing;
 
-                console.log('navigationStart:', timing.navigationStart);
-                console.log('loadEventEnd:', timing.loadEventEnd);
-                var pageLoadTime = timing.loadEventEnd - timing.navigationStart;
-                console.log('Total page load time: ' + pageLoadTime + ' ms');
-                // addText('Total page load time: ' + pageLoadTime + ' ms', 'red');
+               var pageLoadTime = performance.now();
+               console.log('Total page load time: ' + pageLoadTime.toFixed(2) + ' ms');
+               addText('Total page load time: ' + pageLoadTime.toFixed(2) + ' ms', 'red');
             }
 
             // Paint Timing API
