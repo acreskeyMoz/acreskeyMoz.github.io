@@ -2,11 +2,9 @@
 <html>
 <head>
     <title>Page Load Stages Test</title>
-
-  <script>
+    <script>
         // Blocking script to delay DOMContentLoaded
         console.log('Starting heavy computation to delay DOMContentLoaded');
-
         let n = 1000000000;
         let result = 0;
         for (let i = 0; i < n; i++) {
@@ -14,7 +12,6 @@
         }
         console.log('Heavy computation finished, result:', result);
     </script>
-
     <script>
         // Function to create and style text elements
         function addText(message, color) {
@@ -24,33 +21,24 @@
             textElement.style.color = color;
             document.body.appendChild(textElement);
         }
-
         // Document readyState changes
         document.onreadystatechange = function() {
             console.log('ReadyState changed to:', document.readyState);
             addText('readyState: ' + document.readyState, 'orange');
         };
-
         // DOMContentLoaded event
         document.addEventListener('DOMContentLoaded', function() {
             console.log('DOMContentLoaded event fired');
             addText('DOMContentLoaded', 'blue');
         });
-
         // window.onload event
         window.onload = function() {
             console.log('window.onload event fired');
             addText('window.onload', 'darkgreen');
-
-            // Performance Timing API
-            if (performance && performance.timing) {
-                var timing = performance.timing;
-
-               var pageLoadTime = performance.now();
-               console.log('Total page load time: ' + pageLoadTime.toFixed(2) + ' ms');
-               addText('Total page load time: ' + pageLoadTime.toFixed(2) + ' ms', 'red');
-            }
-
+            // Use performance.now() for accurate timing
+            var pageLoadTime = performance.now();
+            console.log('Total page load time: ' + pageLoadTime.toFixed(2) + ' ms');
+            addText('Total page load time: ' + pageLoadTime.toFixed(2) + ' ms', 'red');
             // Paint Timing API
             if ('performance' in window && 'getEntriesByType' in performance) {
                 var paintEntries = performance.getEntriesByType('paint');
@@ -60,27 +48,28 @@
                 });
             }
         };
-
         // beforeunload event
         window.addEventListener('beforeunload', function(event) {
             console.log('beforeunload event fired');
-            // Note: Adding text to the body here won't be visible as the page is unloading
         });
-
         // unload event
         window.addEventListener('unload', function(event) {
             console.log('unload event fired');
-            // Note: Adding text to the body here won't be visible as the page is unloading
         });
     </script>
 </head>
 <body>
     <h1>Testing Page Load Stages with Large Images and Delayed Resources</h1>
+
+    <!-- Additional Text Above the Fold -->
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec vel sapien vel velit ullamcorper consectetur. Phasellus ac ante at sapien bibendum placerat. Sed a mauris at ipsum tempor commodo. Suspendisse potenti. Vivamus at urna ut elit vehicula feugiat. Nullam euismod, nisl eget consectetur dignissim, nisl nunc gravida urna, id pellentesque enim odio vitae nunc.</p>
+    <p>Curabitur vitae mauris sem. Nulla facilisi. Donec suscipit libero at ipsum bibendum, in vulputate tellus ultrices. Fusce sollicitudin turpis id mi hendrerit, a cursus leo tincidunt. Duis fermentum est a eros tincidunt, in suscipit nisi gravida. Nunc vel purus sed massa bibendum finibus.</p>
+    <p>Sed vitae sapien nec tortor cursus elementum. Phasellus sit amet dolor et magna vehicula hendrerit. Cras ac lacus in nulla volutpat aliquet. Maecenas ac ipsum sed odio aliquet interdum. Praesent vitae nisi eget justo gravida malesuada. Integer ultricies, purus id ultricies elementum, sapien neque blandit urna, vitae ultricies nisl justo ut elit.</p>
+
     <!-- Large Images from Wikimedia Commons -->
     <img src="https://upload.wikimedia.org/wikipedia/commons/3/3f/Fronalpstock_big.jpg" alt="Large Image 1" width="400">
     <img src="https://upload.wikimedia.org/wikipedia/commons/7/7d/%22_The_Calutron_Girls%22_Y-12_Oak_Ridge_1944_Large_Format_%2832093954911%29_%282%29.jpg" alt="Large Image 2" width="400">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/6/65/%22Scenic_Inn%22_at_Dana_Cove_%2829366426673%29.jpg" alt="Large Image 3" width="400">
-
+    
     <!-- Slow Loading Resources using httpbin.org -->
     <img src="https://httpbin.org/stream-bytes/5000000?chunk_size=1024&content_type=image/png" alt="Delayed Resource 1" width="400">
     <img src="https://httpbin.org/stream-bytes/10000000?chunk_size=1024&content_type=image/png" alt="Delayed Resource 2" width="400">
@@ -90,28 +79,22 @@
     <script>
         // Get all images on the page
         var images = document.images;
-
         // Track loaded images
         var loadedImages = 0;
-
         // Function to handle image load event
         function imageLoaded() {
             loadedImages++;
             console.log('Image loaded:', this.alt);
-            // addText('Loaded: ' + this.alt, 'teal');
-
             // Optionally, check if all images are loaded
             if (loadedImages === images.length) {
                 console.log('All images have loaded');
                 addText('All images have loaded', 'darkblue');
             }
         }
-
         // Attach load event listener to each image
         for (var i = 0; i < images.length; i++) {
             images[i].addEventListener('load', imageLoaded);
         }
-
         // Performance Observer for First Paint
         if ('PerformanceObserver' in window) {
             var observer = new PerformanceObserver(function(list) {
@@ -126,5 +109,15 @@
             observer.observe({ entryTypes: ['paint'] });
         }
     </script>
+
+    <!-- More Content to Push Image Below the Fold -->
+    <p>Additional content here to push the image further down the page. You can add as much text as needed to simulate a long page.</p>
+    <p>Another paragraph of text to increase the page length. This will ensure that the image below is way below the fold and requires scrolling.</p>
+    <p>Yet another paragraph. You might want to repeat or generate more content here to achieve the desired effect.</p>
+    <p>Continue adding content until the image is sufficiently far down the page.</p>
+
+    <!-- Moved Large Image Below the Fold -->
+    <img src="https://upload.wikimedia.org/wikipedia/commons/6/65/%22Scenic_Inn%22_at_Dana_Cove_%2829366426673%29.jpg" alt="Large Image 3" width="400">
+
 </body>
 </html>
