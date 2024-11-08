@@ -4,6 +4,7 @@
     <title>Page Load Stages Test</title>
     <script>
         // Blocking script to delay DOMContentLoaded
+        let computationStartTime = performance.now();
         console.log('Starting heavy computation to delay DOMContentLoaded');
         let n = 1000000000;
         let result = 0;
@@ -11,6 +12,9 @@
             result += Math.sqrt(i);
         }
         console.log('Heavy computation finished, result:', result);
+        let computationEndTime = performance.now();
+        window.computationDuration = computationEndTime - computationStartTime;
+        console.log('Heavy computation duration: ' + window.computationDuration.toFixed(2) + ' ms');
     </script>
     <script>
         // Function to create and style text elements
@@ -31,6 +35,10 @@
         document.addEventListener('DOMContentLoaded', function() {
             console.log('DOMContentLoaded event fired');
             addText('DOMContentLoaded', 'blue');
+            // Output the heavy computation duration
+            if (window.computationDuration !== undefined) {
+                addText('Heavy computation duration: ' + window.computationDuration.toFixed(2) + ' ms', 'purple');
+            }
         });
         // window.onload event
         window.onload = function() {
@@ -113,7 +121,5 @@
     <!-- Large Images Below the Fold -->
     <img src="https://upload.wikimedia.org/wikipedia/commons/6/65/%22Scenic_Inn%22_at_Dana_Cove_%2829366426673%29.jpg" alt="Large Image 3" width="400">
     <img src="https://upload.wikimedia.org/wikipedia/commons/8/85/%22_Shot_From_The_Sky%22_Army_Show_1945_Oak_Ridge_%2824971013612%29.jpg" alt="Large Image 4" width="400">
-    
-    
 </body>
 </html>
