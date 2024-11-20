@@ -52,6 +52,11 @@
             console.log('unload event fired');
         });
     </script>
+
+    // slow scripts
+    <script src="https://app.requestly.io/delay/4000/https://code.jquery.com/jquery-3.6.0.min.js" crossorigin></script>
+    <script src="https://app.requestly.io/delay/10000/https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    
 </head>
 <body>
     <h1>Testing Page Load Stages with Large Images and Delayed Resources</h1>
@@ -60,7 +65,6 @@
  
     <!-- Large Images from Wikimedia Commons -->
     <img src="https://upload.wikimedia.org/wikipedia/commons/7/7d/Woman_lighting_the_candles_for_the_Festival_of_Lights_in_India_%28cropped%29.jpg" alt="Large Image 1" width="400">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/7/7d/%22_The_Calutron_Girls%22_Y-12_Oak_Ridge_1944_Large_Format_%2832093954911%29_%282%29.jpg" alt="Large Image 2" width="400">
     
     <!-- Container for messages -->
     <div id="messages"></div>
@@ -111,8 +115,6 @@
     <img src="https://upload.wikimedia.org/wikipedia/commons/8/85/%22_Shot_From_The_Sky%22_Army_Show_1945_Oak_Ridge_%2824971013612%29.jpg" alt="Large Image 4" width="400">
 
     <img src="https://commons.wikimedia.org/wiki/Category:Large_images#/media/File:%22Bar_guild_head_backs_plan_of_FDR.%22_Washington,_D.C.,_March_12._Judge_John_Patrick_Devaney,_former_Chief_Justice_of_the_Minnesota_Supreme_Court_and_now_President_of_the_National_Lawyers_LCCN2016871345.tif" alt="Large Image 5" width="400">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/7/7e/%22Marimba%22_-_Curiosity_%2828932226176%29.jpg" alt="Large Image 6" width="400">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/c/cb/%22Itala_nam_tellus_Groecia_major_erat%22..._-_btv1b84464435.jpg" alt="Large Image 7" width="400">
     
     
 </body>
