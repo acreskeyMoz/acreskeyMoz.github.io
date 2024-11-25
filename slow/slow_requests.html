@@ -21,10 +21,6 @@
         document.addEventListener('DOMContentLoaded', function() {
             console.log('DOMContentLoaded event fired');
             addText('DOMContentLoaded', 'blue');
-            // Output the heavy computation duration
-            if (window.computationDuration !== undefined) {
-                addText('Heavy computation duration: ' + window.computationDuration.toFixed(2) + ' ms', 'purple');
-            }
         });
         // window.onload event
         window.onload = function() {
@@ -34,30 +30,24 @@
             var pageLoadTime = performance.now();
             console.log('Total page load time: ' + pageLoadTime.toFixed(2) + ' ms');
             addText('Total page load time: ' + pageLoadTime.toFixed(2) + ' ms', 'red');
-            // Paint Timing API
-            if ('performance' in window && 'getEntriesByType' in performance) {
-                var paintEntries = performance.getEntriesByType('paint');
-                paintEntries.forEach(function(paintEntry) {
-                    console.log(paintEntry.name + ': ' + paintEntry.startTime + ' ms');
-                    addText(paintEntry.name + ': ' + paintEntry.startTime.toFixed(2) + ' ms', 'brown');
-                });
-            }
         };
-        // beforeunload event
-        window.addEventListener('beforeunload', function(event) {
-            console.log('beforeunload event fired');
-        });
-        // unload event
-        window.addEventListener('unload', function(event) {
-            console.log('unload event fired');
-        });
+
     </script>
 
     <!-- Delay DCL by 8 seconds -->
     <script src="https://slowfil.es/file?type=js&delay=8000" crossorigin></script>
 
-    <!-- Deferred script to delay window.onload without affecting DCL -->
-    <script src="https://slowfil.es/file?type=js&delay=16000" defer crossorigin></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log("DomContentLoaded");
+        var script = document.createElement('script');
+        script.src = 'https://slowfil.es/file?type=js&delay=8000';
+        script.onload = function() {
+            console.log('Delayed script loaded');
+        };
+        document.body.appendChild(script);
+    });
+</script>
 
     
 </head>
@@ -70,47 +60,9 @@
     <img src="https://upload.wikimedia.org/wikipedia/commons/7/7d/Woman_lighting_the_candles_for_the_Festival_of_Lights_in_India_%28cropped%29.jpg" alt="Large Image 1" width="400">
 
     <img src="https://upload.wikimedia.org/wikipedia/commons/9/9e/%22The_Hub%22._Cycling_Map_of_England_and_Wales_showing_the_bert_touring_roads_reduced_from_the_Ordnance_Survey..._-_drawn%2C_engraved_and_printed_by_John_Bartholomew_and_Co_-_btv1b53258054x.jpg" alt="Large Image, small" width="60">
-
-    
+  
     <!-- Container for messages -->
     <div id="messages"></div>
-
-    <!-- Individual Image Load Events -->
-    <script>
-        // Get all images on the page
-        var images = document.images;
-        // Track loaded images
-        var loadedImages = 0;
-        // Function to handle image load event
-        function imageLoaded() {
-            loadedImages++;
-            console.log('Image loaded:', this.alt);
-            // Optionally, check if all images are loaded
-            if (loadedImages === images.length) {
-                console.log('All images have loaded');
-                addText('All images have loaded', 'darkblue');
-            }
-        }
-        // Attach load event listener to each image
-        for (var i = 0; i < images.length; i++) {
-            images[i].addEventListener('load', imageLoaded);
-        }
-        // Performance Observer for First Paint
-        if ('PerformanceObserver' in window) {
-            var observer = new PerformanceObserver(function(list) {
-                var entries = list.getEntries();
-                entries.forEach(function(entry) {
-                    if (entry.entryType === 'paint') {
-                        console.log(entry.name + ': ' + entry.startTime + ' ms');
-                        addText(entry.name + ': ' + entry.startTime.toFixed(2) + ' ms', 'brown');
-                    }
-                });
-            });
-            observer.observe({ entryTypes: ['paint'] });
-        }
-    </script>
-
-
 
     <!-- More Content to Push Image Below the Fold -->
     <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec vel sapien vel velit ullamcorper consectetur. Phasellus ac ante at sapien bibendum placerat. Sed a mauris at ipsum tempor commodo. Suspendisse potenti. Vivamus at urna ut elit vehicula feugiat. Nullam euismod, nisl eget consectetur dignissim, nisl nunc gravida urna, id pellentesque enim odio vitae nunc.</p>
@@ -123,9 +75,5 @@
     <img src="https://commons.wikimedia.org/wiki/Category:Large_images#/media/File:%22Bar_guild_head_backs_plan_of_FDR.%22_Washington,_D.C.,_March_12._Judge_John_Patrick_Devaney,_former_Chief_Justice_of_the_Minnesota_Supreme_Court_and_now_President_of_the_National_Lawyers_LCCN2016871345.tif" alt="Large Image 5" width="400">
     
     <img src="https://upload.wikimedia.org/wikipedia/commons/1/1b/%22Tsiltsil%E2%80%9D_is_the_Chinuk_Wawa_word_for_%E2%80%9Cbuttons.%E2%80%9D_It_can_also_mean_%22stars.%22_It_is_pronounced_TSIL-tsil._Use_the_%22short%22_i_sound_%28ee8af44b-c857-4d78-812f-14fbb0dc9404%29.jpg" alt="Large Image 6" width="400">
-
-
-    
-    
 </body>
 </html>
