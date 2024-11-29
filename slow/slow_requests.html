@@ -34,14 +34,16 @@
 
     </script>
 
-    <!-- Delay DCL by 8 seconds -->
-    <script src="https://slowfil.es/file?type=js&delay=8000" crossorigin></script>
+    <!-- Delay DCL -->
+    <script src="https://slowfil.es/file?type=js&delay=5000" crossorigin></script>
 
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         console.log("DomContentLoaded");
+
+        // Add a slow-loading script on DCL
         var script = document.createElement('script');
-        script.src = 'https://slowfil.es/file?type=js&delay=8000';
+        script.src = 'https://slowfil.es/file?type=js&delay=10000';
         script.onload = function() {
             console.log('Delayed script loaded');
         };
