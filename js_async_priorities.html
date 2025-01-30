@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Async JavaScript with fetchPriority</title>
+</head>
+<body>
+  <h1>Async JavaScript fetchPriority Test</h1>
+  <p>Open the Network tab to see how these async scripts are fetched.</p>
+
+  <!-- High Priority Script (Async) -->
+  <script src="high-priority.js" async fetchpriority="high"></script>
+
+  <!-- Default Priority Script (Async) -->
+  <script src="normal-priority.js" async></script>
+
+  <!-- Low Priority Script (Async) -->
+  <script src="low-priority.js" async fetchpriority="low"></script>
+</body>
+</html>
