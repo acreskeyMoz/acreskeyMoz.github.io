@@ -1,0 +1,11 @@
+/* normal.css */
+p {
+  color: #333;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+a {
+  color: #0073e6;
+  text-decoration: none;
+}
