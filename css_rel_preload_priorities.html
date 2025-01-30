@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CSS Preload Fetch Priority Test</title>
+
+  <!-- Preload CSS with high priority -->
+  <link rel="preload" href="critical.css" as="style" fetchpriority="high" onload="this.onload=null;this.rel='stylesheet'">
+
+  <!-- Preload CSS with default priority -->
+  <link rel="preload" href="normal.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+
+  <!-- Preload CSS with low priority -->
+  <link rel="preload" href="lazy.css" as="style" fetchpriority="low" onload="this.onload=null;this.rel='stylesheet'">
+
+  <noscript>
+    <!-- Fallback if JavaScript is disabled -->
+    <link rel="stylesheet" href="critical.css" />
+    <link rel="stylesheet" href="normal.css" />
+    <link rel="stylesheet" href="lazy.css" />
+  </noscript>
+</head>
+<body>
+  <h1>Preload + fetchPriority Test</h1>
+  <p>Check the Network tab for priority handling of these preloaded stylesheets.</p>
+</body>
+</html>
