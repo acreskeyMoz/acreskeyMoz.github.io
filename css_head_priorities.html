@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSS FetchPriority Test</title>
+
+  <!-- High priority (critical) CSS -->
+  <link rel="stylesheet" href="critical.css" fetchpriority="high">
+
+  <!-- Default priority CSS -->
+  <link rel="stylesheet" href="normal.css">
+
+  <!-- Low priority CSS -->
+  <link rel="stylesheet" href="lazy.css" fetchpriority="low">
+
+</head>
+<body>
+  <h1>Testing fetchPriority for CSS</h1> 
+</body>
+</html>
