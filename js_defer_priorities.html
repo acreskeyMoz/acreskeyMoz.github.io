@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Deferred JavaScript with fetchPriority</title>
+
+  <!-- High Priority Script (Defer) -->
+  <script src="high-priority.js" defer fetchpriority="high"></script>
+
+  <!-- Default Priority Script (Defer) -->
+  <script src="normal-priority.js" defer></script>
+
+  <!-- Low Priority Script (Defer) -->
+  <script src="low-priority.js" defer fetchpriority="low"></script>
+</head>
+<body>
+  <h1>Defer JavaScript fetchPriority Test</h1>
+  <p>Check the Network tab to see how the deferred scripts are prioritized.</p>
+</body>
+</html>
