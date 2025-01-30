@@ -1,0 +1,9 @@
+/* lazy.css */
+body {
+  border: 5px dashed #666;
+}
+
+h1 {
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
