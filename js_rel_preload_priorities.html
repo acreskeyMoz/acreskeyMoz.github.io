@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>JavaScript Preload Fetch Priority Test</title>
+
+  <!-- High Priority Script Preload -->
+  <link rel="preload" href="high-priority.js" as="script" fetchpriority="high"
+        onload="this.onload=null; this.rel='script'">
+
+  <!-- Default Priority Script Preload -->
+  <link rel="preload" href="normal-priority.js" as="script"
+        onload="this.onload=null; this.rel='script'">
+
+  <!-- Low Priority Script Preload -->
+  <link rel="preload" href="low-priority.js" as="script" fetchpriority="low"
+        onload="this.onload=null; this.rel='script'">
+
+  <noscript>
+    <!-- Fallback if JavaScript is disabled -->
+    <script src="high-priority.js"></script>
+    <script src="normal-priority.js"></script>
+    <script src="low-priority.js"></script>
+  </noscript>
+</head>
+<body>
+  <h1>Preload + fetchPriority Test (JavaScript)</h1>
+  <p>Check the Network tab to see the priority of these preloaded scripts.</p>
+</body>
+</html>
