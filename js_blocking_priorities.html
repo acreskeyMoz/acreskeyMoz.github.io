@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Blocking JavaScript with fetchPriority</title>
+
+  <!-- High Priority Script -->
+  <script src="high-priority.js" fetchpriority="high"></script>
+
+  <!-- Default Priority Script -->
+  <script src="normal-priority.js"></script>
+
+  <!-- Low Priority Script -->
+  <script src="low-priority.js" fetchpriority="low"></script>
+</head>
+<body>
+  <h1>JavaScript (Blocking) fetchPriority Test</h1>
+  <p>Open the Network tab to observe how each script is fetched.</p>
+</body>
+</html>
