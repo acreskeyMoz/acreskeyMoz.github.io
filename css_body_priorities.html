@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CSS in Body with fetchPriority</title>
+</head>
+<body>
+  <h1>Testing fetchPriority for CSS in Body</h1>
+  <p>We’ll load CSS files directly in the body with different fetchPriority values.</p>
+
+  <!-- High priority CSS -->
+  <link rel="stylesheet" href="critical.css" fetchpriority="high">
+
+  <!-- Default priority CSS -->
+  <link rel="stylesheet" href="normal.css">
+
+  <!-- Low priority CSS -->
+  <link rel="stylesheet" href="lazy.css" fetchpriority="low">
+
+  <p>Check the Network tab to see if the priorities are being requested differently.</p>
+</body>
+</html>
