@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>DNS Lookup Test with 100 Top Sites</title>
+</head>
+<body>
+  <h1>DNS Lookup Test with 100 Top Sites</h1>
+  <p>Loading images from 100 top domains to trigger DNS lookups.</p>
+  <div id="images"></div>
+  <script>
+    const domains = [
+      "google.com", "youtube.com", "facebook.com", "twitter.com", "instagram.com",
+      "linkedin.com", "amazon.com", "wikipedia.org", "reddit.com", "yahoo.com",
+      "bing.com", "netflix.com", "office.com", "live.com", "pinterest.com",
+      "quora.com", "whatsapp.com", "tumblr.com", "vimeo.com", "wordpress.com",
+      "ebay.com", "paypal.com", "stackoverflow.com", "github.com", "dropbox.com",
+      "adobe.com", "msn.com", "apple.com", "spotify.com", "cnn.com",
+      "bbc.com", "nytimes.com", "forbes.com", "medium.com", "wordpress.org",
+      "imdb.com", "weather.com", "espn.com", "hulu.com", "outlook.com",
+      "indeed.com", "soundcloud.com", "tiktok.com", "stackexchange.com", "aliexpress.com",
+      "tmall.com", "sohu.com", "sina.com.cn", "weibo.com", "jd.com",
+      "taobao.com", "vk.com", "ok.ru", "dailymotion.com", "naver.com",
+      "daum.net", "etsy.com", "tripadvisor.com", "huffpost.com", "buzzfeed.com",
+      "vice.com", "businessinsider.com", "wired.com", "theguardian.com", "reuters.com",
+      "techcrunch.com", "engadget.com", "gizmodo.com", "zdnet.com", "cnet.com",
+      "arstechnica.com", "chase.com", "bankofamerica.com", "wellsfargo.com", "citi.com",
+      "americanexpress.com", "expedia.com", "booking.com", "airbnb.com", "uber.com",
+      "lyft.com", "slack.com", "zoom.us", "roblox.com", "minecraft.net",
+      "epicgames.com", "steampowered.com", "ea.com", "twitch.tv", "snapchat.com",
+      "discord.com", "foxnews.com", "msnbc.com", "bloomberg.com", "cbsnews.com",
+      "nbcnews.com", "usatoday.com", "latimes.com", "target.com", "bestbuy.com"
+    ];
+
+    const container = document.getElementById("images");
+    domains.forEach(domain => {
+      const img = document.createElement("img");
+      // Using the favicon to force a DNS lookup for each domain.
+      img.src = "https://" + domain + "/favicon.ico";
+      img.alt = "Favicon from " + domain;
+      container.appendChild(img);
+    });
+  </script>
+</body>
+</html>
