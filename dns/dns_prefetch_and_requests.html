@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>DNS Prefetch vs Network Request Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        button {
+            font-size: 16px;
+            padding: 15px 30px;
+            margin: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+            border: 2px solid #333;
+            background: #4CAF50;
+            color: white;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        .output-container {
+            display: flex;
+            gap: 20px;
+            margin-top: 30px;
+        }
+        .output {
+            flex: 1;
+            border: 1px solid #ccc;
+            padding: 15px;
+            border-radius: 5px;
+            background: #f9f9f9;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        .output h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        .timing {
+            color: #0066cc;
+            font-weight: bold;
+        }
+        .status {
+            margin: 10px 0;
+            padding: 10px;
+            background: #e7f3ff;
+            border-left: 4px solid #2196F3;
+        }
+    </style>
+</head>
+<body>
+    <h1>DNS Prefetch vs Network Request Comparison</h1>
+    <p>Compare the performance of DNS prefetch vs full network requests</p>
+    
+    <div>
+        <button onclick="testDNSPrefetch()">Test DNS Prefetch (25 domains)</button>
+        <button onclick="testNetworkRequests()">Test Network Requests (25 domains)</button>
+        <button onclick="clearOutputs()">Clear Results</button>
+    </div>
+
+    <div class="output-container">
+        <div class="output" id="prefetch-output">
+            <h3>DNS Prefetch Results</h3>
+            <p>Click button to start test...</p>
+        </div>
+        <div class="output" id="network-output">
+            <h3>Network Request Results</h3>
+            <p>Click button to start test...</p>
+        </div>
+    </div>
+
+    <script>
+        const prefetchDomains = [
+            'google.com',
+            'youtube.com',
+            'facebook.com',
+            'twitter.com',
+            'instagram.com',
+            'linkedin.com',
+            'reddit.com',
+            'amazon.com',
+            'wikipedia.org',
+            'netflix.com',
+            'apple.com',
+            'microsoft.com',
+            'github.com',
+            'stackoverflow.com',
+            'medium.com',
+            'twitch.tv',
+            'discord.com',
+            'zoom.us',
+            'dropbox.com',
+            'spotify.com',
+            'ebay.com',
+            'cloudflare.com',
+            'yahoo.com',
+            'bing.com',
+            'adobe.com'
+        ];
+
+        const networkDomains = [
+            'cnn.com',
+            'bbc.com',
+            'nytimes.com',
+            'weather.com',
+            'imdb.com',
+            'paypal.com',
+            'wordpress.com',
+            'salesforce.com',
+            'craigslist.org',
+            'pinterest.com',
+            'tumblr.com',
+            'vimeo.com',
+            'etsy.com',
+            'quora.com',
+            'tripadvisor.com',
+            'indeed.com',
+            'walmart.com',
+            'target.com',
+            'booking.com',
+            'airbnb.com',
+            'uber.com',
+            'lyft.com',
+            'doordash.com',
+            'grubhub.com',
+            'instacart.com'
+        ];
+
+        function testDNSPrefetch() {
+            const output = document.getElementById('prefetch-output');
+            const startTime = performance.now();
+            
+            output.innerHTML = '<h3>DNS Prefetch Results</h3>';
+            output.innerHTML += '<div class="status">Starting DNS prefetch for 25 domains...</div>';
+            
+            let completed = 0;
+            
+            prefetchDomains.forEach((domain, index) => {
+                const link = document.createElement('link');
+                link.rel = 'dns-prefetch';
+                link.href = `//${domain}`;
+                
+                // Add to head
+                document.head.appendChild(link);
+                
+                // Simulate completion (DNS prefetch is fire-and-forget)
+                setTimeout(() => {
+                    completed++;
+                    output.innerHTML += `<div>${completed}. ${domain} - DNS prefetch initiated</div>`;
+                    
+                    if (completed === prefetchDomains.length) {
+                        const totalTime = (performance.now() - startTime).toFixed(2);
+                        output.innerHTML += `<div class="status">All prefetches initiated in <span class="timing">${totalTime}ms</span></div>`;
+                        output.innerHTML += '<div class="status">Note: DNS prefetch is non-blocking and happens in background</div>';
+                    }
+                }, index * 10);
+            });
+        }
+
+        function testNetworkRequests() {
+            const output = document.getElementById('network-output');
+            const startTime = performance.now();
+            
+            output.innerHTML = '<h3>Network Request Results</h3>';
+            output.innerHTML += '<div class="status">Making network requests to 25 domains...</div>';
+            
+            let completed = 0;
+            let successCount = 0;
+            let failCount = 0;
+            
+            networkDomains.forEach((domain, index) => {
+                const img = new Image();
+                const requestStart = performance.now();
+                
+                img.onload = () => {
+                    completed++;
+                    successCount++;
+                    const duration = (performance.now() - requestStart).toFixed(2);
+                    output.innerHTML += `<div style="color: green">${completed}. ${domain} - ✓ Success (${duration}ms)</div>`;
+                    checkComplete();
+                };
+                
+                img.onerror = () => {
+                    completed++;
+                    failCount++;
+                    const duration = (performance.now() - requestStart).toFixed(2);
+                    output.innerHTML += `<div style="color: orange">${completed}. ${domain} - ⚠ Failed/Blocked (${duration}ms)</div>`;
+                    checkComplete();
+                };
+                
+                // Try to load favicon
+                img.src = `https://${domain}/favicon.ico?t=${Date.now()}`;
+            });
+            
+            function checkComplete() {
+                if (completed === networkDomains.length) {
+                    const totalTime = (performance.now() - startTime).toFixed(2);
+                    output.innerHTML += `<div class="status">
+                        Completed: ${successCount} successful, ${failCount} failed<br>
+                        Total time: <span class="timing">${totalTime}ms</span>
+                    </div>`;
+                    
+                    // Show Resource Timing data
+                    setTimeout(showResourceTiming, 500);
+                }
+            }
+            
+            function showResourceTiming() {
+                const entries = performance.getEntriesByType('resource');
+                const relevantEntries = entries.filter(e => 
+                    networkDomains.some(d => e.name.includes(d))
+                ).slice(-5); // Show last 5 for brevity
+                
+                if (relevantEntries.length > 0) {
+                    output.innerHTML += '<div class="status"><strong>Sample DNS Timing (last 5):</strong></div>';
+                    relevantEntries.forEach(entry => {
+                        const dnsTime = (entry.domainLookupEnd - entry.domainLookupStart).toFixed(2);
+                        const domain = networkDomains.find(d => entry.name.includes(d));
+                        output.innerHTML += `<div>${domain}: DNS lookup = ${dnsTime}ms</div>`;
+                    });
+                }
+            }
+        }
+
+        function clearOutputs() {
+            document.getElementById('prefetch-output').innerHTML = 
+                '<h3>DNS Prefetch Results</h3><p>Click button to start test...</p>';
+            document.getElementById('network-output').innerHTML = 
+                '<h3>Network Request Results</h3><p>Click button to start test...</p>';
+            
+            // Clear performance entries
+            performance.clearResourceTimings();
+        }
+    </script>
+</body>
+</html>
