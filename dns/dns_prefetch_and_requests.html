@@ -71,6 +71,11 @@
             border-left: 3px solid #FF9800;
             animation: fadeIn 0.3s;
         }
+        .progress {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2196F3;
+        }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateX(-10px); }
             to { opacity: 1; transform: translateX(0); }
@@ -82,9 +87,9 @@
     <p>Compare the performance of DNS prefetch vs full network requests</p>
     
     <div>
-        <button class="pulse-btn" onclick="testPulsedDNS()" id="pulse-btn">Pulsed DNS (1 per second)</button>
-        <button onclick="testDNSPrefetch()" id="burst-btn">Burst DNS Prefetch (25 domains)</button>
-        <button onclick="testNetworkRequests()" id="network-btn">Test Network Requests (25 domains)</button>
+        <button class="pulse-btn" onclick="testPulsedDNS()" id="pulse-btn">Pulsed DNS (1 per second × 25)</button>
+        <button onclick="testDNSPrefetch()" id="burst-btn">Burst DNS Prefetch (100 domains)</button>
+        <button onclick="testNetworkRequests()" id="network-btn">Test Network Requests (100 domains)</button>
         <button onclick="clearOutputs()">Clear Results</button>
     </div>
 
@@ -133,59 +138,49 @@
         ];
 
         const prefetchDomains = [
-            'google.com',
-            'youtube.com',
-            'facebook.com',
-            'twitter.com',
-            'instagram.com',
-            'linkedin.com',
-            'reddit.com',
-            'amazon.com',
-            'wikipedia.org',
-            'netflix.com',
-            'apple.com',
-            'microsoft.com',
-            'github.com',
-            'stackoverflow.com',
-            'medium.com',
-            'twitch.tv',
-            'discord.com',
-            'zoom.us',
-            'dropbox.com',
-            'spotify.com',
-            'ebay.com',
-            'cloudflare.com',
-            'yahoo.com',
-            'bing.com',
-            'adobe.com'
+            'google.com', 'youtube.com', 'facebook.com', 'twitter.com', 'instagram.com',
+            'linkedin.com', 'reddit.com', 'amazon.com', 'wikipedia.org', 'netflix.com',
+            'apple.com', 'microsoft.com', 'github.com', 'stackoverflow.com', 'medium.com',
+            'twitch.tv', 'discord.com', 'zoom.us', 'dropbox.com', 'spotify.com',
+            'ebay.com', 'yahoo.com', 'bing.com', 'adobe.com', 'salesforce.com',
+            'wordpress.com', 'shopify.com', 'squarespace.com', 'wix.com', 'godaddy.com',
+            'namecheap.com', 'bluehost.com', 'hostgator.com', 'digitalocean.com', 'linode.com',
+            'heroku.com', 'netlify.com', 'vercel.com', 'aws.amazon.com', 'azure.microsoft.com',
+            'cloud.google.com', 'alibabacloud.com', 'oracle.com', 'ibm.com', 'sap.com',
+            'atlassian.com', 'jira.com', 'confluence.com', 'trello.com', 'asana.com',
+            'slack.com', 'notion.so', 'airtable.com', 'monday.com', 'clickup.com',
+            'figma.com', 'canva.com', 'sketch.com', 'invision.com', 'miro.com',
+            'lucidchart.com', 'draw.io', 'whimsical.com', 'balsamiq.com', 'axure.com',
+            'framer.com', 'webflow.com', 'bubble.io', 'zapier.com', 'ifttt.com',
+            'mailchimp.com', 'sendgrid.com', 'hubspot.com', 'marketo.com', 'pardot.com',
+            'intercom.com', 'zendesk.com', 'freshdesk.com', 'helpscout.com', 'drift.com',
+            'segment.com', 'amplitude.com', 'mixpanel.com', 'heap.io', 'fullstory.com',
+            'hotjar.com', 'crazyegg.com', 'optimizely.com', 'vwo.com', 'unbounce.com',
+            'stripe.com', 'paypal.com', 'square.com', 'braintree.com', 'adyen.com',
+            'twilio.com', 'sendbird.com', 'pusher.com', 'firebase.google.com', 'supabase.com'
         ];
 
         const networkDomains = [
-            'cnn.com',
-            'bbc.com',
-            'nytimes.com',
-            'weather.com',
-            'imdb.com',
-            'paypal.com',
-            'wordpress.com',
-            'salesforce.com',
-            'craigslist.org',
-            'pinterest.com',
-            'tumblr.com',
-            'vimeo.com',
-            'etsy.com',
-            'quora.com',
-            'tripadvisor.com',
-            'indeed.com',
-            'walmart.com',
-            'target.com',
-            'booking.com',
-            'airbnb.com',
-            'uber.com',
-            'lyft.com',
-            'doordash.com',
-            'grubhub.com',
-            'instacart.com'
+            'cnn.com', 'bbc.com', 'nytimes.com', 'theguardian.com', 'washingtonpost.com',
+            'wsj.com', 'reuters.com', 'bloomberg.com', 'fortune.com', 'forbes.com',
+            'techcrunch.com', 'theverge.com', 'wired.com', 'arstechnica.com', 'engadget.com',
+            'cnet.com', 'zdnet.com', 'mashable.com', 'venturebeat.com', 'geekwire.com',
+            'weather.com', 'accuweather.com', 'weather.gov', 'wunderground.com', 'forecast.io',
+            'imdb.com', 'rottentomatoes.com', 'metacritic.com', 'tvguide.com', 'tvdb.com',
+            'craigslist.org', 'offerup.com', 'letgo.com', 'mercari.com', 'poshmark.com',
+            'pinterest.com', 'tumblr.com', 'flickr.com', 'deviantart.com', '500px.com',
+            'vimeo.com', 'dailymotion.com', 'vevo.com', 'soundcloud.com', 'bandcamp.com',
+            'etsy.com', 'redbubble.com', 'society6.com', 'zazzle.com', 'cafepress.com',
+            'quora.com', 'answers.com', 'yahoo.com/answers', 'askubuntu.com', 'superuser.com',
+            'tripadvisor.com', 'yelp.com', 'zomato.com', 'opentable.com', 'kayak.com',
+            'expedia.com', 'hotels.com', 'priceline.com', 'orbitz.com', 'travelocity.com',
+            'booking.com', 'airbnb.com', 'vrbo.com', 'homeaway.com', 'hostelworld.com',
+            'indeed.com', 'monster.com', 'careerbuilder.com', 'glassdoor.com', 'ziprecruiter.com',
+            'walmart.com', 'target.com', 'bestbuy.com', 'costco.com', 'homedepot.com',
+            'lowes.com', 'ikea.com', 'wayfair.com', 'overstock.com', 'zappos.com',
+            'macys.com', 'nordstrom.com', 'kohls.com', 'jcpenney.com', 'sears.com',
+            'uber.com', 'lyft.com', 'doordash.com', 'grubhub.com', 'ubereats.com',
+            'postmates.com', 'instacart.com', 'shipt.com', 'freshdirect.com', 'peapod.com'
         ];
 
         let pulsedInterval = null;
@@ -200,6 +195,7 @@
             
             output.innerHTML = '<h3>Pulsed DNS Results</h3>';
             output.innerHTML += '<div class="status pulse-status">Starting pulsed DNS prefetch (1 per second for 25 seconds)...</div>';
+            output.innerHTML += '<div class="progress" id="pulse-progress">Progress: 0/25</div>';
             
             let index = 0;
             
@@ -235,6 +231,10 @@
                 document.head.appendChild(link);
                 
                 const elapsed = ((performance.now() - startTime) / 1000).toFixed(1);
+                
+                // Update progress
+                document.getElementById('pulse-progress').innerHTML = `Progress: ${index + 1}/25`;
+                
                 output.innerHTML += `<div class="pulse-item">
                     <strong>${index + 1}.</strong> ${domain} - DNS prefetch initiated 
                     <span style="color: #666">(t=${elapsed}s)</span>
@@ -249,10 +249,14 @@
 
         function testDNSPrefetch() {
             const output = document.getElementById('prefetch-output');
+            const btn = document.getElementById('burst-btn');
             const startTime = performance.now();
             
+            btn.disabled = true;
+            
             output.innerHTML = '<h3>Burst DNS Prefetch Results</h3>';
-            output.innerHTML += '<div class="status">Starting burst DNS prefetch for 25 domains...</div>';
+            output.innerHTML += '<div class="status">Starting burst DNS prefetch for 100 domains...</div>';
+            output.innerHTML += '<div class="progress" id="prefetch-progress">Progress: 0/100</div>';
             
             let completed = 0;
             
@@ -267,23 +271,37 @@
                 // Simulate completion (DNS prefetch is fire-and-forget)
                 setTimeout(() => {
                     completed++;
-                    output.innerHTML += `<div>${completed}. ${domain} - DNS prefetch initiated</div>`;
+                    
+                    // Update progress
+                    document.getElementById('prefetch-progress').innerHTML = `Progress: ${completed}/100`;
+                    
+                    // Only show every 10th entry to avoid clutter
+                    if (completed % 10 === 0 || completed === prefetchDomains.length) {
+                        output.innerHTML += `<div>${completed}. ${domain} - DNS prefetch initiated</div>`;
+                    }
                     
                     if (completed === prefetchDomains.length) {
                         const totalTime = (performance.now() - startTime).toFixed(2);
-                        output.innerHTML += `<div class="status">All prefetches initiated in <span class="timing">${totalTime}ms</span></div>`;
+                        output.innerHTML += `<div class="status">All 100 prefetches initiated in <span class="timing">${totalTime}ms</span></div>`;
                         output.innerHTML += '<div class="status">Note: DNS prefetch is non-blocking and happens in background</div>';
+                        btn.disabled = false;
                     }
+                    
+                    output.scrollTop = output.scrollHeight;
                 }, index * 10);
             });
         }
 
         function testNetworkRequests() {
             const output = document.getElementById('network-output');
+            const btn = document.getElementById('network-btn');
             const startTime = performance.now();
             
+            btn.disabled = true;
+            
             output.innerHTML = '<h3>Network Request Results</h3>';
-            output.innerHTML += '<div class="status">Making network requests to 25 domains...</div>';
+            output.innerHTML += '<div class="status">Making network requests to 100 domains...</div>';
+            output.innerHTML += '<div class="progress" id="network-progress">Progress: 0/100 | Success: 0 | Failed: 0</div>';
             
             let completed = 0;
             let successCount = 0;
@@ -297,7 +315,15 @@
                     completed++;
                     successCount++;
                     const duration = (performance.now() - requestStart).toFixed(2);
-                    output.innerHTML += `<div style="color: green">${completed}. ${domain} - ✓ Success (${duration}ms)</div>`;
+                    
+                    // Update progress
+                    document.getElementById('network-progress').innerHTML = 
+                        `Progress: ${completed}/100 | Success: ${successCount} | Failed: ${failCount}`;
+                    
+                    // Only show every 10th entry
+                    if (completed % 10 === 0 || completed === 1) {
+                        output.innerHTML += `<div style="color: green">${completed}. ${domain} - ✓ Success (${duration}ms)</div>`;
+                    }
                     checkComplete();
                 };
                 
@@ -305,7 +331,15 @@
                     completed++;
                     failCount++;
                     const duration = (performance.now() - requestStart).toFixed(2);
-                    output.innerHTML += `<div style="color: orange">${completed}. ${domain} - ⚠ Failed/Blocked (${duration}ms)</div>`;
+                    
+                    // Update progress
+                    document.getElementById('network-progress').innerHTML = 
+                        `Progress: ${completed}/100 | Success: ${successCount} | Failed: ${failCount}`;
+                    
+                    // Only show every 10th entry
+                    if (completed % 10 === 0 || completed === 1) {
+                        output.innerHTML += `<div style="color: orange">${completed}. ${domain} - ⚠ Failed/Blocked (${duration}ms)</div>`;
+                    }
                     checkComplete();
                 };
                 
@@ -321,25 +355,32 @@
                         Total time: <span class="timing">${totalTime}ms</span>
                     </div>`;
                     
+                    btn.disabled = false;
+                    
                     // Show Resource Timing data
                     setTimeout(showResourceTiming, 500);
                 }
+                
+                output.scrollTop = output.scrollHeight;
             }
             
             function showResourceTiming() {
                 const entries = performance.getEntriesByType('resource');
                 const relevantEntries = entries.filter(e => 
                     networkDomains.some(d => e.name.includes(d))
-                ).slice(-5); // Show last 5 for brevity
+                ).slice(-10); // Show last 10
                 
                 if (relevantEntries.length > 0) {
-                    output.innerHTML += '<div class="status"><strong>Sample DNS Timing (last 5):</strong></div>';
+                    output.innerHTML += '<div class="status"><strong>Sample DNS Timing (last 10):</strong></div>';
                     relevantEntries.forEach(entry => {
                         const dnsTime = (entry.domainLookupEnd - entry.domainLookupStart).toFixed(2);
                         const domain = networkDomains.find(d => entry.name.includes(d));
-                        output.innerHTML += `<div>${domain}: DNS lookup = ${dnsTime}ms</div>`;
+                        if (domain) {
+                            output.innerHTML += `<div>${domain}: DNS lookup = ${dnsTime}ms</div>`;
+                        }
                     });
                 }
+                output.scrollTop = output.scrollHeight;
             }
         }
 
@@ -350,8 +391,10 @@
                 pulsedInterval = null;
             }
             
-            // Re-enable pulse button
+            // Re-enable all buttons
             document.getElementById('pulse-btn').disabled = false;
+            document.getElementById('burst-btn').disabled = false;
+            document.getElementById('network-btn').disabled = false;
             
             document.getElementById('pulse-output').innerHTML = 
                 '<h3>Pulsed DNS Results</h3><p>Click button to start pulsed test (1 per second)...</p>';
