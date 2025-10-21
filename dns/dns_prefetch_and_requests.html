@@ -22,6 +22,16 @@
         button:hover {
             background: #45a049;
         }
+        button:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+        }
+        .pulse-btn {
+            background: #FF9800;
+        }
+        .pulse-btn:hover:not(:disabled) {
+            background: #F57C00;
+        }
         .output-container {
             display: flex;
             gap: 20px;
@@ -50,6 +60,21 @@
             background: #e7f3ff;
             border-left: 4px solid #2196F3;
         }
+        .pulse-status {
+            background: #fff3e0;
+            border-left: 4px solid #FF9800;
+        }
+        .pulse-item {
+            padding: 5px;
+            margin: 5px 0;
+            background: white;
+            border-left: 3px solid #FF9800;
+            animation: fadeIn 0.3s;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
     </style>
 </head>
 <body>
@@ -57,14 +82,19 @@
     <p>Compare the performance of DNS prefetch vs full network requests</p>
     
     <div>
-        <button onclick="testDNSPrefetch()">Test DNS Prefetch (25 domains)</button>
-        <button onclick="testNetworkRequests()">Test Network Requests (25 domains)</button>
+        <button class="pulse-btn" onclick="testPulsedDNS()" id="pulse-btn">Pulsed DNS (1 per second)</button>
+        <button onclick="testDNSPrefetch()" id="burst-btn">Burst DNS Prefetch (25 domains)</button>
+        <button onclick="testNetworkRequests()" id="network-btn">Test Network Requests (25 domains)</button>
         <button onclick="clearOutputs()">Clear Results</button>
     </div>
 
     <div class="output-container">
+        <div class="output" id="pulse-output">
+            <h3>Pulsed DNS Results</h3>
+            <p>Click button to start pulsed test (1 per second)...</p>
+        </div>
         <div class="output" id="prefetch-output">
-            <h3>DNS Prefetch Results</h3>
+            <h3>Burst DNS Prefetch Results</h3>
             <p>Click button to start test...</p>
         </div>
         <div class="output" id="network-output">
@@ -74,6 +104,34 @@
     </div>
 
     <script>
+        const pulsedDomains = [
+            'oracle.com',
+            'ibm.com',
+            'intel.com',
+            'amd.com',
+            'nvidia.com',
+            'dell.com',
+            'hp.com',
+            'samsung.com',
+            'sony.com',
+            'lg.com',
+            'panasonic.com',
+            'toshiba.com',
+            'cisco.com',
+            'vmware.com',
+            'redhat.com',
+            'canonical.com',
+            'mongodb.com',
+            'redis.io',
+            'elastic.co',
+            'docker.com',
+            'kubernetes.io',
+            'terraform.io',
+            'jenkins.io',
+            'nginx.com',
+            'cloudflare.com'
+        ];
+
         const prefetchDomains = [
             'google.com',
             'youtube.com',
@@ -130,12 +188,71 @@
             'instacart.com'
         ];
 
+        let pulsedInterval = null;
+
+        function testPulsedDNS() {
+            const output = document.getElementById('pulse-output');
+            const btn = document.getElementById('pulse-btn');
+            const startTime = performance.now();
+            
+            // Disable button during test
+            btn.disabled = true;
+            
+            output.innerHTML = '<h3>Pulsed DNS Results</h3>';
+            output.innerHTML += '<div class="status pulse-status">Starting pulsed DNS prefetch (1 per second for 25 seconds)...</div>';
+            
+            let index = 0;
+            
+            // Clear any existing interval
+            if (pulsedInterval) {
+                clearInterval(pulsedInterval);
+            }
+            
+            // Make first request immediately
+            makePulsedRequest();
+            
+            // Then one per second
+            pulsedInterval = setInterval(() => {
+                makePulsedRequest();
+            }, 1000);
+            
+            function makePulsedRequest() {
+                if (index >= pulsedDomains.length) {
+                    clearInterval(pulsedInterval);
+                    const totalTime = ((performance.now() - startTime) / 1000).toFixed(2);
+                    output.innerHTML += `<div class="status pulse-status">
+                        ✓ Completed all 25 DNS prefetches<br>
+                        Total elapsed time: <span class="timing">${totalTime} seconds</span>
+                    </div>`;
+                    btn.disabled = false;
+                    return;
+                }
+                
+                const domain = pulsedDomains[index];
+                const link = document.createElement('link');
+                link.rel = 'dns-prefetch';
+                link.href = `//${domain}`;
+                document.head.appendChild(link);
+                
+                const elapsed = ((performance.now() - startTime) / 1000).toFixed(1);
+                output.innerHTML += `<div class="pulse-item">
+                    <strong>${index + 1}.</strong> ${domain} - DNS prefetch initiated 
+                    <span style="color: #666">(t=${elapsed}s)</span>
+                </div>`;
+                
+                // Auto-scroll to bottom
+                output.scrollTop = output.scrollHeight;
+                
+                index++;
+            }
+        }
+
         function testDNSPrefetch() {
             const output = document.getElementById('prefetch-output');
             const startTime = performance.now();
             
-            output.innerHTML = '<h3>DNS Prefetch Results</h3>';
-            output.innerHTML += '<div class="status">Starting DNS prefetch for 25 domains...</div>';
+            output.innerHTML = '<h3>Burst DNS Prefetch Results</h3>';
+            output.innerHTML += '<div class="status">Starting burst DNS prefetch for 25 domains...</div>';
             
             let completed = 0;
             
@@ -227,8 +344,19 @@
         }
 
         function clearOutputs() {
+            // Clear the pulsed interval if running
+            if (pulsedInterval) {
+                clearInterval(pulsedInterval);
+                pulsedInterval = null;
+            }
+            
+            // Re-enable pulse button
+            document.getElementById('pulse-btn').disabled = false;
+            
+            document.getElementById('pulse-output').innerHTML = 
+                '<h3>Pulsed DNS Results</h3><p>Click button to start pulsed test (1 per second)...</p>';
             document.getElementById('prefetch-output').innerHTML = 
-                '<h3>DNS Prefetch Results</h3><p>Click button to start test...</p>';
+                '<h3>Burst DNS Prefetch Results</h3><p>Click button to start test...</p>';
             document.getElementById('network-output').innerHTML = 
                 '<h3>Network Request Results</h3><p>Click button to start test...</p>';
             
