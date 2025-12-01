@@ -2,88 +2,72 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Speculation Rules Test</title>
+  <title>Speculation Rules Manual Test</title>
   <style>
-    body {
-      font-family: sans-serif;
-      max-width: 800px;
-      margin: 40px auto;
-      padding: 20px;
-    }
-    h1 {
-      color: #333;
-    }
-    .link-list {
-      margin: 30px 0;
-      padding: 20px;
-      border: 2px solid #ddd;
-      border-radius: 8px;
-      background: #f9f9f9;
-    }
-    .link-list a {
-      display: block;
-      padding: 15px 20px;
-      margin: 10px 0;
-      background: #0066cc;
-      color: white;
-      text-decoration: none;
-      border-radius: 4px;
-      transition: background 0.3s;
-    }
-    .link-list a:hover {
-      background: #0052a3;
-    }
-    .info {
-      background: #e8f4f8;
-      padding: 15px;
-      border-radius: 4px;
-      margin: 15px 0;
-      border-left: 4px solid #0066cc;
-    }
+    body { font-family: sans-serif; max-width: 800px; margin: 40px auto; }
+    .section { margin: 20px 0; padding: 15px; border: 2px solid #ddd; }
+    .eager { border-color: #cc00cc; }
+    .conservative { border-color: #cc6600; }
   </style>
 </head>
 <body>
-  <h1>Speculation Rules Test</h1>
+  <h1>Speculation Rules Manual Test</h1>
 
-  <div class="info">
-    <strong>This page uses speculation rules to prefetch the links below.</strong>
-    <p>Open the Network panel in DevTools to see prefetch requests. Open the Firefox Profiler to see "Prefetch" and "Speculation Rules" markers.</p>
-  </div>
+  <p><strong>Instructions:</strong> Open DevTools Network panel and Firefox Profiler to observe prefetch behavior.</p>
 
+  <!-- Eager (hover) Eagerness - prefetches on hover -->
   <script type="speculationrules">
   {
     "prefetch": [
       {
         "urls": [
-          "page1.html",
-          "page2.html",
-          "page3.html"
-        ]
+          "speculation_rules_subpage1.html"
+        ],
+        "eagerness": "eager"
       }
     ]
   }
   </script>
 
-  <div class="link-list">
-    <a href="page1.html">Page 1</a>
-    <a href="page2.html">Page 2</a>
-    <a href="page3.html">Page 3</a>
+  <!-- Conservative (mousedown) Eagerness - prefetches on mousedown -->
+  <script type="speculationrules">
+  {
+    "prefetch": [
+      {
+        "urls": [
+          "speculation_rules_subpage2.html"
+        ],
+        "eagerness": "conservative"
+      }
+    ]
+  }
+  </script>
+
+  <div class="section eager">
+    <h2>Eager Eagerness (Hover)</h2>
+    <p>This link should be prefetched when you hover your mouse over it. Watch the Network panel as you hover (don't click yet).</p>
+    <a href="speculation_rules_subpage1.html">Subpage 1 (eager/hover)</a>
   </div>
 
-  <div class="info">
-    <strong>Expected behavior:</strong>
-    <ul>
-      <li>On page load: Speculation rules are parsed and registered</li>
-      <li>On hover: Pages are prefetched (if hover pref is enabled)</li>
-      <li>On mousedown: Pages are prefetched (if mousedown pref is enabled)</li>
-      <li>On click: Navigate to the page (potentially from cache)</li>
-    </ul>
+  <div class="section conservative">
+    <h2>Conservative Eagerness (Mousedown)</h2>
+    <p>This link should only be prefetched when you press the mouse button down on it (before releasing). Watch the Network panel as you click.</p>
+    <a href="speculation_rules_subpage2.html">Subpage 2 (conservative/mousedown)</a>
+  </div>
+
+  <div class="section">
+    <h2>No Speculation Rule</h2>
+    <p>This link has no speculation rule and should never be prefetched automatically.</p>
+    <a href="speculation_rules_subpage3.html">Subpage 3 (no rule)</a>
   </div>
 
   <script>
-    console.log('Speculation Rules test page loaded');
-    console.log('Check Network panel for prefetch activity');
-    console.log('Check Profiler for "Prefetch" and "Speculation Rules" markers');
+    console.log('Speculation Rules manual test page loaded');
+    console.log('Expected behavior:');
+    console.log('- Subpage 1: Prefetched when you hover over the link');
+    console.log('- Subpage 2: Prefetched when you mousedown on the link');
+    console.log('- Subpage 3: Never prefetched');
+    console.log('Check Network panel and Firefox Profiler for "Prefetch" markers');
   </script>
 </body>
 </html>
