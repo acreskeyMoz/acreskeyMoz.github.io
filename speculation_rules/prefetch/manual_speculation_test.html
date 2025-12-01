@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Speculation Rules Test</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 20px;
+    }
+    h1 {
+      color: #333;
+    }
+    .link-list {
+      margin: 30px 0;
+      padding: 20px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      background: #f9f9f9;
+    }
+    .link-list a {
+      display: block;
+      padding: 15px 20px;
+      margin: 10px 0;
+      background: #0066cc;
+      color: white;
+      text-decoration: none;
+      border-radius: 4px;
+      transition: background 0.3s;
+    }
+    .link-list a:hover {
+      background: #0052a3;
+    }
+    .info {
+      background: #e8f4f8;
+      padding: 15px;
+      border-radius: 4px;
+      margin: 15px 0;
+      border-left: 4px solid #0066cc;
+    }
+  </style>
+</head>
+<body>
+  <h1>Speculation Rules Test</h1>
+
+  <div class="info">
+    <strong>This page uses speculation rules to prefetch the links below.</strong>
+    <p>Open the Network panel in DevTools to see prefetch requests. Open the Firefox Profiler to see "Prefetch" and "Speculation Rules" markers.</p>
+  </div>
+
+  <script type="speculationrules">
+  {
+    "prefetch": [
+      {
+        "urls": [
+          "page1.html",
+          "page2.html",
+          "page3.html"
+        ]
+      }
+    ]
+  }
+  </script>
+
+  <div class="link-list">
+    <a href="page1.html">Page 1</a>
+    <a href="page2.html">Page 2</a>
+    <a href="page3.html">Page 3</a>
+  </div>
+
+  <div class="info">
+    <strong>Expected behavior:</strong>
+    <ul>
+      <li>On page load: Speculation rules are parsed and registered</li>
+      <li>On hover: Pages are prefetched (if hover pref is enabled)</li>
+      <li>On mousedown: Pages are prefetched (if mousedown pref is enabled)</li>
+      <li>On click: Navigate to the page (potentially from cache)</li>
+    </ul>
+  </div>
+
+  <script>
+    console.log('Speculation Rules test page loaded');
+    console.log('Check Network panel for prefetch activity');
+    console.log('Check Profiler for "Prefetch" and "Speculation Rules" markers');
+  </script>
+</body>
+</html>
