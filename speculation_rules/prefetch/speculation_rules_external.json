@@ -1,0 +1,24 @@
+{
+  "prefetch": [
+    {
+      "urls": [
+        "speculation_rules_subpage1.html"
+      ],
+      "eagerness": "moderate"
+    },
+    {
+      "urls": [
+        "speculation_rules_subpage2.html"
+      ],
+      "eagerness": "conservative"
+    }
+  ],
+  "prefetch_with_subresources": [
+    {
+      "where": {
+        "href_matches": "speculation_rules_*"
+      },
+      "eagerness": "moderate"
+    }
+  ]
+}
