@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Dynamic Speculation Rules Test</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 20px;
+    }
+    h1 {
+      border-bottom: 2px solid #0060df;
+      padding-bottom: 10px;
+    }
+    .info {
+      background-color: #e7f3ff;
+      padding: 15px;
+      border-radius: 5px;
+      margin: 20px 0;
+    }
+    button {
+      background-color: #0060df;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      font-size: 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin: 10px 5px;
+    }
+    button:hover {
+      background-color: #0050c5;
+    }
+    #log {
+      background-color: #f5f5f5;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      margin-top: 20px;
+      font-family: monospace;
+      font-size: 14px;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    .log-entry {
+      margin: 5px 0;
+      padding: 5px;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    .log-entry:last-child {
+      border-bottom: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>Dynamic Speculation Rules Test</h1>
+
+  <div class="info">
+    <strong>Test Type:</strong> Dynamically inserted speculation rules<br>
+    <strong>Instructions:</strong>
+    <ol>
+      <li>Open DevTools Console and Network panel</li>
+      <li>Click one of the buttons below to dynamically add speculation rules</li>
+      <li>Watch the console for log messages</li>
+      <li>Network panel should show the external JSON file being fetched</li>
+      <li>Check that rules are parsed and registered</li>
+    </ol>
+  </div>
+
+  <div>
+    <button id="addInline">Add Inline Speculation Rules</button>
+    <button id="addExternal">Add External Speculation Rules</button>
+    <button id="clearLog">Clear Log</button>
+  </div>
+
+  <div id="log">
+    <div class="log-entry">Waiting for action...</div>
+  </div>
+
+  <div style="margin-top: 20px; padding: 15px; background: #fff3cd; border-radius: 4px;">
+    <strong>Test Links (hover/click after adding rules):</strong><br>
+    <a href="speculation_rules_subpage1.html">Subpage 1</a> |
+    <a href="speculation_rules_subpage2.html">Subpage 2</a> |
+    <a href="speculation_rules_subpage3.html">Subpage 3</a>
+  </div>
+
+  <script>
+    const logDiv = document.getElementById('log');
+
+    function addLog(message, type = 'info') {
+      console.log(message);
+      const entry = document.createElement('div');
+      entry.className = 'log-entry';
+      entry.style.color = type === 'error' ? '#d32f2f' : type === 'success' ? '#388e3c' : '#000';
+      const timestamp = new Date().toLocaleTimeString();
+      entry.textContent = `[${timestamp}] ${message}`;
+      logDiv.appendChild(entry);
+      logDiv.scrollTop = logDiv.scrollHeight;
+    }
+
+    document.getElementById('addInline').addEventListener('click', function() {
+      addLog('Adding inline speculation rules via JavaScript...');
+
+      const script = document.createElement('script');
+      script.type = 'speculationrules';
+      script.textContent = JSON.stringify({
+        "prefetch": [
+          {
+            "urls": ["speculation_rules_subpage1.html"],
+            "eagerness": "moderate"
+          }
+        ]
+      });
+
+      document.head.appendChild(script);
+      addLog('Inline speculation rules script added to DOM', 'success');
+    });
+
+    document.getElementById('addExternal').addEventListener('click', function() {
+      addLog('Adding external speculation rules via JavaScript...');
+
+      const script = document.createElement('script');
+      script.type = 'speculationrules';
+      script.src = 'https://acreskeymoz.github.io/speculation_rules/prefetch/speculation_rules_external.json';
+
+      script.onload = function() {
+        addLog('External speculation rules script onload event fired', 'success');
+      };
+
+      script.onerror = function() {
+        addLog('External speculation rules script onerror event fired', 'error');
+      };
+
+      document.head.appendChild(script);
+      addLog('External speculation rules script element added to DOM', 'success');
+    });
+
+    document.getElementById('clearLog').addEventListener('click', function() {
+      logDiv.innerHTML = '<div class="log-entry">Log cleared.</div>';
+    });
+
+    // Log when page is fully loaded
+    window.addEventListener('load', function() {
+      addLog('Page fully loaded', 'success');
+    });
+
+    addLog('Test page initialized');
+  </script>
+</body>
+</html>
