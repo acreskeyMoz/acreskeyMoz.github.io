@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Form Demo</title>
+<style>
+  body { font-family: system-ui, sans-serif; max-width: 500px; margin: 2rem auto; padding: 0 1rem; }
+  label { display: block; margin-top: 0.75rem; font-weight: 600; }
+  input, select, textarea { width: 100%; padding: 0.4rem; margin-top: 0.25rem; box-sizing: border-box; }
+  button { margin-top: 1rem; padding: 0.5rem 1.5rem; }
+  #log { margin-top: 2rem; background: #f4f4f4; padding: 1rem; white-space: pre-wrap; font-family: monospace; display: none; }
+</style>
+</head>
+<body>
+<h1>Contact Form</h1>
+<form id="form">
+  <label>Name <input name="name" required></label>
+  <label>Email <input name="email" type="email" required></label>
+  <label>Phone <input name="phone" type="tel"></label>
+  <label>Subject
+    <select name="subject">
+      <option value="general">General Inquiry</option>
+      <option value="support">Support</option>
+      <option value="feedback">Feedback</option>
+    </select>
+  </label>
+  <label>Website <input name="website" type="url" placeholder="https://"></label>
+  <label>Message <textarea name="message" rows="3"></textarea></label>
+  <button type="submit">Submit</button>
+</form>
+<div id="log"></div>
+<script>
+  const log = document.getElementById('log');
+  document.getElementById('form').addEventListener('submit', e => {
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(e.target));
+    console.log('Form submitted:', data);
+    log.style.display = 'block';
+    log.textContent = 'Submitted:\n' + JSON.stringify(data, null, 2);
+  });
+</script>
+</body>
+</html>
