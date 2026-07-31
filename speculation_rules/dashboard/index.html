@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speculation Rules Prefetch - CI Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f0f0f0;
+            min-height: 100vh;
+            padding: 20px;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+            padding: 30px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 2rem;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 6px;
+            font-size: 1rem;
+            text-align: center;
+        }
+
+        .meta-bug {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            color: #718096;
+        }
+
+        .meta-bug a {
+            color: #3366ff;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .meta-bug a:hover {
+            text-decoration: underline;
+        }
+
+        .toggle-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 12px;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .toggle-row .row-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #718096;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-right: 4px;
+        }
+
+        .toggle-row label.pill {
+            display: inline-block;
+            background: white;
+            border: 2px solid #d0d0d0;
+            border-radius: 5px;
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            color: #333;
+            cursor: pointer;
+            transition: all 0.2s;
+            user-select: none;
+        }
+
+        .toggle-row label.pill:hover {
+            background: #f3f3f3;
+            border-color: #3366ff;
+        }
+
+        .toggle-row label.pill input {
+            display: none;
+        }
+
+        .toggle-row label.pill:has(input:checked) {
+            background: #3366ff;
+            color: white;
+            border-color: #3366ff;
+        }
+
+        .toggle-row label.pill:has(input:disabled) {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .plain-toggle {
+            font-size: 0.85rem;
+            color: #4a5568;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .plain-toggle input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: #3182ce;
+            cursor: pointer;
+        }
+
+        .note {
+            text-align: center;
+            color: #718096;
+            font-size: 0.85rem;
+            margin-bottom: 16px;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(520px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        .chart-card {
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 20px;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .chart-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .chart-title a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .chart-title a:hover {
+            text-decoration: underline;
+        }
+
+        .card-note {
+            color: #718096;
+            font-size: 0.85rem;
+            font-weight: 400;
+            margin-top: 4px;
+        }
+
+        .ratio {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #2d3748;
+            margin-top: 6px;
+        }
+
+        .stats-table {
+            width: auto;
+            border-collapse: collapse;
+            flex: none;
+        }
+
+        .stats-table th {
+            padding: 4px 12px;
+            text-align: right;
+            color: #718096;
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+
+        .stats-table th:first-child {
+            text-align: left;
+        }
+
+        .stats-table td {
+            padding: 6px 12px;
+            text-align: right;
+            color: #2d3748;
+            font-weight: 600;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+
+        .stats-table td:first-child {
+            text-align: left;
+            color: #4a5568;
+            font-weight: 500;
+        }
+
+        .stats-table tr:not(:last-child) {
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+
+        .sparkline-container {
+            height: 45px;
+        }
+
+        .sparkline-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #718096;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 14px;
+            margin-bottom: 4px;
+        }
+
+        .error {
+            background: #fed7d7;
+            color: #c53030;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 20px;
+            border-left: 4px solid #c53030;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #718096;
+            font-size: 1.1rem;
+        }
+
+        .footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+            text-align: center;
+            color: #718096;
+            font-size: 0.85rem;
+        }
+
+        .footer a {
+            color: #3366ff;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 1200px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Speculation Rules Prefetch &mdash; CI Dashboard</h1>
+        <p class="subtitle">
+            Raptor browsertime on autoland &middot; <code>navigation_duration</code>, lower is better
+            &middot; Firefox vs Chrome &middot; from 2026-06-30
+        </p>
+        <p class="meta-bug">
+            <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1969396" target="_blank">bug 1969396</a>
+            &mdash; [meta] Implement Speculation Rules &ndash; Prefetch (Same-origin)
+        </p>
+
+        <div class="toggle-row" id="sourceToggle">
+            <span class="row-label">Rule source</span>
+            <label class="pill">
+                <input type="radio" name="source" value="list" checked onchange="onControlChange()">
+                <span>List rule</span>
+            </label>
+            <label class="pill">
+                <input type="radio" name="source" value="document" onchange="onControlChange()">
+                <span>Document rule</span>
+            </label>
+        </div>
+
+        <div class="toggle-row" id="platformToggle">
+            <span class="row-label">Platform</span>
+        </div>
+
+        <div class="toggle-row" id="rangeToggle">
+            <span class="row-label">Range</span>
+            <label class="pill">
+                <input type="radio" name="range" value="7" onchange="onRangeChange()">
+                <span>7 days</span>
+            </label>
+            <label class="pill">
+                <input type="radio" name="range" value="30" checked onchange="onRangeChange()">
+                <span>30 days</span>
+            </label>
+            <label class="pill">
+                <input type="radio" name="range" value="90" onchange="onRangeChange()">
+                <span>90 days</span>
+            </label>
+        </div>
+
+        <div class="toggle-row">
+            <label class="plain-toggle">
+                <input type="checkbox" id="showMedian" checked onchange="onControlChange()">
+                daily median overlay
+            </label>
+            <label class="plain-toggle">
+                <input type="checkbox" id="logScale" onchange="onControlChange()">
+                log scale
+            </label>
+        </div>
+
+        <div id="platformNote" class="note" style="display: none;"></div>
+        <div class="note">
+            <strong>Reading the numbers:</strong> the test server stalls <code>target.html</code> by
+            <code>TARGET_STALL_MS = 500</code> (the p75 top-level document response time on desktop). A
+            prefetch-cache hit skips that wait and lands around 15&ndash;25&nbsp;ms; a miss pays it in full and lands
+            at 520&nbsp;ms or more. So the two regimes are far apart, and which one a series sits in is the result.
+        </div>
+
+        <div id="chartsGrid" class="charts-grid"></div>
+
+        <div id="error" class="error" style="display: none;"></div>
+
+        <div class="footer">
+            Data source: <a href="https://treeherder.mozilla.org/perfherder/graphs" target="_blank">Perfherder</a>
+            (repository <code>autoland</code>, framework <code>browsertime</code>) &mdash; the task's
+            <code>run-on-projects</code> is autoland-only, so no other branch has this data &middot;
+            <a href="https://firefox-source-docs.mozilla.org/testing/perfdocs/raptor.html" target="_blank">Raptor docs</a> &middot;
+            <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=2007155" target="_blank">bug 2007155</a> (perf tests) &middot;
+            <a href="../prefetch/">test pages</a>
+        </div>
+    </div>
+
+    <script>
+        const TREEHERDER = 'https://treeherder.mozilla.org';
+        const REPOSITORY = 'autoland';
+        const FRAMEWORK = 13; // browsertime
+
+        // Only linux2404-64-shippable runs Chrome, so it is the default: it is the one
+        // platform where a Firefox-vs-Chrome comparison is possible.
+        const PLATFORMS = {
+            linux:   { label: 'Linux 24.04',     platform: 'linux2404-64-shippable',        apps: ['firefox', 'chrome'] },
+            windows: { label: 'Windows 11 24H2', platform: 'windows11-64-24h2-shippable',   apps: ['firefox'] },
+            macos:   { label: 'macOS 14',        platform: 'macosx1470-64-shippable',       apps: ['firefox'] }
+        };
+
+        // One card per suite, notes taken from browsertime-speculation-rules.toml / perfdocs.
+        // The `prefetch-*` suites pass only --browsertime.eagerness, so the test script's
+        // `source` defaults to "document" — these are document-source rules. The
+        // `prefetch-list-*` suites pass --browsertime.source=list; they exist in the manifest
+        // but are not scheduled in taskgraph yet, so they have no Perfherder data and their
+        // cards stay hidden until they do. The retired combined `prefetch` suite is excluded.
+        // Ordered by descending eagerness (immediate first), matching the manifest order.
+        const SUITES = [
+            { suite: 'prefetch-immediate',    label: 'Immediate',    source: 'document',
+              note: 'prefetches as soon as the rules are parsed, then the link is clicked' },
+            { suite: 'prefetch-eager',        label: 'Eager',        source: 'document',
+              note: 'prefetches on the slightest hover, then the link is clicked' },
+            { suite: 'prefetch-moderate',     label: 'Moderate',     source: 'document',
+              note: 'prefetches after ~200&nbsp;ms of sustained hover, then the link is clicked' },
+            { suite: 'prefetch-conservative', label: 'Conservative', source: 'document',
+              note: 'prefetches on pointerdown, which is held so the prefetch can complete before release navigates' },
+            { suite: 'prefetch-list-immediate',    label: 'Immediate',    source: 'list',
+              note: 'target URLs listed explicitly, so they are prefetched as soon as the rules are parsed' },
+            { suite: 'prefetch-list-eager',        label: 'Eager',        source: 'list',
+              note: 'target URLs listed explicitly; prefetch triggered on the slightest hover' },
+            { suite: 'prefetch-list-moderate',     label: 'Moderate',     source: 'list',
+              note: 'target URLs listed explicitly; prefetch triggered after ~200&nbsp;ms of sustained hover' },
+            { suite: 'prefetch-list-conservative', label: 'Conservative', source: 'list',
+              note: 'target URLs listed explicitly; prefetch triggered on pointerdown (list-rule eagerness is browser-defined)' }
+        ];
+
+        // The per-eagerness suites started reporting on 2026-06-30; anything earlier belongs
+        // to the retired combined suite, so it is dropped rather than charted.
+        const DATA_START = new Date('2026-06-30T00:00:00Z');
+
+        // Only navigation_duration is charted. The suites also report response_start, but
+        // fetching just the one subtest halves the number of summary requests.
+        const METRIC = 'navigation_duration';
+
+        // Fixed y-axis top so every card is directly comparable: a prefetch-cache hit (~20 ms)
+        // and a miss (~520 ms, the 500 ms server stall) sit in the same visual frame instead of
+        // each chart rescaling to its own data. Occasional outliers above this are clipped —
+        // the stats table's Range column still reports their true min/max.
+        const Y_MAX_MS = 600;
+
+        const APP_LABEL = { firefox: 'Firefox', chrome: 'Chrome' };
+        const COLORS = { firefox: '#FF9500', chrome: '#1A73E8' };
+
+        let currentPlatform = 'linux';
+        let charts = {};
+        // Signature lists are per platform; data points are per platform+range.
+        const signatureCache = {};
+        const dataCache = {};
+
+        function buildPlatformToggle() {
+            const row = document.getElementById('platformToggle');
+            Object.entries(PLATFORMS).forEach(([key, cfg]) => {
+                const label = document.createElement('label');
+                label.className = 'pill';
+                const chromeHint = cfg.apps.includes('chrome') ? '' : ' (Firefox only)';
+                label.innerHTML =
+                    '<input type="radio" name="platform" value="' + key + '"' +
+                    (key === currentPlatform ? ' checked' : '') + ' onchange="onPlatformChange()">' +
+                    '<span>' + cfg.label + chromeHint + '</span>';
+                row.appendChild(label);
+            });
+        }
+
+        function selectedSource() {
+            return document.querySelector('input[name="source"]:checked').value;
+        }
+
+        function selectedDays() {
+            return parseInt(document.querySelector('input[name="range"]:checked').value, 10);
+        }
+
+        // Every browser the selected platform actually runs; Chrome only exists on Linux.
+        function selectedApps() {
+            return PLATFORMS[currentPlatform].apps;
+        }
+
+        // Persist non-default selections in the query string so a view is shareable.
+        function syncUrl() {
+            const p = new URLSearchParams();
+            if (selectedSource() !== 'list') p.set('source', selectedSource());
+            if (currentPlatform !== 'linux') p.set('platform', currentPlatform);
+            if (selectedDays() !== 30) p.set('range', String(selectedDays()));
+            if (!document.getElementById('showMedian').checked) p.set('median', '0');
+            if (document.getElementById('logScale').checked) p.set('log', '1');
+            const qs = p.toString();
+            history.replaceState(null, '', qs ? '?' + qs : location.pathname);
+        }
+
+        function applyUrlParams() {
+            const p = new URLSearchParams(location.search);
+            if (p.get('source') === 'document') {
+                document.querySelector('input[name="source"][value="document"]').checked = true;
+            }
+            const platform = p.get('platform');
+            if (platform && PLATFORMS[platform]) currentPlatform = platform;
+            if (p.get('median') === '0') document.getElementById('showMedian').checked = false;
+            if (p.get('log') === '1') document.getElementById('logScale').checked = true;
+            const range = p.get('range');
+            if (range && document.querySelector('input[name="range"][value="' + range + '"]')) {
+                document.querySelector('input[name="range"][value="' + range + '"]').checked = true;
+            }
+        }
+
+        function median(values) {
+            if (!values.length) return null;
+            const s = [...values].sort((a, b) => a - b);
+            const mid = Math.floor(s.length / 2);
+            return s.length % 2 ? s[mid] : (s[mid - 1] + s[mid]) / 2;
+        }
+
+        function fmtMs(v) {
+            if (v === null || v === undefined) return '–';
+            return (v < 100 ? v.toFixed(1) : v.toFixed(0)) + 'ms';
+        }
+
+        // A logarithmic axis generates ticks at 1,2,…,9,10,20,… — labelling all of them is
+        // unreadable at 300px tall, so only the 1/2/5 × 10^n steps get a label.
+        function axisTick(value, useLog) {
+            // Axis labels stay compact (10ms, not 10.0ms); the stats table carries the precision.
+            const compact = (value >= 10 ? Math.round(value) : Math.round(value * 10) / 10) + 'ms';
+            if (!useLog) return compact;
+            if (!(value > 0)) return '';
+            const mantissa = value / Math.pow(10, Math.floor(Math.log10(value)));
+            const nice = [1, 2, 5].some(n => Math.abs(mantissa - n) < 1e-6);
+            return nice ? compact : '';
+        }
+
+        // HTML tooltip for the short "pushes per day" sparklines, rendered on <body> so the
+        // 45px-tall canvas does not clip it.
+        function sparklineTooltip(context) {
+            const { chart, tooltip } = context;
+            let el = document.getElementById('sparkline-tooltip');
+            if (!el) {
+                el = document.createElement('div');
+                el.id = 'sparkline-tooltip';
+                el.style.cssText = 'position:fixed;pointer-events:none;background:rgba(255,255,255,0.97);' +
+                    'border:1px solid #e2e8f0;border-radius:6px;padding:6px 10px;font-size:12px;color:#4a5568;' +
+                    'box-shadow:0 2px 8px rgba(0,0,0,0.15);z-index:1000;white-space:nowrap;opacity:0;';
+                document.body.appendChild(el);
+            }
+            if (tooltip.opacity === 0) { el.style.opacity = '0'; return; }
+            const title = tooltip.title && tooltip.title[0]
+                ? '<div style="font-weight:600;margin-bottom:2px;">' + tooltip.title[0] + '</div>' : '';
+            const lines = tooltip.body.map((b, i) => {
+                const color = tooltip.labelColors[i].borderColor;
+                return '<div><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:' +
+                    color + ';margin-right:6px;"></span>' + b.lines.join(' ') + '</div>';
+            }).join('');
+            el.innerHTML = title + lines;
+            const rect = chart.canvas.getBoundingClientRect();
+            el.style.opacity = '1';
+            el.style.left = (rect.left + tooltip.caretX + 12) + 'px';
+            el.style.top = (rect.top + tooltip.caretY - 8) + 'px';
+        }
+
+        async function getSignatures(platformKey) {
+            if (signatureCache[platformKey]) return signatureCache[platformKey];
+
+            const cfg = PLATFORMS[platformKey];
+            const url = TREEHERDER + '/api/project/' + REPOSITORY + '/performance/signatures/?framework=' +
+                FRAMEWORK + '&platform=' + cfg.platform;
+            const response = await fetch(url);
+            if (!response.ok) throw new Error('signatures request failed: HTTP ' + response.status);
+            const all = await response.json();
+
+            // Keep only the charted suites' navigation_duration subtest, and drop profiling
+            // variants (gecko-profile / simpleperf runs are not comparable to clean runs).
+            const wanted = new Set(SUITES.map(s => s.suite));
+            const sigs = Object.values(all).filter(sig =>
+                wanted.has(sig.suite) &&
+                sig.test === METRIC &&
+                !(sig.extra_options || []).some(o => o === 'gecko-profile' || o === 'simpleperf')
+            );
+
+            signatureCache[platformKey] = sigs;
+            return sigs;
+        }
+
+        async function getData(platformKey, days) {
+            const key = platformKey + '|' + days;
+            if (dataCache[key]) return dataCache[key];
+
+            const sigs = await getSignatures(platformKey);
+            const interval = days * 24 * 60 * 60;
+
+            const results = await Promise.all(sigs.map(async sig => {
+                const url = TREEHERDER + '/api/performance/summary/?repository=' + REPOSITORY +
+                    '&signature=' + sig.id + '&framework=' + FRAMEWORK +
+                    '&interval=' + interval + '&all_data=true';
+                try {
+                    const response = await fetch(url);
+                    if (!response.ok) throw new Error('HTTP ' + response.status);
+                    const summary = await response.json();
+                    if (!Array.isArray(summary) || !summary.length || !summary[0].data) return [];
+                    return summary[0].data.map(point => ({
+                        suite: sig.suite,
+                        test: sig.test,
+                        app: sig.application,
+                        signatureId: sig.id,
+                        date: new Date(point.push_timestamp + 'Z'),
+                        value: point.value,
+                        revision: point.revision,
+                        jobId: point.job_id
+                    }));
+                } catch (error) {
+                    console.warn('Failed to load signature ' + sig.id, error);
+                    return [];
+                }
+            }));
+
+            const points = results.flat().filter(p => p.date >= DATA_START);
+            dataCache[key] = points;
+            return points;
+        }
+
+        function onPlatformChange() {
+            currentPlatform = document.querySelector('input[name="platform"]:checked').value;
+            loadAndRender();
+        }
+
+        function onRangeChange() {
+            loadAndRender();
+        }
+
+        function onControlChange() {
+            render();
+            syncUrl();
+        }
+
+        async function loadAndRender() {
+            const grid = document.getElementById('chartsGrid');
+            const errorDiv = document.getElementById('error');
+            errorDiv.style.display = 'none';
+            destroyCharts();
+            grid.innerHTML = '<div class="loading">Loading CI data…</div>';
+            syncUrl();
+
+            try {
+                await getData(currentPlatform, selectedDays());
+                render();
+            } catch (error) {
+                grid.innerHTML = '';
+                errorDiv.textContent = 'Error loading data: ' + error.message;
+                errorDiv.style.display = 'block';
+                console.error(error);
+            }
+        }
+
+        function destroyCharts() {
+            Object.values(charts).forEach(chart => chart.destroy());
+            charts = {};
+        }
+
+        // Bucket per-push values into one point per UTC day.
+        function dailyMedian(points) {
+            const byDay = new Map();
+            points.forEach(p => {
+                const day = p.date.toISOString().slice(0, 10);
+                if (!byDay.has(day)) byDay.set(day, []);
+                byDay.get(day).push(p.value);
+            });
+            return [...byDay.entries()]
+                .map(([day, values]) => ({ x: day, y: median(values), n: values.length }))
+                .sort((a, b) => new Date(a.x) - new Date(b.x));
+        }
+
+        function render() {
+            const grid = document.getElementById('chartsGrid');
+
+            const hasChrome = PLATFORMS[currentPlatform].apps.includes('chrome');
+            const platformNote = document.getElementById('platformNote');
+            if (hasChrome) {
+                platformNote.style.display = 'none';
+            } else {
+                // The task's limit-platforms pins the chrome app to linux.*shippable.*, so no
+                // other platform can produce Chrome data no matter how long the range is.
+                platformNote.innerHTML = 'The task limits the Chrome app to <code>linux.*shippable.*</code>, ' +
+                    'so ' + PLATFORMS[currentPlatform].label + ' is Firefox-only — ' +
+                    'switch to Linux 24.04 to compare against Chrome.';
+                platformNote.style.display = 'block';
+            }
+
+            const apps = selectedApps();
+            const showMedian = document.getElementById('showMedian').checked;
+            const useLog = document.getElementById('logScale').checked;
+            const points = dataCache[currentPlatform + '|' + selectedDays()] || [];
+
+            destroyCharts();
+            grid.innerHTML = '';
+
+            let rendered = 0;
+            // Chart.js measures its canvas at construction time, so every card has to be in
+            // the DOM before any chart is built — otherwise the grid reflows as later cards
+            // are appended and the earlier charts keep their stale (too wide) width.
+            const chartBuilders = [];
+            // One rule source at a time; the toggle at the top carries which one, so the cards
+            // themselves no longer need a per-card source tag.
+            SUITES.filter(s => s.source === selectedSource()).forEach(suiteCfg => {
+                const perApp = {};
+                apps.forEach(app => {
+                    perApp[app] = points
+                        .filter(p => p.suite === suiteCfg.suite && p.test === METRIC && p.app === app)
+                        .sort((a, b) => a.date - b.date);
+                });
+
+                const total = apps.reduce((sum, app) => sum + perApp[app].length, 0);
+                if (total === 0) return;
+                rendered++;
+
+                const canvasId = 'chart-' + suiteCfg.suite;
+                const sparkId = 'spark-' + suiteCfg.suite;
+
+                // Statistics per browser: newest push, median and full range over the window.
+                let statsRows = '';
+                apps.forEach(app => {
+                    const series = perApp[app];
+                    if (!series.length) return;
+                    const values = series.map(p => p.value);
+                    statsRows +=
+                        '<tr>' +
+                        '<td>' + APP_LABEL[app] + '</td>' +
+                        '<td>' + fmtMs(values[values.length - 1]) + '</td>' +
+                        '<td>' + fmtMs(median(values)) + '</td>' +
+                        '<td>' + fmtMs(Math.min(...values)) + '–' + fmtMs(Math.max(...values)) + '</td>' +
+                        '<td>' + series.length + '</td>' +
+                        '</tr>';
+                });
+
+                // Quantify the cross-browser gap, since a log axis compresses it visually.
+                let ratioHtml = '';
+                if (apps.length === 2 && perApp.firefox.length && perApp.chrome.length) {
+                    const ff = median(perApp.firefox.map(p => p.value));
+                    const cr = median(perApp.chrome.map(p => p.value));
+                    if (ff && cr) {
+                        const factor = (ff > cr ? ff / cr : cr / ff).toFixed(1);
+                        ratioHtml = '<div class="ratio">Firefox ' + fmtMs(ff) + ' vs Chrome ' + fmtMs(cr) +
+                            ' — ' + factor + '× (medians over this window)</div>';
+                    }
+                }
+
+                // Link the title to the same series in Perfherder for alerts and full history.
+                const seriesParams = apps
+                    .filter(app => perApp[app].length)
+                    .map(app => 'series=' + REPOSITORY + ',' + perApp[app][0].signatureId + ',1,' + FRAMEWORK)
+                    .join('&');
+                const perfherderUrl = TREEHERDER + '/perfherder/graphs?highlightAlerts=1&timerange=7776000&' + seriesParams;
+
+                const card = document.createElement('div');
+                card.className = 'chart-card';
+                card.innerHTML =
+                    '<div class="chart-header">' +
+                        '<div>' +
+                            '<div class="chart-title">' +
+                                '<a href="' + perfherderUrl + '" target="_blank" rel="noopener">' + suiteCfg.label + '</a>' +
+                            '</div>' +
+                            '<div class="card-note">' + suiteCfg.note + '</div>' +
+                            '<div class="card-note"><code>' + suiteCfg.suite + '</code> / <code>' + METRIC + '</code></div>' +
+                            ratioHtml +
+                        '</div>' +
+                        '<table class="stats-table">' +
+                            '<thead><tr><th></th><th>Latest</th><th>Median</th><th>Range</th><th>Pushes</th></tr></thead>' +
+                            '<tbody>' + statsRows + '</tbody>' +
+                        '</table>' +
+                    '</div>' +
+                    '<div class="chart-container"><canvas id="' + canvasId + '"></canvas></div>' +
+                    '<div class="sparkline-label">Pushes per day</div>' +
+                    '<div class="chart-container sparkline-container"><canvas id="' + sparkId + '"></canvas></div>';
+                grid.appendChild(card);
+
+                const datasets = [];
+                apps.forEach(app => {
+                    const series = perApp[app];
+                    if (!series.length) return;
+                    // Per-push line: faint when the median overlay carries the trend, and the
+                    // only clickable dataset (a median point has no single job behind it).
+                    datasets.push({
+                        label: APP_LABEL[app],
+                        data: series.map(p => ({ x: p.date, y: p.value, revision: p.revision, jobId: p.jobId })),
+                        borderColor: COLORS[app],
+                        backgroundColor: 'transparent',
+                        borderWidth: showMedian ? 1 : 2,
+                        fill: false,
+                        tension: 0.1,
+                        pointRadius: 0,
+                        pointHoverRadius: 5,
+                        pointHoverBackgroundColor: COLORS[app],
+                        pointHoverBorderColor: '#fff',
+                        pointHoverBorderWidth: 2,
+                        clickable: true
+                    });
+                    if (showMedian) {
+                        datasets.push({
+                            label: APP_LABEL[app] + ' (daily median)',
+                            data: dailyMedian(series),
+                            borderColor: COLORS[app],
+                            backgroundColor: 'transparent',
+                            borderWidth: 2.5,
+                            fill: false,
+                            tension: 0.2,
+                            pointRadius: 0,
+                            pointHoverRadius: 4
+                        });
+                    }
+                });
+
+                chartBuilders.push(() => {
+                const ctx = document.getElementById(canvasId).getContext('2d');
+                charts[suiteCfg.suite] = new Chart(ctx, {
+                    type: 'line',
+                    data: { datasets: datasets },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: { mode: 'nearest', axis: 'x', intersect: false },
+                        onClick: (event, elements, chart) => {
+                            const hit = elements.find(el => chart.data.datasets[el.datasetIndex].clickable);
+                            if (!hit) return;
+                            const point = chart.data.datasets[hit.datasetIndex].data[hit.index];
+                            if (!point.revision) return;
+                            window.open(TREEHERDER + '/jobs?repo=' + REPOSITORY + '&revision=' +
+                                point.revision + '&group_state=expanded', '_blank');
+                        },
+                        onHover: (event, elements, chart) => {
+                            const overPoint = elements.some(el => chart.data.datasets[el.datasetIndex].clickable);
+                            chart.canvas.style.cursor = overPoint ? 'pointer' : 'default';
+                        },
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'top',
+                                align: 'start',
+                                labels: {
+                                    padding: 12,
+                                    boxWidth: 12,
+                                    boxHeight: 2,
+                                    font: { size: 13, weight: '500' },
+                                    usePointStyle: false,
+                                    // The median overlay repeats a browser's color, so keep one
+                                    // legend entry per browser.
+                                    filter: item => !item.text.includes('(daily median)')
+                                }
+                            },
+                            tooltip: {
+                                backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                                titleColor: '#2d3748',
+                                bodyColor: '#4a5568',
+                                borderColor: '#e2e8f0',
+                                borderWidth: 1,
+                                padding: 10,
+                                displayColors: true,
+                                boxWidth: 8,
+                                boxHeight: 8,
+                                titleFont: { size: 12, weight: '600' },
+                                bodyFont: { size: 12, weight: '500' },
+                                callbacks: {
+                                    label: c => c.dataset.label + ': ' + fmtMs(c.parsed.y),
+                                    afterBody: items => {
+                                        const rev = items[0] && items[0].raw && items[0].raw.revision;
+                                        return rev ? 'push ' + rev.slice(0, 12) + ' — click to open' : '';
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                type: 'time',
+                                time: {
+                                    unit: 'day',
+                                    displayFormats: { day: 'MMM d' },
+                                    tooltipFormat: 'MMM d, yyyy HH:mm'
+                                },
+                                grid: { display: false },
+                                border: { display: false },
+                                ticks: {
+                                    maxRotation: 0,
+                                    autoSkip: true,
+                                    maxTicksLimit: 8,
+                                    font: { size: 11 },
+                                    color: '#718096'
+                                }
+                            },
+                            y: {
+                                type: useLog ? 'logarithmic' : 'linear',
+                                afterFit: a => { a.width = 60; },
+                                beginAtZero: !useLog,
+                                max: Y_MAX_MS,
+                                grid: { color: 'rgba(0, 0, 0, 0.05)' },
+                                border: { display: false },
+                                ticks: {
+                                    font: { size: 11 },
+                                    color: '#718096',
+                                    padding: 8,
+                                    callback: v => axisTick(v, useLog)
+                                }
+                            }
+                        }
+                    }
+                });
+
+                // Pushes per day doubles as a CI-coverage check: gaps mean the test did not run.
+                const sparkDatasets = apps
+                    .filter(app => perApp[app].length)
+                    .map(app => {
+                        const counts = dailyMedian(perApp[app]).map(d => ({ x: d.x, y: d.n }));
+                        return {
+                            label: APP_LABEL[app],
+                            data: counts,
+                            borderColor: COLORS[app],
+                            backgroundColor: COLORS[app] + '22',
+                            borderWidth: 1.5,
+                            fill: true,
+                            tension: 0.1,
+                            pointRadius: 0,
+                            pointHoverRadius: 4
+                        };
+                    });
+
+                const sctx = document.getElementById(sparkId).getContext('2d');
+                charts[suiteCfg.suite + '__spark'] = new Chart(sctx, {
+                    type: 'line',
+                    data: { datasets: sparkDatasets },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: { mode: 'index', intersect: false },
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                enabled: false,
+                                external: sparklineTooltip,
+                                callbacks: { label: c => c.dataset.label + ': ' + c.parsed.y + ' pushes' }
+                            }
+                        },
+                        scales: {
+                            x: { type: 'time', time: { tooltipFormat: 'MMM d, yyyy' }, display: false },
+                            y: {
+                                afterFit: a => { a.width = 60; },
+                                beginAtZero: true,
+                                grid: { color: 'rgba(0, 0, 0, 0.05)' },
+                                border: { display: false },
+                                ticks: { font: { size: 9 }, color: '#a0aec0', maxTicksLimit: 3, precision: 0 }
+                            }
+                        }
+                    }
+                });
+                });
+            });
+
+            if (rendered === 0) {
+                grid.innerHTML = '<div class="loading">No data for this combination of platform, browser and range.</div>';
+                return;
+            }
+
+            // Layout is settled now that every card is appended, so the charts measure correctly.
+            chartBuilders.forEach(build => build());
+        }
+
+        window.addEventListener('load', function() {
+            applyUrlParams();
+            buildPlatformToggle();
+            loadAndRender();
+        });
+    </script>
+</body>
+</html>
