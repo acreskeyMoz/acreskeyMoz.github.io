@@ -364,7 +364,9 @@
             <code>run-on-projects</code> is autoland-only, so no other branch has this data &middot;
             <a href="https://firefox-source-docs.mozilla.org/testing/perfdocs/raptor.html" target="_blank">Raptor docs</a> &middot;
             <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=2007155" target="_blank">bug 2007155</a> (perf tests) &middot;
-            <a href="../prefetch/">test pages</a>
+            <!-- Absolute, not ../prefetch/: perf-labs proxies this page under a /gh/<slug>/
+                 prefix, where a relative parent path would resolve off-site and 404. -->
+            <a href="https://acreskeymoz.github.io/speculation_rules/prefetch/" target="_blank">test pages</a>
         </div>
     </div>
 
