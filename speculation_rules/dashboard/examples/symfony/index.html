@@ -42,6 +42,8 @@
   code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
          font-size: .9em; }
   .note { color: var(--text-muted); font-size: 13.5px; margin-top: .7rem; }
+  a { color: #2a78d6; text-decoration: none; }
+  a:hover { text-decoration: underline; }
 </style>
 </head>
 <body>
@@ -50,7 +52,7 @@
 <p class="lede">Does the page’s speculation-rules prefetch of <code>/blog/</code> speed up the click from the homepage, and how does Firefox compare with Chrome?</p>
 <h2>Test</h2>
 <dl class="config">
-  <dt>URL</dt><dd><code>https://symfony.com/</code>, which prefetches <code>/blog/</code> via speculation rules</dd>
+  <dt>URL</dt><dd><a href="https://symfony.com/" target="_blank" rel="noopener"><code>https://symfony.com/</code></a>, which prefetches <a href="https://symfony.com/blog/" target="_blank" rel="noopener"><code>https://symfony.com/blog/</code></a> via speculation rules</dd>
   <dt>Steps</dt><dd>launch → 30s settle → <b>measure</b> load → 5s → click <i>Blog</i> → <b>measure</b> sub-navigation</dd>
   <dt>Variants</dt><dd><code>firefox</code> — firefox 155.0<br><code>firefox_no_specrules</code> — firefox 155.0 (<code>dom.speculation_rules.enabled=false</code>)<br><code>chrome</code> — chrome 151.0.0.0</dd>
   <dt>Iterations</dt><dd>10 per variant, fresh browser each</dd>
@@ -59,7 +61,7 @@
 <figure>
   <img src="symfony_subnav.png" alt="Per-iteration loadEventEnd and LCP for each variant, for the initial navigation and the blog sub-navigation.">
 </figure>
-<h2>Initial navigation  →  symfony.com</h2>
+<h2>Initial navigation  →  <a href="https://symfony.com/" target="_blank" rel="noopener">symfony.com</a></h2>
 <table>
 <caption>Median, [min–max] and n per metric, in ms.</caption>
 <thead><tr><th>variant</th><th>loadEventEnd</th><th>LCP</th></tr></thead>
@@ -69,7 +71,7 @@
 <tr><td><span class="swatch" style="background:#1baf7a"></span>chrome</td><td class="v">746 <span style='color:var(--text-muted)'>[705–1121] n=10</span></td><td class="v">512 <span style='color:var(--text-muted)'>[468–816] n=10</span></td></tr>
 </tbody>
 </table>
-<h2>Blog sub-navigation  →  symfony.com/blog/</h2>
+<h2>Blog sub-navigation  →  <a href="https://symfony.com/blog/" target="_blank" rel="noopener">symfony.com/blog/</a></h2>
 <table>
 <caption>Median, [min–max] and n per metric, in ms.</caption>
 <thead><tr><th>variant</th><th>loadEventEnd</th><th>LCP</th></tr></thead>
