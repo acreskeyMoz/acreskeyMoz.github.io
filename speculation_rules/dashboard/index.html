@@ -266,6 +266,60 @@
             font-size: 1.1rem;
         }
 
+        .examples {
+            margin-top: 30px;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e0e0e0;
+            padding: 20px;
+        }
+
+        .examples h2 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .examples-lede {
+            color: #718096;
+            font-size: 0.85rem;
+            margin-bottom: 14px;
+            padding-bottom: 14px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .example-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .example-list li + li {
+            margin-top: 14px;
+            padding-top: 14px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .example-list a {
+            color: #3366ff;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .example-list a:hover {
+            text-decoration: underline;
+        }
+
+        .example-note {
+            display: block;
+            color: #718096;
+            font-size: 0.85rem;
+            margin-top: 4px;
+        }
+
         .footer {
             margin-top: 30px;
             padding-top: 20px;
@@ -357,6 +411,19 @@
         <div id="chartsGrid" class="charts-grid"></div>
 
         <div id="error" class="error" style="display: none;"></div>
+
+        <div class="examples">
+            <h2>Live sites</h2>
+            <p class="examples-lede">Browsertime navigation tests against live sites that ship speculation rules.</p>
+            <ul class="example-list">
+                <li>
+                    <!-- Relative child path: resolves correctly both here and when this page is
+                         proxied under a /gh/<slug>/ prefix, since the splat covers subpaths. -->
+                    <a href="examples/symfony/index.html" target="_blank" rel="noopener">symfony.com &mdash; blog sub-navigation</a>
+                    <span class="example-note">List rules. Sub-navigation LCP 71&nbsp;ms, vs 342&nbsp;ms with rules disabled.</span>
+                </li>
+            </ul>
+        </div>
 
         <div class="footer">
             Data source: <a href="https://treeherder.mozilla.org/perfherder/graphs" target="_blank">Perfherder</a>

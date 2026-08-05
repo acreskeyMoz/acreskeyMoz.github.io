@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>symfony.com blog sub-navigation</title>
+<style>
+  :root {
+    color-scheme: light;
+    --surface-1: #fcfcfb;  --plane: #f9f9f7;
+    --text-primary: #0b0b0b; --text-secondary: #52514e; --text-muted: #898781;
+    --gridline: #e1e0d9; --border: rgba(11,11,11,0.10);
+  }
+  body { margin: 0; padding: 2.5rem 2rem 4rem; background: var(--plane);
+         color: var(--text-primary);
+         font: 15px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 1180px; margin: 0 auto; }
+  h1 { font-size: 1.5rem; margin: 0 0 .3rem; }
+  h2 { font-size: 1.05rem; margin: 2.4rem 0 .8rem; }
+  .lede { color: var(--text-secondary); margin: 0 0 2rem; }
+  figure { margin: 0; }
+  img { width: 100%; height: auto; display: block;
+        border: 1px solid var(--border); border-radius: 6px;
+        background: var(--surface-1); }
+  table { border-collapse: collapse; width: 100%; font-size: 14px;
+          font-variant-numeric: tabular-nums; background: var(--surface-1);
+          border: 1px solid var(--border); border-radius: 6px; }
+  caption { text-align: left; color: var(--text-secondary); padding: .5rem 0; }
+  th, td { text-align: left; padding: .5rem .7rem;
+           border-bottom: 1px solid var(--gridline); }
+  th { color: var(--text-secondary); font-weight: 600; }
+  tr:last-child td { border-bottom: none; }
+  td.v { white-space: nowrap; }
+  .swatch { display: inline-block; width: .65em; height: .65em;
+            border-radius: 50%; margin-right: .45em; vertical-align: baseline; }
+  dl.config { display: grid; grid-template-columns: max-content 1fr;
+              gap: .35rem 1.2rem; margin: 0; background: var(--surface-1);
+              border: 1px solid var(--border); border-radius: 6px;
+              padding: 1rem 1.2rem; }
+  dt { color: var(--text-secondary); }
+  dd { margin: 0; }
+  code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+         font-size: .9em; }
+  .note { color: var(--text-muted); font-size: 13.5px; margin-top: .7rem; }
+</style>
+</head>
+<body>
+<main>
+<h1>symfony.com blog sub-navigation</h1>
+<p class="lede">Does the page’s speculation-rules prefetch of <code>/blog/</code> speed up the click from the homepage, and how does Firefox compare with Chrome?</p>
+<h2>Test</h2>
+<dl class="config">
+  <dt>URL</dt><dd><code>https://symfony.com/</code>, which prefetches <code>/blog/</code> via speculation rules</dd>
+  <dt>Steps</dt><dd>launch → 30s settle → <b>measure</b> load → 5s → click <i>Blog</i> → <b>measure</b> sub-navigation</dd>
+  <dt>Variants</dt><dd><code>firefox</code> — firefox 155.0<br><code>firefox_no_specrules</code> — firefox 155.0 (<code>dom.speculation_rules.enabled=false</code>)<br><code>chrome</code> — chrome 151.0.0.0</dd>
+  <dt>Iterations</dt><dd>10 per variant, fresh browser each</dd>
+</dl>
+<h2>Results</h2>
+<figure>
+  <img src="symfony_subnav.png" alt="Per-iteration loadEventEnd and LCP for each variant, for the initial navigation and the blog sub-navigation.">
+</figure>
+<h2>Initial navigation  →  symfony.com</h2>
+<table>
+<caption>Median, [min–max] and n per metric, in ms.</caption>
+<thead><tr><th>variant</th><th>loadEventEnd</th><th>LCP</th></tr></thead>
+<tbody>
+<tr><td><span class="swatch" style="background:#2a78d6"></span>firefox</td><td class="v">843 <span style='color:var(--text-muted)'>[708–1058] n=10</span></td><td class="v">496 <span style='color:var(--text-muted)'>[413–724] n=10</span></td></tr>
+<tr><td><span class="swatch" style="background:#eb6834"></span>firefox_no_specrules</td><td class="v">866 <span style='color:var(--text-muted)'>[759–1163] n=10</span></td><td class="v">479 <span style='color:var(--text-muted)'>[413–812] n=10</span></td></tr>
+<tr><td><span class="swatch" style="background:#1baf7a"></span>chrome</td><td class="v">746 <span style='color:var(--text-muted)'>[705–1121] n=10</span></td><td class="v">512 <span style='color:var(--text-muted)'>[468–816] n=10</span></td></tr>
+</tbody>
+</table>
+<h2>Blog sub-navigation  →  symfony.com/blog/</h2>
+<table>
+<caption>Median, [min–max] and n per metric, in ms.</caption>
+<thead><tr><th>variant</th><th>loadEventEnd</th><th>LCP</th></tr></thead>
+<tbody>
+<tr><td><span class="swatch" style="background:#2a78d6"></span>firefox</td><td class="v">243 <span style='color:var(--text-muted)'>[168–310] n=10</span></td><td class="v">71 <span style='color:var(--text-muted)'>[57–207] n=10</span></td></tr>
+<tr><td><span class="swatch" style="background:#eb6834"></span>firefox_no_specrules</td><td class="v">545 <span style='color:var(--text-muted)'>[431–673] n=10</span></td><td class="v">342 <span style='color:var(--text-muted)'>[315–440] n=10</span></td></tr>
+<tr><td><span class="swatch" style="background:#1baf7a"></span>chrome</td><td class="v">279 <span style='color:var(--text-muted)'>[197–1060] n=10</span></td><td class="v">120 <span style='color:var(--text-muted)'>[108–500] n=10</span></td></tr>
+</tbody>
+</table>
+</main>
+</body>
+</html>
