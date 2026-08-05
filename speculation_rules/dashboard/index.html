@@ -553,6 +553,40 @@
             }
         }
 
+        // Treeherder preselects a job with selectedTaskRun=<task_id>.<retry_id>, but the
+        // performance series only carries job_id, so the pair has to be looked up. The tab is
+        // opened synchronously (before the await) or the popup blocker would eat it, then
+        // pointed at the job once resolved; any failure still lands on the push.
+        const taskRunCache = {};
+
+        function openJob(point) {
+            const pushUrl = TREEHERDER + '/jobs?repo=' + REPOSITORY +
+                '&revision=' + point.revision + '&group_state=expanded';
+            const win = window.open('', '_blank');
+            const go = url => { if (win) { win.location = url; } else { window.open(url, '_blank'); } };
+
+            if (!point.jobId) { go(pushUrl); return; }
+            if (taskRunCache[point.jobId]) {
+                go(pushUrl + '&selectedTaskRun=' + taskRunCache[point.jobId]);
+                return;
+            }
+
+            fetch(TREEHERDER + '/api/project/' + REPOSITORY + '/jobs/?id=' + point.jobId)
+                .then(response => response.ok ? response.json()
+                    : Promise.reject(new Error('HTTP ' + response.status)))
+                .then(data => {
+                    const job = (data.results || [])[0];
+                    if (!job || !job.task_id) throw new Error('no task_id for job ' + point.jobId);
+                    const taskRun = job.task_id + '.' + (job.retry_id || 0);
+                    taskRunCache[point.jobId] = taskRun;
+                    go(pushUrl + '&selectedTaskRun=' + taskRun);
+                })
+                .catch(error => {
+                    console.warn('Could not resolve job ' + point.jobId + ', opening the push', error);
+                    go(pushUrl);
+                });
+        }
+
         function median(values) {
             if (!values.length) return null;
             const s = [...values].sort((a, b) => a - b);
@@ -869,8 +903,7 @@
                             if (!hit) return;
                             const point = chart.data.datasets[hit.datasetIndex].data[hit.index];
                             if (!point.revision) return;
-                            window.open(TREEHERDER + '/jobs?repo=' + REPOSITORY + '&revision=' +
-                                point.revision + '&group_state=expanded', '_blank');
+                            openJob(point);
                         },
                         onHover: (event, elements, chart) => {
                             const overPoint = elements.some(el => chart.data.datasets[el.datasetIndex].clickable);
@@ -908,7 +941,7 @@
                                     label: c => c.dataset.label + ': ' + fmtMs(c.parsed.y),
                                     afterBody: items => {
                                         const rev = items[0] && items[0].raw && items[0].raw.revision;
-                                        return rev ? 'push ' + rev.slice(0, 12) + ' — click to open' : '';
+                                        return rev ? 'push ' + rev.slice(0, 12) + ' — click to open the job' : '';
                                     }
                                 }
                             }
