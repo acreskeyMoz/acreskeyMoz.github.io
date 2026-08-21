@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Speculation Rules Prefetch - CI Dashboard</title>
+    <title>Speculation Rules Prefetch - Dashboard</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
     <style>
@@ -60,6 +60,32 @@
 
         .meta-bug a:hover {
             text-decoration: underline;
+        }
+
+        /* Link cards hoisted above the controls: same card treatment as the
+           in-page sections, just with tighter spacing so they read as a header block. */
+        .top-links {
+            margin-bottom: 25px;
+        }
+
+        .top-links .examples {
+            margin-top: 15px;
+        }
+
+        /* Heading for the Perfherder half of the page, matching the link cards' h2. */
+        .section-heading {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #333;
+            text-align: center;
+            margin-bottom: 4px;
+        }
+
+        /* No lede in this card, so the h2 carries the divider the lede normally provides. */
+        .examples.compact h2 {
+            margin-bottom: 14px;
+            padding-bottom: 14px;
+            border-bottom: 2px solid #e2e8f0;
         }
 
         .toggle-row {
@@ -347,14 +373,39 @@
 </head>
 <body>
     <div class="container">
-        <h1>Speculation Rules Prefetch &mdash; CI Dashboard</h1>
-        <p class="subtitle">
-            Raptor browsertime on autoland &middot; <code>navigation_duration</code>, lower is better
-            &middot; Firefox vs Chrome &middot; from 2026-06-30
-        </p>
+        <h1>Speculation Rules Prefetch &mdash; Dashboard</h1>
         <p class="meta-bug">
             <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1969396" target="_blank">bug 1969396</a>
             &mdash; [meta] Implement Speculation Rules &ndash; Prefetch (Same-origin)
+        </p>
+        <div class="top-links">
+            <div class="examples compact">
+                <h2>Telemetry</h2>
+                <ul class="example-list">
+                    <li>
+                        <a href="https://sql.telemetry.mozilla.org/dashboard/speculation-rules-use-counters-bug-2058157-?p_channels=%5B%22nightly%22%5D&amp;p_channels_all=%5B%22nightly%22%2C%22beta%22%5D&amp;p_date_range=d_last_30_days&amp;p_min_major_version=155&amp;p_sample_pct=100" target="_blank" rel="noopener">Use counters &mdash; Redash</a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="examples">
+                <h2>Live sites</h2>
+                <p class="examples-lede">Browsertime navigation tests against live sites that ship speculation rules.</p>
+                <ul class="example-list">
+                    <li>
+                        <!-- Relative child path: resolves correctly both here and when this page is
+                             proxied under a /gh/<slug>/ prefix, since the splat covers subpaths. -->
+                        <a href="examples/symfony/index.html" target="_blank" rel="noopener">symfony.com &mdash; blog sub-navigation</a>
+                        <span class="example-note">List rules. Sub-navigation LCP 71&nbsp;ms, vs 342&nbsp;ms with rules disabled.</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <h2 class="section-heading">CI</h2>
+        <p class="subtitle">
+            Raptor browsertime on autoland &middot; <code>navigation_duration</code>, lower is better
+            &middot; Firefox vs Chrome &middot; from 2026-06-30
         </p>
 
         <div class="toggle-row" id="sourceToggle">
@@ -411,19 +462,6 @@
         <div id="chartsGrid" class="charts-grid"></div>
 
         <div id="error" class="error" style="display: none;"></div>
-
-        <div class="examples">
-            <h2>Live sites</h2>
-            <p class="examples-lede">Browsertime navigation tests against live sites that ship speculation rules.</p>
-            <ul class="example-list">
-                <li>
-                    <!-- Relative child path: resolves correctly both here and when this page is
-                         proxied under a /gh/<slug>/ prefix, since the splat covers subpaths. -->
-                    <a href="examples/symfony/index.html" target="_blank" rel="noopener">symfony.com &mdash; blog sub-navigation</a>
-                    <span class="example-note">List rules. Sub-navigation LCP 71&nbsp;ms, vs 342&nbsp;ms with rules disabled.</span>
-                </li>
-            </ul>
-        </div>
 
         <div class="footer">
             Data source: <a href="https://treeherder.mozilla.org/perfherder/graphs" target="_blank">Perfherder</a>
