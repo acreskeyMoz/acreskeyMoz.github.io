@@ -14,6 +14,26 @@ per job. Chrome is the baseline; a positive gap means Fenix is slower.
 Open `index.html`. Optional query parameters: `?test=urlbar-nav|hot-applink`
 and `?platform=<machine platform>`.
 
+## What it shows
+
+The page leads with the two screen captures side by side, because the point is
+to watch where Fenix loses the time rather than to read a number. Each pane
+loads on its own:
+
+- **Job** — the run at the median of that browser's selected runs. With an even
+  number of runs there is no job sitting exactly on the median, so the upper of
+  the two middle runs is used.
+- **Iteration** — within that job, the one whose replicate is closest to the
+  job's median replicate.
+
+That default follows the push filter: narrow the pushes and each pane moves to
+the new median. Choosing a job by hand, either from the pane's picker or by
+clicking a dot in *Every run*, pins the pane until "Back to median runs".
+The pane's subtitle says which of the two you are looking at.
+
+Below the videos are the headline medians and a dot-per-job strip plot, with
+per-lane summary statistics behind the table-view disclosure.
+
 ## Where the data comes from
 
 Everything is read live in the browser; nothing is checked in or cached
@@ -33,9 +53,12 @@ server-side.
 
 ## Caveats baked into the UI
 
+- Both median videos are fetched as soon as the Perfherder data resolves, which
+  is roughly 40 MB. Switching test or platform re-fetches; the last four
+  archives are kept in memory, so switching back is free.
 - Try pushes expire from Perfherder, and Taskcluster expires the video
   artifacts about four weeks after the push. When that happens the charts still
-  work but the video inspector reports that the archive is gone.
+  work but the video panes report that the archive is gone.
 - Fenix and Chrome do not always run on the same pushes. When the selected
   pushes differ between the two, or when either side has fewer than five runs,
   the headline shows a "Read with care" note rather than presenting the pooled
@@ -43,9 +66,9 @@ server-side.
 
 ## Adding a test or platform
 
-Add an entry to `TESTS` (suite name, the Perfherder subtest name used as the
-metric, and the submetrics suite) or to `CANDIDATE_PLATFORMS`. Nothing else is
-hardcoded — revisions are discovered from whatever Perfherder returns.
+Add an entry to `TESTS` (suite name and the Perfherder subtest name used as the
+metric) or to `CANDIDATE_PLATFORMS`. Nothing else is hardcoded — revisions are
+discovered from whatever Perfherder returns.
 
 ## Colours
 

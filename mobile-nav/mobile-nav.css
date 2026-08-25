@@ -209,13 +209,14 @@ select {
 }
 
 .card > h2 {
-  margin: 0 0 4px;
+  margin: 0 0 14px;
   font-size: 17px;
   font-weight: 600;
 }
 
+/* Pulls back up under the h2 on the cards that still carry a line of prose. */
 .card-sub {
-  margin: 0 0 16px;
+  margin: -8px 0 14px;
   max-width: 82ch;
   font-size: 13.5px;
   color: var(--text-secondary);
@@ -276,36 +277,15 @@ select {
 
 .caveat {
   margin: 14px 0 0;
-  padding: 10px 14px;
-  max-width: 82ch;
   font-size: 13px;
-  color: var(--text-secondary);
-  border: 1px solid var(--border);
-  border-left: 3px solid var(--neutral);
-  border-radius: 6px;
+  color: var(--text-muted);
 }
-
-.caveat b { color: var(--text-primary); }
 
 .delta-cell.critical { color: var(--critical); }
 .delta-cell.good     { color: var(--good); }
 
 .stat-value { font-size: 27px; font-weight: 600; line-height: 1.2; }
 .stat-sub { font-size: 12.5px; color: var(--text-muted); }
-
-.chip {
-  align-self: flex-start;
-  margin-top: 4px;
-  padding: 2px 9px;
-  font-size: 12.5px;
-  font-weight: 600;
-  border-radius: 999px;
-  border: 1px solid currentColor;
-}
-
-.chip.good     { color: var(--good); }
-.chip.critical { color: var(--critical); }
-.chip.neutral  { color: var(--neutral); }
 
 /* Series keys: a coloured mark beside text, never coloured text. */
 
@@ -388,18 +368,7 @@ tr.group-row.chrome td:first-child { border-left-color: var(--chrome); }
 .cell-app { display: inline-flex; align-items: center; gap: 7px; }
 .muted { color: var(--text-muted); }
 
-.link-btn {
-  font: inherit;
-  font-size: 13px;
-  padding: 0;
-  color: var(--chrome);
-  background: none;
-  border: none;
-  cursor: pointer;
-  text-decoration: underline;
-}
-
-/* Video inspector */
+/* Video panes */
 
 /* Cap the pane width so the two captures sit close enough to compare frame by
    frame; the videos are portrait phone recordings. */
@@ -428,8 +397,31 @@ tr.group-row.chrome td:first-child { border-left-color: var(--chrome); }
   font-weight: 600;
 }
 
+/* The score reads above its own capture, so the two numbers and the two videos
+   line up as one pair. */
+.pane-figure {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  margin-top: -4px;
+}
+
+.pane-value {
+  font-size: 30px;
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+}
+
+.pane-note { font-size: 12.5px; color: var(--text-secondary); }
+
+.pane-pickers { display: flex; flex-wrap: wrap; gap: 10px; }
+.pane-pickers > div { flex: 1 1 140px; min-width: 0; }
+
 .video-pane select { width: 100%; min-width: 0; }
 .video-pane label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 3px; }
+.video-pane a { font-size: 12.5px; }
 
 .video-pane video {
   width: 100%;

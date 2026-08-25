@@ -13,8 +13,7 @@
   <div class="page-head-inner">
     <h1>Mobile navigation benchmarks</h1>
     <p class="lede">
-      Two Android mozperftest suites on a locally served <code>newssite</code> test page,
-      measuring time to the navigation-end frame in the screen capture. Lower is better.
+      Time to the navigation-end frame on a local <code>newssite</code> page. Lower is better.
     </p>
     <button type="button" id="theme-toggle" class="ghost-btn" aria-label="Switch colour theme">
       <span id="theme-toggle-label">Dark</span>
@@ -46,18 +45,28 @@
 
   <p class="test-blurb" id="test-blurb"></p>
 
-  <div id="status" class="status" role="status">Loading Perfherder data&hellip;</div>
+  <div id="status" class="status" role="status">Loading&hellip;</div>
 
   <div id="dashboard" hidden>
+
+    <!-- The point of the page: the two captures, median run each. -->
+    <section class="card" aria-labelledby="video-h">
+      <h2 id="video-h">Median run</h2>
+      <div class="video-panes" id="video-panes"></div>
+      <div class="video-controls">
+        <button type="button" class="ghost-btn" id="play-both">Play both</button>
+        <button type="button" class="ghost-btn" id="pause-both">Pause</button>
+        <button type="button" class="ghost-btn" id="reset-medians">Reset to medians</button>
+        <label class="inline-check">
+          <input type="checkbox" id="autoplay-toggle" checked>
+          Autoplay
+        </label>
+      </div>
+    </section>
 
     <!-- Headline -->
     <section class="card" aria-labelledby="headline-h">
       <h2 id="headline-h">Fenix vs Chrome</h2>
-      <p class="card-sub">
-        Chrome is the baseline. A positive gap means Fenix takes <strong>longer</strong> to
-        reach the navigation-end frame on the same device, page and push &mdash; that is the
-        regression to close.
-      </p>
       <div class="kpi-row">
         <div class="hero">
           <span class="hero-label">Fenix vs Chrome, median</span>
@@ -81,14 +90,11 @@
     <!-- Every run, one dot -->
     <section class="card" aria-labelledby="runs-h">
       <h2 id="runs-h">Every run</h2>
-      <p class="card-sub">
-        One dot per CI job (each job is the mean of its 10 iterations). The vertical rule
-        marks the lane median. Click a dot to open that job in the video inspector.
-      </p>
+      <p class="card-sub">One dot per CI job. Click one to load its video.</p>
       <div class="legend" id="legend"></div>
       <div class="chart-wrap" id="strip-wrap"></div>
       <details class="table-view">
-        <summary>Table view &mdash; summary statistics</summary>
+        <summary>Summary statistics</summary>
         <div class="table-scroll">
           <table id="summary-table">
             <thead>
@@ -110,65 +116,13 @@
       </details>
     </section>
 
-    <!-- Job-level results -->
-    <section class="card" aria-labelledby="jobs-h">
-      <h2 id="jobs-h">Run results</h2>
-      <div class="table-scroll">
-        <table id="jobs-table">
-          <thead>
-            <tr>
-              <th scope="col">Browser</th>
-              <th scope="col">Push</th>
-              <th scope="col" class="num">Value</th>
-              <th scope="col">Device</th>
-              <th scope="col">Ran</th>
-              <th scope="col">Links</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-    </section>
-
-    <!-- CPU submetrics, loaded on demand -->
-    <section class="card" aria-labelledby="cpu-h">
-      <h2 id="cpu-h">CPU time submetrics</h2>
-      <p class="card-sub">
-        Per-process CPU time reported alongside the main metric. Fetched separately
-        because it is one Perfherder request per process.
-      </p>
-      <button type="button" class="ghost-btn" id="cpu-load">Load CPU submetrics</button>
-      <div id="cpu-out"></div>
-    </section>
-
-    <!-- Video inspector -->
-    <section class="card" aria-labelledby="video-h">
-      <h2 id="video-h">Video inspector</h2>
-      <p class="card-sub">
-        Screen captures come from each job's <code>.tgz</code> artifact &mdash; roughly 20&nbsp;MB
-        per job, extracted in the browser. Iteration <em>n</em> in the picker is the same
-        <em>n</em> as the replicate value beside it. Taskcluster expires these artifacts
-        about four weeks after the push.
-      </p>
-      <div class="video-panes" id="video-panes"></div>
-      <div class="video-controls">
-        <button type="button" class="ghost-btn" id="play-both">Play both from start</button>
-        <button type="button" class="ghost-btn" id="pause-both">Pause both</button>
-        <label class="inline-check">
-          <input type="checkbox" id="autoplay-toggle" checked>
-          Autoplay on load
-        </label>
-      </div>
-    </section>
-
   </div>
 </main>
 
 <footer class="page-foot">
   <p>
-    Data: <a href="https://treeherder.mozilla.org/perfherder">Perfherder</a> framework 15
-    (<code>mozperftest</code>) on the <code>try</code> repository, read live from the
-    Treeherder and Taskcluster APIs. No data is stored by this page.
+    Live from <a href="https://treeherder.mozilla.org/perfherder">Perfherder</a> framework 15
+    on <code>try</code>, plus Taskcluster artifacts.
   </p>
 </footer>
 

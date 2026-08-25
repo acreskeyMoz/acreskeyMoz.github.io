@@ -11,21 +11,13 @@ const TESTS = {
     label: "URL bar navigation",
     suite: "newssite-urlbar-nav",
     metric: "urlbar_nav",
-    submetricSuite: "newssite_urlbar_nav_submetrics",
-    blurb:
-      "URL bar navigation (ubne-newssite.sh) types the site's address into the URL bar of " +
-      "an already-running browser and measures the time to the urlbar_nav_end frame in the " +
-      "screen capture. Ten iterations per job; the job value is their mean.",
+    blurb: "ubne-newssite.sh — typed URL in a running browser, to the urlbar_nav_end frame.",
   },
   "hot-applink": {
     label: "Hot applink",
     suite: "newssite-hot-applink",
     metric: "hot_applink",
-    submetricSuite: "newssite_hot_applink_submetrics",
-    blurb:
-      "Hot applink (hvne-newssite.sh) fires an Android VIEW intent at a browser that is " +
-      "already running and measures the time to the hot_view_nav_end frame in the screen " +
-      "capture. Ten iterations per job; the job value is their mean.",
+    blurb: "hvne-newssite.sh — VIEW intent at a running browser, to the hot_view_nav_end frame.",
   },
 };
 
@@ -180,7 +172,6 @@ async function loadRuns() {
       jobId: p.job_id,
       value: p.value,
       pushTimestamp: Math.floor(new Date(p.push_timestamp + "Z").getTime() / 1000),
-      submitTime: p.submit_time,
       machine: p.machine_name,
     }));
   });
@@ -213,6 +204,19 @@ async function loadPushMetadata(revisions) {
 const testRuns = () => state.runs.filter((r) => r.test === state.test && r.platform === state.platform);
 
 const selectedRuns = () => testRuns().filter((r) => state.selectedRevisions.has(r.revision));
+
+/**
+ * The run a browser's video panel defaults to: the one sitting at the median of
+ * that browser's selected runs. With an even count there is no run exactly at the
+ * median, so take the upper of the two middle runs — a real job we can play,
+ * within a hair of the number in the headline.
+ */
+function medianRun(appId) {
+  const runs = selectedRuns()
+    .filter((r) => r.app === appId)
+    .sort((a, b) => a.value - b.value);
+  return runs.length ? runs[runs.length >> 1] : null;
+}
 
 /** Revisions available for the current test+platform, newest push first. */
 function availableRevisions() {
@@ -295,7 +299,7 @@ function renderStripPlot() {
   if (!laneList.length) {
     const empty = document.createElement("p");
     empty.className = "card-sub";
-    empty.textContent = "No runs in the current selection.";
+    empty.textContent = "No runs selected.";
     wrap.append(empty);
     return;
   }
@@ -363,7 +367,7 @@ function renderStripPlot() {
     "text-anchor": "middle",
     class: "axis-title",
   });
-  axisTitle.textContent = "Time to navigation end (ms) — lower is better";
+  axisTitle.textContent = "ms — lower is better";
   svg.append(axisTitle);
 
   // Chrome is the baseline, so mark its pooled median across every lane: anything
@@ -393,7 +397,7 @@ function renderStripPlot() {
       "stroke-width": 2,
     });
     const caption = svgEl("text", { x: x(baseline) + 22, y: padTop - 10, class: "lane-meta" });
-    caption.textContent = `Chrome median ${baseline.toFixed(0)} ms — slower to the right`;
+    caption.textContent = `Chrome median ${baseline.toFixed(0)} ms`;
     svg.append(key, caption);
   }
 
@@ -409,7 +413,7 @@ function renderStripPlot() {
     svg.append(name);
 
     const meta = svgEl("text", { x: 0, y: mid + 13, class: "lane-meta" });
-    meta.textContent = `${values.length} run${values.length === 1 ? "" : "s"} · median ${med.toFixed(1)} ms`;
+    meta.textContent = `n=${values.length} · median ${med.toFixed(1)}`;
     svg.append(meta);
 
     svg.append(
@@ -473,11 +477,7 @@ function showRunTooltip(event, run, app) {
   const meta = document.createElement("div");
   meta.textContent = `${app.label} · ${shortRev(run.revision)} · ${run.machine}`;
 
-  const hint = document.createElement("div");
-  hint.className = "muted";
-  hint.textContent = "Click to load this job's video";
-
-  tip.append(value, meta, hint);
+  tip.append(value, meta);
   tip.hidden = false;
 
   const rect = tip.getBoundingClientRect();
@@ -505,12 +505,10 @@ function appCell(app) {
 /**
  * The two browsers do not always run on the same pushes, and a pooled median
  * that quietly mixes 99 Fenix runs with 3 Chrome runs from one push would read
- * as a like-for-like comparison. Say so when it is not.
+ * as a like-for-like comparison. Flag it, tersely.
  */
 function renderHeadlineCaveat(runs) {
   const box = $("headline-caveat");
-  box.textContent = "";
-
   const revsOf = (appId) => new Set(runs.filter((r) => r.app === appId).map((r) => r.revision));
   const fenixRevs = revsOf("fenix");
   const chromeRevs = revsOf("chrome-m");
@@ -519,28 +517,18 @@ function renderHeadlineCaveat(runs) {
 
   if (fenixRevs.size && chromeRevs.size && shared.length !== fenixRevs.size) {
     notes.push(
-      `The two browsers do not cover the same pushes: Fenix ran on ${fenixRevs.size}, ` +
-        `Chrome on ${chromeRevs.size}, ${shared.length} in common. ` +
-        `Narrow the push filter to a shared push for a like-for-like number.`
+      `pushes differ (Fenix ${fenixRevs.size}, Chrome ${chromeRevs.size}, ${shared.length} shared)`
     );
   }
-
   for (const app of APPS) {
     const n = runs.filter((r) => r.app === app.id).length;
     if (n > 0 && n < 5) {
-      notes.push(`${app.label} has only ${n} run${n === 1 ? "" : "s"} in this selection.`);
+      notes.push(`${app.label} n=${n}`);
     }
   }
 
-  if (!notes.length) {
-    box.hidden = true;
-    return;
-  }
-
-  const label = document.createElement("b");
-  label.textContent = "Read with care:";
-  box.append(label, document.createTextNode(` ${notes.join(" ")}`));
-  box.hidden = false;
+  box.hidden = !notes.length;
+  box.textContent = notes.length ? `Not like-for-like: ${notes.join("; ")}.` : "";
 }
 
 function renderHeadline() {
@@ -555,8 +543,8 @@ function renderHeadline() {
     const s = stats[app.id];
     $(`stat-${app.cls}`).textContent = s ? fmtMs(s.median) : "–";
     $(`stat-${app.cls}-sub`).textContent = s
-      ? `${s.n} run${s.n === 1 ? "" : "s"} · mean ${s.mean.toFixed(1)} · CV ${s.cv.toFixed(1)}%`
-      : "no runs in selection";
+      ? `n=${s.n} · mean ${s.mean.toFixed(1)} · CV ${s.cv.toFixed(1)}%`
+      : "no runs";
   }
 
   const fenix = stats.fenix;
@@ -567,7 +555,7 @@ function renderHeadline() {
   if (!fenix || !chrome) {
     hero.className = "hero-value neutral";
     hero.textContent = "–";
-    verdict.textContent = "Needs runs from both browsers in the current selection.";
+    verdict.textContent = "Needs runs from both browsers.";
     return;
   }
 
@@ -586,12 +574,11 @@ function renderHeadline() {
     hero.append(glyph);
   }
   hero.append(document.createTextNode(fmtPct(delta)));
+  // Names the direction in words so it never rests on the colour alone.
   verdict.textContent =
     kind === "neutral"
-      ? `Level with Chrome (${Math.abs(gapMs).toFixed(1)} ms apart).`
-      : kind === "critical"
-        ? `Fenix is SLOWER than Chrome — ${gapMs.toFixed(1)} ms behind on the median run.`
-        : `Fenix is FASTER than Chrome — ${Math.abs(gapMs).toFixed(1)} ms ahead on the median run.`;
+      ? `Level, ${Math.abs(gapMs).toFixed(1)} ms apart`
+      : `Fenix ${Math.abs(gapMs).toFixed(1)} ms ${kind === "critical" ? "slower" : "faster"}`;
 }
 
 /** Signed gap of a Fenix median against the pooled Chrome median. */
@@ -675,200 +662,6 @@ function renderSummaryTable() {
       addRow(label, lane.runs.map((r) => r.value), false, app);
     }
   }
-}
-
-function renderJobsTable() {
-  const tbody = $("jobs-table").querySelector("tbody");
-  tbody.textContent = "";
-
-  const runs = [...selectedRuns()].sort(
-    (a, b) => a.app.localeCompare(b.app) || b.pushTimestamp - a.pushTimestamp || a.value - b.value
-  );
-
-  for (const run of runs) {
-    const app = APPS.find((a) => a.id === run.app);
-    const tr = document.createElement("tr");
-
-    const appTd = document.createElement("td");
-    appTd.append(appCell(app));
-
-    const revTd = document.createElement("td");
-    const revCode = document.createElement("code");
-    revCode.textContent = shortRev(run.revision);
-    revTd.append(revCode);
-    const push = state.pushes.get(run.revision);
-    if (push) {
-      revTd.title = push.comment;
-    }
-
-    const valTd = document.createElement("td");
-    valTd.className = "num";
-    valTd.textContent = run.value.toFixed(1);
-
-    const machineTd = document.createElement("td");
-    machineTd.className = "muted";
-    machineTd.textContent = run.machine || "–";
-
-    const whenTd = document.createElement("td");
-    whenTd.className = "muted";
-    whenTd.textContent = run.submitTime ? fmtDate(new Date(run.submitTime + "Z").getTime() / 1000) : "–";
-
-    const linksTd = document.createElement("td");
-    const videoBtn = document.createElement("button");
-    videoBtn.type = "button";
-    videoBtn.className = "link-btn";
-    videoBtn.textContent = "Video";
-    videoBtn.addEventListener("click", () => selectJobInPane(run.app, run.jobId));
-    const jobLink = document.createElement("a");
-    jobLink.href = `${TREEHERDER}/jobs?repo=${REPO}&revision=${run.revision}&group_state=expanded`;
-    jobLink.target = "_blank";
-    jobLink.rel = "noopener";
-    jobLink.textContent = "Treeherder";
-    linksTd.append(videoBtn, document.createTextNode(" · "), jobLink);
-
-    tr.append(appTd, revTd, valTd, machineTd, whenTd, linksTd);
-    tbody.append(tr);
-  }
-}
-
-/* -------------------------------------------------------- CPU submetrics */
-
-let cpuLoaded = false;
-
-async function loadCpuSubmetrics() {
-  const out = $("cpu-out");
-  const button = $("cpu-load");
-  button.disabled = true;
-  button.textContent = "Loading…";
-  out.textContent = "";
-
-  const suite = TESTS[state.test].submetricSuite;
-  const url =
-    `${TREEHERDER}/api/project/${REPO}/performance/signatures/` +
-    `?framework=${FRAMEWORK}&platform=${state.platform}&interval=${SIGNATURE_INTERVAL}`;
-
-  let sigs;
-  try {
-    const byId = await getJSON(url);
-    sigs = Object.values(byId).filter(
-      (s) => s.suite === suite && s.test && s.test.endsWith("-cpu-time")
-    );
-  } catch (e) {
-    out.textContent = `Could not load submetric signatures: ${e.message}`;
-    button.disabled = false;
-    button.textContent = "Retry";
-    return;
-  }
-
-  const series = await pooled(sigs, 6, async (sig) => {
-    try {
-      const data = await getJSON(
-        `${TREEHERDER}/api/performance/summary/` +
-          `?repository=${REPO}&signature=${sig.id}&framework=${FRAMEWORK}` +
-          `&interval=${SIGNATURE_INTERVAL}&all_data=true`
-      );
-      const points = (data[0] && data[0].data) || [];
-      return { sig, points };
-    } catch (e) {
-      console.warn("submetric fetch failed", sig.id, e);
-      return { sig, points: [] };
-    }
-  });
-
-  cpuLoaded = true;
-  button.textContent = "Reload CPU submetrics";
-  button.disabled = false;
-  renderCpuTable(series);
-}
-
-let cpuSeries = null;
-
-function renderCpuTable(series) {
-  if (series) {
-    cpuSeries = series;
-  }
-  const out = $("cpu-out");
-  out.textContent = "";
-  if (!cpuSeries) {
-    return;
-  }
-
-  const rows = [];
-  for (const { sig, points } of cpuSeries) {
-    const values = points
-      .filter((p) => state.selectedRevisions.has(p.revision))
-      .map((p) => p.value);
-    if (values.length) {
-      rows.push({ app: sig.application, metric: sig.test, stats: describe(values) });
-    }
-  }
-  rows.sort((a, b) => a.app.localeCompare(b.app) || a.metric.localeCompare(b.metric));
-
-  if (!rows.length) {
-    const p = document.createElement("p");
-    p.className = "card-sub";
-    p.textContent = "No CPU submetric data in the current selection.";
-    out.append(p);
-    return;
-  }
-
-  const scroll = document.createElement("div");
-  scroll.className = "table-scroll";
-  const table = document.createElement("table");
-  const thead = document.createElement("thead");
-  const headRow = document.createElement("tr");
-  for (const [text, isNum] of [
-    ["Browser", false],
-    ["Process", false],
-    ["Runs", true],
-    ["Median", true],
-    ["Mean", true],
-    ["Std dev", true],
-  ]) {
-    const th = document.createElement("th");
-    th.scope = "col";
-    if (isNum) {
-      th.className = "num";
-    }
-    th.textContent = text;
-    headRow.append(th);
-  }
-  thead.append(headRow);
-
-  const tbody = document.createElement("tbody");
-  for (const row of rows) {
-    const app = APPS.find((a) => a.id === row.app);
-    const tr = document.createElement("tr");
-    const appTd = document.createElement("td");
-    appTd.append(app ? appCell(app) : document.createTextNode(row.app));
-    const metricTd = document.createElement("td");
-    const metricCode = document.createElement("code");
-    metricCode.textContent = row.metric;
-    metricTd.append(metricCode);
-    tr.append(appTd, metricTd);
-    for (const v of [
-      String(row.stats.n),
-      Math.round(row.stats.median).toLocaleString(),
-      Math.round(row.stats.mean).toLocaleString(),
-      Math.round(row.stats.stddev).toLocaleString(),
-    ]) {
-      const td = document.createElement("td");
-      td.className = "num";
-      td.textContent = v;
-      tr.append(td);
-    }
-    tbody.append(tr);
-  }
-
-  table.append(thead, tbody);
-  scroll.append(table);
-  const note = document.createElement("p");
-  note.className = "card-sub";
-  note.style.marginTop = "10px";
-  note.textContent =
-    "CPU time is milliseconds of process CPU consumed over the whole job, not per iteration. " +
-    "Fenix and Chrome split work across different process sets, so compare total-cpu-time rather than named processes.";
-  out.append(scroll, note);
 }
 
 /* --------------------------------------------------- artifact extraction */
@@ -1012,19 +805,15 @@ function buildVideoPanes() {
     key.className = `key key-${app.cls}`;
     title.append(key, document.createTextNode(app.label));
 
-    const jobLabel = document.createElement("label");
-    jobLabel.textContent = "Job";
-    const jobSelect = document.createElement("select");
-    jobLabel.htmlFor = jobSelect.id = `job-select-${app.cls}`;
-
-    const iterLabel = document.createElement("label");
-    iterLabel.textContent = "Iteration";
-    const iterSelect = document.createElement("select");
-    iterLabel.htmlFor = iterSelect.id = `iter-select-${app.cls}`;
-    iterSelect.disabled = true;
-
-    const status = document.createElement("p");
-    status.className = "pane-status";
+    // The pair of numbers sits directly above the pair of videos: the score first,
+    // then whether it is the median run or one picked by hand.
+    const figure = document.createElement("div");
+    figure.className = "pane-figure";
+    const value = document.createElement("span");
+    value.className = "pane-value";
+    const note = document.createElement("span");
+    note.className = "pane-note";
+    figure.append(value, note);
 
     const progress = document.createElement("div");
     progress.className = "progress";
@@ -1037,20 +826,50 @@ function buildVideoPanes() {
     video.playsInline = true;
     video.preload = "metadata";
 
+    const status = document.createElement("p");
+    status.className = "pane-status";
+
+    // Overrides, so they sit under the capture rather than above it.
+    const pickers = document.createElement("div");
+    pickers.className = "pane-pickers";
+    const jobLabel = document.createElement("label");
+    jobLabel.textContent = "Job";
+    const jobSelect = document.createElement("select");
+    jobLabel.htmlFor = jobSelect.id = `job-select-${app.cls}`;
+    const iterLabel = document.createElement("label");
+    iterLabel.textContent = "Iteration";
+    const iterSelect = document.createElement("select");
+    iterLabel.htmlFor = iterSelect.id = `iter-select-${app.cls}`;
+    iterSelect.disabled = true;
+
     const jobLink = document.createElement("a");
     jobLink.target = "_blank";
     jobLink.rel = "noopener";
-    jobLink.textContent = "Open job in Treeherder";
+    jobLink.textContent = "Treeherder";
     jobLink.hidden = true;
-    jobLink.style.fontSize = "12.5px";
 
-    pane.append(title, jobLabel, jobSelect, iterLabel, iterSelect, status, progress, video, jobLink);
+    const jobField = document.createElement("div");
+    jobField.append(jobLabel, jobSelect);
+    const iterField = document.createElement("div");
+    iterField.append(iterLabel, iterSelect);
+    pickers.append(jobField, iterField);
+
+    pane.append(title, figure, progress, video, status, pickers, jobLink);
     container.append(pane);
 
-    const record = { app, jobSelect, iterSelect, status, progress, bar, video, jobLink, entry: null };
+    // `pinned` means the job was chosen by hand, so the median default leaves it alone.
+    const record = {
+      app, value, note, jobSelect, iterSelect, status, progress, bar, video, jobLink,
+      entry: null,
+      pinned: false,
+    };
     panes.set(app.id, record);
 
-    jobSelect.addEventListener("change", () => loadPaneJob(app.id, Number(jobSelect.value)));
+    jobSelect.addEventListener("change", () => {
+      record.pinned = Boolean(jobSelect.value);
+      loadPaneJob(app.id, Number(jobSelect.value));
+      updatePaneNote(app.id);
+    });
     iterSelect.addEventListener("change", () => showIteration(app.id, Number(iterSelect.value)));
   }
 }
@@ -1068,8 +887,8 @@ function refreshPaneJobLists() {
     const placeholder = document.createElement("option");
     placeholder.value = "";
     placeholder.textContent = runs.length
-      ? `Choose one of ${runs.length} job${runs.length === 1 ? "" : "s"}…`
-      : "No runs in the current selection";
+      ? `${runs.length} job${runs.length === 1 ? "" : "s"}…`
+      : "No runs";
     pane.jobSelect.append(placeholder);
 
     for (const run of runs) {
@@ -1080,17 +899,55 @@ function refreshPaneJobLists() {
     }
 
     pane.jobSelect.disabled = !runs.length;
-    if (runs.some((r) => String(r.jobId) === previous)) {
+    if (pane.pinned && runs.some((r) => String(r.jobId) === previous)) {
       pane.jobSelect.value = previous;
-    } else if (pane.entry) {
-      resetPane(app.id);
+    } else {
+      loadMedianRun(app.id);
     }
+    updatePaneNote(app.id);
   }
+}
+
+/**
+ * Put the pane back on the median run. Reloading the same job would re-download
+ * 20 MB for nothing, so only act when the median has actually moved.
+ */
+function loadMedianRun(appId) {
+  const pane = panes.get(appId);
+  pane.pinned = false;
+  const run = medianRun(appId);
+  if (!run) {
+    pane.jobSelect.value = "";
+    resetPane(appId);
+    return;
+  }
+  if (Number(pane.jobSelect.value) === run.jobId) {
+    return;
+  }
+  pane.jobSelect.value = String(run.jobId);
+  loadPaneJob(appId, run.jobId);
+}
+
+function updatePaneNote(appId) {
+  const pane = panes.get(appId);
+  const runs = selectedRuns().filter((r) => r.app === appId);
+  const med = medianRun(appId);
+  if (!med) {
+    pane.value.textContent = "–";
+    pane.note.textContent = "No runs selected";
+    return;
+  }
+  const showing = runs.find((r) => r.jobId === Number(pane.jobSelect.value)) || med;
+  const which = showing.jobId === med.jobId ? "Median" : "Hand-picked";
+  pane.value.textContent = fmtMs(showing.value);
+  pane.note.textContent =
+    `${which} of ${runs.length} run${runs.length === 1 ? "" : "s"} · ${shortRev(showing.revision)}`;
 }
 
 function resetPane(appId) {
   const pane = panes.get(appId);
   pane.entry = null;
+  pane.pinned = false;
   pane.iterSelect.textContent = "";
   pane.iterSelect.disabled = true;
   pane.video.removeAttribute("src");
@@ -1105,8 +962,10 @@ function selectJobInPane(appId, jobId) {
   if (!pane) {
     return;
   }
+  pane.pinned = true;
   pane.jobSelect.value = String(jobId);
   loadPaneJob(appId, jobId);
+  updatePaneNote(appId);
   $("video-panes").scrollIntoView({ behavior: "smooth", block: "center" });
 }
 
@@ -1118,7 +977,7 @@ async function loadPaneJob(appId, jobId) {
   }
 
   pane.status.classList.remove("error");
-  pane.status.textContent = "Fetching artifact…";
+  pane.status.textContent = "Fetching…";
   pane.progress.hidden = false;
   pane.bar.style.width = "0%";
   pane.iterSelect.disabled = true;
@@ -1134,9 +993,9 @@ async function loadPaneJob(appId, jobId) {
     const mb = (received / 1048576).toFixed(1);
     if (total) {
       pane.bar.style.width = `${(received / total) * 100}%`;
-      pane.status.textContent = `Downloading — ${mb} of ${(total / 1048576).toFixed(1)} MB`;
+      pane.status.textContent = `${mb} / ${(total / 1048576).toFixed(1)} MB`;
     } else {
-      pane.status.textContent = `Downloading — ${mb} MB`;
+      pane.status.textContent = `${mb} MB`;
     }
   };
 
@@ -1249,21 +1108,13 @@ function render() {
   renderHeadline();
   renderStripPlot();
   renderSummaryTable();
-  renderJobsTable();
   refreshPaneJobLists();
-  if (cpuLoaded) {
-    renderCpuTable();
-  }
   writeUrlState();
 }
 
 function onTestOrPlatformChange() {
   state.selectedRevisions = new Set(availableRevisions().map((r) => r.revision));
   $("test-blurb").textContent = TESTS[state.test].blurb;
-  cpuLoaded = false;
-  cpuSeries = null;
-  $("cpu-out").textContent = "";
-  $("cpu-load").textContent = "Load CPU submetrics";
   for (const app of APPS) {
     resetPane(app.id);
   }
@@ -1342,7 +1193,7 @@ async function init() {
   } catch (e) {
     const status = $("status");
     status.classList.add("error");
-    status.textContent = `Could not load data: ${e.message}`;
+    status.textContent = `No data: ${e.message}`;
     return;
   }
 
@@ -1362,7 +1213,6 @@ async function init() {
     onTestOrPlatformChange();
   });
 
-  $("cpu-load").addEventListener("click", loadCpuSubmetrics);
   $("revs-all").addEventListener("click", () => {
     state.selectedRevisions = new Set(availableRevisions().map((r) => r.revision));
     render();
@@ -1383,6 +1233,12 @@ async function init() {
   $("pause-both").addEventListener("click", () => {
     for (const pane of panes.values()) {
       pane.video.pause();
+    }
+  });
+  $("reset-medians").addEventListener("click", () => {
+    for (const app of APPS) {
+      loadMedianRun(app.id);
+      updatePaneNote(app.id);
     }
   });
 
@@ -1406,10 +1262,7 @@ async function init() {
   });
 
   const revisions = [...new Set(state.runs.map((r) => r.revision))];
-  loadPushMetadata(revisions).then(() => {
-    renderRevChips();
-    renderJobsTable();
-  });
+  loadPushMetadata(revisions).then(renderRevChips);
 }
 
 init();
