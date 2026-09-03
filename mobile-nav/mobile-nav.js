@@ -34,7 +34,7 @@ const CANDIDATE_PLATFORMS = [
 ];
 
 const state = {
-  test: "urlbar-nav",
+  test: "hot-applink",
   platform: null,
   selectedRevisions: new Set(),
   signatures: [],
@@ -228,6 +228,20 @@ function availableRevisions() {
     byRev.get(run.revision).count++;
   }
   return [...byRev.values()].sort((a, b) => b.pushTimestamp - a.pushTimestamp);
+}
+
+/**
+ * Pushes to select on open: the newest one that ran both browsers, else just the
+ * newest. Selecting every push pools runs weeks apart, so the medians stop meaning
+ * anything and the video panes land on whichever old push sits in the middle.
+ * The All button is still there when you do want everything.
+ */
+function defaultRevisions() {
+  const runs = testRuns();
+  const revs = availableRevisions();
+  const appsOn = (rev) => new Set(runs.filter((r) => r.revision === rev).map((r) => r.app));
+  const pick = revs.find((r) => APPS.every((a) => appsOn(r.revision).has(a.id))) || revs[0];
+  return new Set(pick ? [pick.revision] : []);
 }
 
 /** One lane per (app, revision) that has runs, apps in fixed order. */
@@ -1113,7 +1127,7 @@ function render() {
 }
 
 function onTestOrPlatformChange() {
-  state.selectedRevisions = new Set(availableRevisions().map((r) => r.revision));
+  state.selectedRevisions = defaultRevisions();
   $("test-blurb").textContent = TESTS[state.test].blurb;
   for (const app of APPS) {
     resetPane(app.id);
