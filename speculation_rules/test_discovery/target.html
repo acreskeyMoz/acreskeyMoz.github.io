@@ -1,0 +1,41 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Target</title>
+<style>
+  body { font: 16px system-ui; margin: 40px; max-width: 760px; }
+  h1 { font-size: 44px; margin: 0 0 12px; }
+  .ok { color: #0a7a2f; }
+  .no { color: #c0392b; }
+  td { padding: 4px 18px 4px 0; font-variant-numeric: tabular-nums; }
+  td:first-child { color: #555; }
+</style>
+<h1 id="verdict">…</h1>
+<p>This URL is unique to the visit that linked here, so it can only be in the HTTP cache (transferSize 0) if it was prefetched.</p>
+<table>
+  <tr><td>from page</td><td id="item"></td></tr>
+  <tr><td>transferSize</td><td id="ts"></td></tr>
+  <tr><td>responseStart</td><td id="rs"></td></tr>
+  <tr><td>domContentLoaded</td><td id="dcl"></td></tr>
+  <tr><td>loadEventEnd</td><td id="le"></td></tr>
+  <tr><td>deliveryType</td><td id="dt"></td></tr>
+</table>
+<p><a href="index.html">back to index</a></p>
+<script>
+  addEventListener("load", () => setTimeout(() => {
+    if (location.protocol === "file:") {
+      verdict.textContent = "Open over http(s): speculation rules ignore file:// pages";
+      verdict.className = "no";
+      return;
+    }
+    const n = performance.getEntriesByType("navigation")[0];
+    const ok = n.transferSize === 0 || n.deliveryType === "navigational-prefetch";
+    verdict.textContent = ok ? "PREFETCHED" : "NOT prefetched";
+    verdict.className = ok ? "ok" : "no";
+    item.textContent = new URLSearchParams(location.search).get("item") + ".html";
+    ts.textContent = n.transferSize + " bytes";
+    rs.textContent = n.responseStart.toFixed(1) + " ms";
+    dcl.textContent = n.domContentLoadedEventEnd.toFixed(1) + " ms";
+    le.textContent = n.loadEventEnd.toFixed(1) + " ms";
+    dt.textContent = n.deliveryType || "(empty)";
+  }));
+</script>

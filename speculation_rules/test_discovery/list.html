@@ -1,0 +1,34 @@
+<!doctype html>
+<html data-item="list">
+<meta charset="utf-8">
+<title>list.html</title>
+<script src="demo.js"></script>
+<script>
+  // The list rule must name this visit's unique target URL, so it is
+  // generated here rather than written inline.
+  const rules = document.createElement("script");
+  rules.type = "speculationrules";
+  rules.textContent = JSON.stringify(
+    { prefetch: [{ source: "list", urls: [TARGET], eagerness: "immediate" }] });
+  document.head.appendChild(rules);
+</script>
+<style>
+  body { font: 16px system-ui; margin: 40px; max-width: 760px; }
+  pre { background: #eee; padding: 10px; overflow-x: auto; }
+  a.target { font-size: 26px; }
+</style>
+<body>
+<h1>list.html</h1>
+<p><b>List</b> source in &lt;head&gt;: the URL is named explicitly, no link matching involved.</p>
+<pre id="rules-shown"></pre>
+<p>Wait about 2 s, then click:</p>
+<p><a id="go" class="target">Go to target</a></p>
+<p>Target this visit: <code id="turl"></code></p>
+<script>
+  setTargetLink();
+  document.getElementById("rules-shown").textContent =
+    '<script type="speculationrules">\n' + rules.textContent + '\n<\/script>';
+</script>
+<p><a href="index.html">back to index</a></p>
+</body>
+</html>

@@ -1,0 +1,33 @@
+<!doctype html>
+<html data-item="late">
+<meta charset="utf-8">
+<title>late.html</title>
+<script src="demo.js"></script>
+<style>
+  body { font: 16px system-ui; margin: 40px; max-width: 760px; }
+  pre { background: #eee; padding: 10px; overflow-x: auto; }
+  a.target { font-size: 26px; }
+</style>
+<body>
+<h1>late.html</h1>
+<p>Same document rule, but injected by script <b>1.5 s after load</b>.</p>
+<p>Status: <b id="status">waiting to inject rules…</b></p>
+<p><a id="go" class="target">Go to target</a></p>
+<p>Target this visit: <code id="turl"></code></p>
+<script>setTargetLink()</script>
+<pre>&lt;script type="speculationrules"&gt;
+{"prefetch":[{"source":"document","where":{"href_matches":"target.html*"},"eagerness":"immediate"}]}
+&lt;/script&gt;</pre>
+<p><a href="index.html">back to index</a></p>
+<script>
+  addEventListener("load", () => setTimeout(() => {
+    const s = document.createElement("script");
+    s.type = "speculationrules";
+    s.textContent = '{"prefetch":[{"source":"document","where":{"href_matches":"target.html*"},"eagerness":"immediate"}]}';
+    document.body.appendChild(s);
+    document.getElementById("status").textContent =
+      "rules injected at +" + performance.now().toFixed(0) + " ms; wait 1 s, then click";
+  }, 1500));
+</script>
+</body>
+</html>

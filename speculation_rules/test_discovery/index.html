@@ -1,0 +1,24 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Speculation rules placement demo</title>
+<style>
+  body { font: 16px system-ui; margin: 40px; max-width: 760px; }
+  table { border-collapse: collapse; }
+  td, th { text-align: left; padding: 6px 18px 6px 0; border-bottom: 1px solid #ddd; }
+  code { background: #eee; padding: 1px 5px; }
+</style>
+<h1>Speculation rules placement demo</h1>
+<p>
+  Each page prefetches <code>target.html</code> with
+  <code>eagerness: immediate</code>. The target URL is unique per visit, so
+  the target reports <b>PREFETCHED</b> if it arrived from the HTTP cache and
+  <b>NOT prefetched</b> if it came over the network.
+</p>
+<p>On each page: wait about 2 s, then click the link.</p>
+<table>
+  <tr><th>page</th><th>rules placement</th></tr>
+  <tr><td><a href="head.html">head.html</a></td><td>document rule in &lt;head&gt;, link in &lt;body&gt;</td></tr>
+  <tr><td><a href="tail.html">tail.html</a></td><td>document rule after the &lt;a&gt;, same parse pass</td></tr>
+  <tr><td><a href="late.html">late.html</a></td><td>document rule injected 1.5 s after load</td></tr>
+  <tr><td><a href="list.html">list.html</a></td><td>list source in &lt;head&gt;</td></tr>
+</table>

@@ -1,0 +1,26 @@
+<!doctype html>
+<html data-item="tail">
+<meta charset="utf-8">
+<title>tail.html</title>
+<script src="demo.js"></script>
+<style>
+  body { font: 16px system-ui; margin: 40px; max-width: 760px; }
+  pre { background: #eee; padding: 10px; overflow-x: auto; }
+  a.target { font-size: 26px; }
+</style>
+<body>
+<h1>tail.html</h1>
+<p>Link first, document rule <b>after the &lt;a&gt;</b> in the same parse pass (the WordPress footer pattern).</p>
+<p>Wait about 2 s, then click:</p>
+<p><a id="go" class="target">Go to target</a></p>
+<p>Target this visit: <code id="turl"></code></p>
+<script>setTargetLink()</script>
+<pre>&lt;script type="speculationrules"&gt;
+{"prefetch":[{"source":"document","where":{"href_matches":"target.html*"},"eagerness":"immediate"}]}
+&lt;/script&gt;</pre>
+<p><a href="index.html">back to index</a></p>
+<script type="speculationrules">
+{"prefetch":[{"source":"document","where":{"href_matches":"target.html*"},"eagerness":"immediate"}]}
+</script>
+</body>
+</html>
