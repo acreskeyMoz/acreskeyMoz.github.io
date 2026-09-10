@@ -1,8 +1,15 @@
 <!doctype html>
-<html data-item="tail">
+<html>
 <meta charset="utf-8">
 <title>tail.html</title>
-<script src="demo.js"></script>
+<script>
+  // Unique per visit, so a cache hit on the target can only be a prefetch.
+  const TARGET = "target.html?item=tail&n=" + Date.now();
+  function setTargetLink() {
+    document.getElementById("go").href = TARGET;
+    document.getElementById("turl").textContent = TARGET;
+  }
+</script>
 <style>
   body { font: 16px system-ui; margin: 40px; max-width: 760px; }
   pre { background: #eee; padding: 10px; overflow-x: auto; }

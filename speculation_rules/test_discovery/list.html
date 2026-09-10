@@ -1,9 +1,14 @@
 <!doctype html>
-<html data-item="list">
+<html>
 <meta charset="utf-8">
 <title>list.html</title>
-<script src="demo.js"></script>
 <script>
+  // Unique per visit, so a cache hit on the target can only be a prefetch.
+  const TARGET = "target.html?item=list&n=" + Date.now();
+  function setTargetLink() {
+    document.getElementById("go").href = TARGET;
+    document.getElementById("turl").textContent = TARGET;
+  }
   // The list rule must name this visit's unique target URL, so it is
   // generated here rather than written inline.
   const rules = document.createElement("script");
