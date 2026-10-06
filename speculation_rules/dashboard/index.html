@@ -491,9 +491,8 @@
         // One card per suite, notes taken from browsertime-speculation-rules.toml / perfdocs.
         // The `prefetch-*` suites pass only --browsertime.eagerness, so the test script's
         // `source` defaults to "document" — these are document-source rules. The
-        // `prefetch-list-*` suites pass --browsertime.source=list; they exist in the manifest
-        // but are not scheduled in taskgraph yet, so they have no Perfherder data and their
-        // cards stay hidden until they do. The retired combined `prefetch` suite is excluded.
+        // `prefetch-list-*` suites pass --browsertime.source=list. A card stays hidden until its
+        // suite has Perfherder data. The retired combined `prefetch` suite is excluded.
         // Ordered by descending eagerness (immediate first), matching the manifest order.
         const SUITES = [
             { suite: 'prefetch-immediate',    label: 'Immediate',    source: 'document',
@@ -511,7 +510,13 @@
             { suite: 'prefetch-list-moderate',     label: 'Moderate',     source: 'list',
               note: 'target URLs listed explicitly; prefetch triggered after ~200&nbsp;ms of sustained hover' },
             { suite: 'prefetch-list-conservative', label: 'Conservative', source: 'list',
-              note: 'target URLs listed explicitly; prefetch triggered on pointerdown (list-rule eagerness is browser-defined)' }
+              note: 'target URLs listed explicitly; prefetch triggered on pointerdown (list-rule eagerness is browser-defined)' },
+            // In-flight activation (bug 2073257): moderate hover fires the prefetch at ~200 ms and
+            // the click is issued at 250 ms, inside the 500 ms stall, so the navigation has to wait
+            // for the ongoing prefetch. Its values can exceed the shared Y_MAX_MS, so it carries
+            // its own axis ceiling.
+            { suite: 'prefetch-list-inflight',     label: 'In-flight',    source: 'list', yMax: 1200,
+              note: 'moderate hover, clicked 250&nbsp;ms in while the prefetch is still in flight' }
         ];
 
         // The per-eagerness suites started reporting on 2026-06-30; anything earlier belongs
@@ -1006,7 +1011,7 @@
                                 type: useLog ? 'logarithmic' : 'linear',
                                 afterFit: a => { a.width = 60; },
                                 beginAtZero: !useLog,
-                                max: Y_MAX_MS,
+                                max: suiteCfg.yMax || Y_MAX_MS,
                                 grid: { color: 'rgba(0, 0, 0, 0.05)' },
                                 border: { display: false },
                                 ticks: {
