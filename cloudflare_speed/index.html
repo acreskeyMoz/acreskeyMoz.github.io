@@ -333,16 +333,20 @@
                 ' <span class="muted">&mdash; ' + fmtMs(ff).replace(' ms', '') + ' vs ' + fmtMs(cr) + '</span></div>';
         }
 
-        // The browser with the lower median replicate; within 1% counts as a tie.
+        // 0 = Firefox, 1 = Chrome, null = within 1% (a tie).
+        function faster(ff, cr) {
+            return Math.abs(ff - cr) / Math.min(ff, cr) < 0.01 ? null : (ff < cr ? 0 : 1);
+        }
+
+        // Names a browser only when the median and the min agree on it; otherwise "Mixed".
         function winnerHtml(points) {
-            const meds = BROWSERS.map(b => {
-                const v = points.filter(p => p.app === b.app).map(p => p.value);
-                return v.length ? median(v) : null;
-            });
-            if (meds.some(m => m === null)) return '';
-            const [ff, cr] = meds;
-            if (Math.abs(ff - cr) / Math.min(ff, cr) < 0.01) return '<span class="winner">about the same</span>';
-            const w = BROWSERS[ff < cr ? 0 : 1];
+            const [ff, cr] = BROWSERS.map(b => points.filter(p => p.app === b.app).map(p => p.value));
+            if (!ff.length || !cr.length) return '';
+            const byMedian = faster(median(ff), median(cr));
+            const byMin = faster(Math.min(...ff), Math.min(...cr));
+            if (byMedian !== byMin) return '<span class="winner">Mixed</span>';
+            if (byMedian === null) return '<span class="winner">about the same</span>';
+            const w = BROWSERS[byMedian];
             return '<span class="winner"><span class="dot" style="background:' + w.color + '"></span>' +
                 w.label + ' faster</span>';
         }
