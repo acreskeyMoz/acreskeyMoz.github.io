@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloudflare Speed Test - HTTP/1.1 vs HTTP/2 vs HTTP/3</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f0f0f0;
+            min-height: 100vh;
+            padding: 20px;
+            color: #0b0b0b;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+            padding: 30px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 2rem;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .subtitle, .note {
+            color: #666;
+            font-size: 0.95rem;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+
+        .note {
+            color: #718096;
+            font-size: 0.85rem;
+            margin-bottom: 18px;
+        }
+
+        .toggle-row {
+            display: flex;
+            gap: 10px;
+            margin: 16px 0;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .toggle-row label.pill {
+            background: white;
+            border: 2px solid #d0d0d0;
+            border-radius: 5px;
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            color: #333;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .toggle-row label.pill:hover {
+            border-color: #3366ff;
+        }
+
+        .toggle-row label.pill input {
+            display: none;
+        }
+
+        .toggle-row label.pill:has(input:checked) {
+            background: #3366ff;
+            color: white;
+            border-color: #3366ff;
+        }
+
+        .legend-key {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            font-size: 0.85rem;
+            color: #52514e;
+            margin-bottom: 10px;
+        }
+
+        .dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 6px;
+        }
+
+        .tick {
+            display: inline-block;
+            width: 3px;
+            height: 14px;
+            background: #2d3748;
+            margin-right: 6px;
+            vertical-align: middle;
+        }
+
+        .beyond {
+            color: #52514e;
+            font-size: 0.7rem;
+            margin-right: 6px;
+        }
+
+        .metric {
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e0e0e0;
+            padding: 18px 20px 12px;
+            margin-top: 20px;
+        }
+
+        .metric-title {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .metric-note {
+            color: #718096;
+            font-size: 0.85rem;
+            margin: 3px 0 10px;
+        }
+
+        .protocol-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .protocol-title {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #52514e;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 2px;
+        }
+
+        .compare {
+            font-size: 0.8rem;
+            color: #2d3748;
+            margin-bottom: 4px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .compare .muted {
+            color: #718096;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 120px;
+        }
+
+        .error {
+            background: #fed7d7;
+            color: #c53030;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 20px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #718096;
+        }
+
+        .footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+            text-align: center;
+            color: #718096;
+            font-size: 0.85rem;
+        }
+
+        .footer a {
+            color: #3366ff;
+            text-decoration: none;
+        }
+
+        @media (max-width: 1000px) {
+            .protocol-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Cloudflare Speed Test</h1>
+        <p class="subtitle">
+            <code>browsertime-cloudflare-speed</code> &middot; live latency, download and upload against
+            <code>bastion.h3.speed.cloudflare.com</code> &middot; HTTP/1.1, HTTP/2, HTTP/3 &middot; Firefox vs Chrome
+        </p>
+
+        <div class="toggle-row" id="platformToggle"></div>
+
+        <div class="legend-key">
+            <span><span class="dot" style="background:#eb6834"></span>Firefox</span>
+            <span><span class="dot" style="background:#2a78d6"></span>Chrome</span>
+            <span><span class="tick"></span>median</span>
+            <span><span class="beyond">&#9654;</span>beyond the axis (hover for the value)</span>
+        </div>
+        <p class="note">
+            Each dot is one replicate from a CI job (ms, lower is better); the bar marks each browser's median.
+            The three charts for a metric share an axis, which ends at the 99th percentile. Above each chart,
+            Firefox is compared with Chrome using the median and minimum of all replicates.
+            Hover for the worker and push; click a dot to open its job.
+        </p>
+
+        <div id="metrics"><div class="loading">Loading CI data…</div></div>
+        <div id="error" class="error" style="display: none;"></div>
+
+        <div class="footer">
+            Data: <a href="https://treeherder.mozilla.org/perfherder/graphs" target="_blank">Perfherder</a>,
+            <code>try</code>, last 90 days, suites <code>cf-h1</code> / <code>cf-h2</code> / <code>cf-h3</code>
+        </div>
+    </div>
+
+    <script>
+        const TREEHERDER = 'https://treeherder.mozilla.org';
+        const REPOSITORY = 'try';
+        const FRAMEWORK = 13; // browsertime
+        const INTERVAL = 90 * 24 * 60 * 60;
+
+        const PLATFORMS = {
+            linux:  { label: 'Linux 24.04 shippable',   platform: 'linux2404-64-shippable' },
+            winref: { label: 'Windows 11 ref hardware', platform: 'windows11-64-24h2-hw-ref-shippable' }
+        };
+
+        const BROWSERS = [
+            { app: 'firefox', label: 'Firefox', color: '#eb6834' },
+            { app: 'chrome',  label: 'Chrome',  color: '#2a78d6' }
+        ];
+
+        const PROTOCOLS = [
+            { suite: 'cf-h1', label: 'HTTP/1.1' },
+            { suite: 'cf-h2', label: 'HTTP/2' },
+            { suite: 'cf-h3', label: 'HTTP/3' }
+        ];
+
+        const METRICS = [
+            { test: 'cold_connect_ms',   label: 'Cold connect (duration, ms)',    note: 'connection setup for the first request in a fresh browser (TCP+TLS, or QUIC)' },
+            { test: 'cold_ttfb_ms',      label: 'Cold TTFB (time to first byte, ms)',       note: 'request to first byte of that first navigation' },
+            { test: 'latency_ms',        label: 'Latency (round-trip time, ms)',         note: 'warm 0-byte request, TTFB minus Cloudflare server time' },
+            { test: 'download_100kB_ms', label: 'Download 100 kB (time to download, ms)', note: 'warm connection, latency plus payload time' },
+            { test: 'download_1MB_ms',   label: 'Download 1 MB (time to download, ms)',   note: 'warm connection, latency plus payload time' },
+            { test: 'download_10MB_ms',  label: 'Download 10 MB (time to download, ms)',  note: 'warm connection, latency plus payload time' },
+            { test: 'download_25MB_ms',  label: 'Download 25 MB (time to download, ms)',  note: 'warm connection, latency plus payload time' },
+            { test: 'upload_100kB_ms',   label: 'Upload 100 kB (time to upload, ms)',   note: 'POST, request start to response start' },
+            { test: 'upload_1MB_ms',     label: 'Upload 1 MB (time to upload, ms)',     note: 'POST, request start to response start' },
+            { test: 'upload_10MB_ms',    label: 'Upload 10 MB (time to upload, ms)',    note: 'POST, request start to response start' }
+        ];
+
+        let platform = new URLSearchParams(location.search).get('platform');
+        if (!PLATFORMS[platform]) platform = 'linux';
+        let charts = [];
+        const cache = {};
+
+        function niceMax(v) {
+            const mag = Math.pow(10, Math.floor(Math.log10(v)));
+            return [1, 2, 2.5, 5, 10].map(n => n * mag).find(n => n >= v);
+        }
+
+        function median(values) {
+            const s = [...values].sort((a, b) => a - b);
+            const mid = Math.floor(s.length / 2);
+            return s.length % 2 ? s[mid] : (s[mid - 1] + s[mid]) / 2;
+        }
+
+        function compareLine(label, ff, cr) {
+            const pct = (ff - cr) / cr * 100;
+            const verdict = Math.abs(pct) < 0.5 ? 'Firefox same as Chrome'
+                : 'Firefox ' + Math.abs(pct).toFixed(0) + '% ' + (pct > 0 ? 'slower' : 'faster') + ' than Chrome';
+            return '<div><strong>' + label + ':</strong> ' + verdict +
+                ' <span class="muted">&mdash; ' + fmtMs(ff).replace(' ms', '') + ' vs ' + fmtMs(cr) + '</span></div>';
+        }
+
+        // Firefox relative to Chrome over the replicates: median is the typical case, min the best case.
+        function compareHtml(points) {
+            const ff = points.filter(p => p.app === 'firefox').map(p => p.value);
+            const cr = points.filter(p => p.app === 'chrome').map(p => p.value);
+            if (!ff.length || !cr.length) return '<div class="compare muted">needs both browsers to compare</div>';
+            return '<div class="compare">' +
+                compareLine('Median', median(ff), median(cr)) +
+                compareLine('Min', Math.min(...ff), Math.min(...cr)) + '</div>';
+        }
+
+        function fmtMs(v) {
+            return (v < 100 ? v.toFixed(1) : v.toFixed(0)) + ' ms';
+        }
+
+        async function mapLimited(items, limit, fn) {
+            const out = new Array(items.length);
+            let next = 0;
+            async function worker() {
+                while (next < items.length) {
+                    const i = next++;
+                    out[i] = await fn(items[i]);
+                }
+            }
+            await Promise.all(Array.from({ length: Math.min(limit, items.length) }, worker));
+            return out;
+        }
+
+        async function getData(platformKey) {
+            if (cache[platformKey]) return cache[platformKey];
+            const sigUrl = TREEHERDER + '/api/project/' + REPOSITORY + '/performance/signatures/?framework=' +
+                FRAMEWORK + '&platform=' + PLATFORMS[platformKey].platform;
+            const response = await fetch(sigUrl);
+            if (!response.ok) throw new Error('signatures request failed: HTTP ' + response.status);
+            const suites = new Set(PROTOCOLS.map(p => p.suite));
+            const tests = new Set(METRICS.map(m => m.test));
+            const apps = new Set(BROWSERS.map(b => b.app));
+            const sigs = Object.values(await response.json()).filter(sig =>
+                suites.has(sig.suite) && tests.has(sig.test) && apps.has(sig.application) &&
+                !(sig.extra_options || []).some(o => o === 'gecko-profile' || o === 'simpleperf'));
+
+            const results = await mapLimited(sigs, 8, async sig => {
+                const url = TREEHERDER + '/api/performance/summary/?repository=' + REPOSITORY +
+                    '&signature=' + sig.id + '&framework=' + FRAMEWORK + '&interval=' + INTERVAL +
+                    '&all_data=true&replicates=true';
+                try {
+                    const r = await fetch(url);
+                    if (!r.ok) throw new Error('HTTP ' + r.status);
+                    const json = await r.json();
+                    return ((json[0] && json[0].data) || []).map((p, i) => ({
+                        suite: sig.suite, test: sig.test, app: sig.application, value: p.value, index: i,
+                        jobId: p.job_id, revision: p.revision, machine: p.machine_name,
+                        date: new Date(p.push_timestamp + 'Z')
+                    }));
+                } catch (error) {
+                    console.warn('Failed to load signature ' + sig.id, error);
+                    return [];
+                }
+            });
+            cache[platformKey] = results.flat();
+            return cache[platformKey];
+        }
+
+        function percentile(values, q) {
+            const s = [...values].sort((a, b) => a - b);
+            return s[Math.min(s.length - 1, Math.floor(q * s.length))];
+        }
+
+        // Stable jitter, so dots do not move between renders.
+        function jitter(seed) {
+            const x = Math.sin(seed) * 10000;
+            return (x - Math.floor(x) - 0.5) * 0.6;
+        }
+
+        // Treeherder selects a job by task_id.retry_id; the series only has job_id, so look it up.
+        // The tab is opened before the await so the popup blocker allows it.
+        function openJob(point) {
+            const pushUrl = TREEHERDER + '/jobs?repo=' + REPOSITORY + '&revision=' + point.revision + '&tier=1%2C2%2C3';
+            const win = window.open('', '_blank');
+            const go = url => { if (win) { win.location = url; } else { window.open(url, '_blank'); } };
+            fetch(TREEHERDER + '/api/project/' + REPOSITORY + '/jobs/?id=' + point.jobId)
+                .then(r => r.ok ? r.json() : Promise.reject(new Error('HTTP ' + r.status)))
+                .then(data => {
+                    const job = (data.results || [])[0];
+                    go(job && job.task_id ? pushUrl + '&selectedTaskRun=' + job.task_id + '.' + (job.retry_id || 0) : pushUrl);
+                })
+                .catch(() => go(pushUrl));
+        }
+
+        const medianTicks = {
+            id: 'medianTicks',
+            afterDatasetsDraw(chart) {
+                const { ctx, scales: { x, y } } = chart;
+                chart.options.plugins.medianTicks.medians.forEach((m, row) => {
+                    if (m === null) return;
+                    const px = x.getPixelForValue(Math.min(m, x.max));
+                    ctx.save();
+                    ctx.strokeStyle = '#ffffff';
+                    ctx.lineWidth = 7;
+                    ctx.beginPath();
+                    ctx.moveTo(px, y.getPixelForValue(row - 0.42));
+                    ctx.lineTo(px, y.getPixelForValue(row + 0.42));
+                    ctx.stroke();
+                    ctx.strokeStyle = '#2d3748';
+                    ctx.lineWidth = 3;
+                    ctx.stroke();
+                    ctx.restore();
+                });
+            }
+        };
+
+        function dotChart(canvas, points, hi) {
+            const datasets = [];
+            const medians = BROWSERS.map((b, row) => {
+                const mine = points.filter(p => p.app === b.app);
+                const toDot = p => ({ x: Math.min(p.value, hi), y: row + jitter(p.jobId * 31 + p.index), point: p });
+                datasets.push({
+                    label: b.label,
+                    data: mine.filter(p => p.value <= hi).map(toDot),
+                    backgroundColor: b.color + '66',
+                    borderWidth: 0,
+                    pointRadius: 3,
+                    pointHoverRadius: 6,
+                    pointHoverBackgroundColor: b.color,
+                    pointHitRadius: 4
+                });
+                datasets.push({
+                    label: b.label,
+                    data: mine.filter(p => p.value > hi).map(toDot),
+                    backgroundColor: b.color,
+                    pointStyle: 'triangle',
+                    rotation: 90,
+                    clip: 10,
+                    pointRadius: 5,
+                    pointHoverRadius: 8,
+                    pointHitRadius: 6
+                });
+                return mine.length ? median(mine.map(p => p.value)) : null;
+            });
+            return new Chart(canvas.getContext('2d'), {
+                type: 'scatter',
+                data: { datasets },
+                plugins: [medianTicks],
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: false,
+                    onClick: (event, elements, chart) => {
+                        if (elements.length) openJob(chart.data.datasets[elements[0].datasetIndex].data[elements[0].index].point);
+                    },
+                    onHover: (event, elements, chart) => {
+                        chart.canvas.style.cursor = elements.length ? 'pointer' : 'default';
+                    },
+                    plugins: {
+                        medianTicks: { medians },
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: 'rgba(255, 255, 255, 0.97)',
+                            titleColor: '#2d3748',
+                            bodyColor: '#4a5568',
+                            borderColor: '#e2e8f0',
+                            borderWidth: 1,
+                            padding: 10,
+                            callbacks: {
+                                title: items => items[0].dataset.label + ': ' + fmtMs(items[0].raw.point.value) +
+                                    ' (median ' + fmtMs(medians[BROWSERS.findIndex(b => b.label === items[0].dataset.label)]) + ')',
+                                label: c => {
+                                    const p = c.raw.point;
+                                    return [(p.machine ? 'worker ' + p.machine : ''),
+                                            'push ' + p.revision.slice(0, 12) + ', ' + p.date.toISOString().slice(0, 16).replace('T', ' ')];
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            min: 0,
+                            max: hi,
+                            grid: { color: '#e1e0d9' },
+                            border: { display: false },
+                            ticks: { font: { size: 11 }, color: '#898781', maxTicksLimit: 6,
+                                     callback: v => (v >= 10 || v === 0 ? Math.round(v) : v) + ' ms' }
+                        },
+                        y: {
+                            type: 'linear',
+                            min: -0.5,
+                            max: BROWSERS.length - 0.5,
+                            reverse: true,
+                            afterFit: a => { a.width = 62; },
+                            afterBuildTicks: a => { a.ticks = BROWSERS.map((b, i) => ({ value: i })); },
+                            grid: { display: false },
+                            border: { display: false },
+                            ticks: { font: { size: 11 }, color: '#52514e', callback: v => BROWSERS[v] ? BROWSERS[v].label : '' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function render(points) {
+            charts.forEach(c => c.destroy());
+            charts = [];
+            const host = document.getElementById('metrics');
+            if (!points.length) {
+                host.innerHTML = '<div class="loading">No data for ' + PLATFORMS[platform].label + ' yet.</div>';
+                return;
+            }
+            host.innerHTML = '';
+            const builders = [];
+            METRICS.forEach(m => {
+                const forMetric = points.filter(p => p.test === m.test);
+                if (!forMetric.length) return;
+                const hi = niceMax(percentile(forMetric.map(p => p.value), 0.99) * 1.05);
+                const section = document.createElement('div');
+                section.className = 'metric';
+                section.innerHTML =
+                    '<div class="metric-title">' + m.label + '</div>' +
+                    '<div class="metric-note">' + m.note + ' &middot; <code>' + m.test + '</code></div>' +
+                    '<div class="protocol-row">' + PROTOCOLS.map(p =>
+                        '<div><div class="protocol-title">' + p.label + '</div>' +
+                        compareHtml(forMetric.filter(x => x.suite === p.suite)) +
+                        '<div class="chart-container"><canvas id="c-' + m.test + '-' + p.suite + '"></canvas></div></div>'
+                    ).join('') + '</div>';
+                host.appendChild(section);
+                PROTOCOLS.forEach(p => builders.push(() => charts.push(dotChart(
+                    document.getElementById('c-' + m.test + '-' + p.suite),
+                    forMetric.filter(x => x.suite === p.suite), hi))));
+            });
+            builders.forEach(b => b());
+        }
+
+        async function load() {
+            document.getElementById('error').style.display = 'none';
+            document.getElementById('metrics').innerHTML = '<div class="loading">Loading CI data…</div>';
+            try {
+                render(await getData(platform));
+            } catch (error) {
+                document.getElementById('metrics').innerHTML = '';
+                const e = document.getElementById('error');
+                e.textContent = 'Error loading data: ' + error.message;
+                e.style.display = 'block';
+            }
+        }
+
+        window.addEventListener('load', () => {
+            const row = document.getElementById('platformToggle');
+            Object.entries(PLATFORMS).forEach(([key, cfg]) => {
+                const label = document.createElement('label');
+                label.className = 'pill';
+                label.innerHTML = '<input type="radio" name="platform" value="' + key + '"' +
+                    (key === platform ? ' checked' : '') + '><span>' + cfg.label + '</span>';
+                label.querySelector('input').addEventListener('change', () => {
+                    platform = key;
+                    history.replaceState(null, '', key === 'linux' ? location.pathname : '?platform=' + key);
+                    load();
+                });
+                row.appendChild(label);
+            });
+            load();
+        });
+    </script>
+</body>
+</html>
