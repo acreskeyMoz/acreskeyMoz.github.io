@@ -148,6 +148,35 @@
             gap: 20px;
         }
 
+        .lib {
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #718096;
+            margin-left: 8px;
+            text-transform: none;
+            letter-spacing: 0;
+        }
+
+        .winner {
+            display: inline-block;
+            margin-left: 8px;
+            padding: 1px 8px;
+            border-radius: 10px;
+            border: 1px solid #c3c2b7;
+            background: #f0efec;
+            color: #2d3748;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: none;
+            letter-spacing: 0;
+        }
+
+        .winner .dot {
+            width: 8px;
+            height: 8px;
+            margin-right: 5px;
+        }
+
         .protocol-title {
             font-size: 0.8rem;
             font-weight: 600;
@@ -302,6 +331,20 @@
                 : 'Firefox ' + Math.abs(pct).toFixed(0) + '% ' + (pct > 0 ? 'slower' : 'faster') + ' than Chrome';
             return '<div><strong>' + label + ':</strong> ' + verdict +
                 ' <span class="muted">&mdash; ' + fmtMs(ff).replace(' ms', '') + ' vs ' + fmtMs(cr) + '</span></div>';
+        }
+
+        // The browser with the lower median replicate; within 1% counts as a tie.
+        function winnerHtml(points) {
+            const meds = BROWSERS.map(b => {
+                const v = points.filter(p => p.app === b.app).map(p => p.value);
+                return v.length ? median(v) : null;
+            });
+            if (meds.some(m => m === null)) return '';
+            const [ff, cr] = meds;
+            if (Math.abs(ff - cr) / Math.min(ff, cr) < 0.01) return '<span class="winner">about the same</span>';
+            const w = BROWSERS[ff < cr ? 0 : 1];
+            return '<span class="winner"><span class="dot" style="background:' + w.color + '"></span>' +
+                w.label + ' faster</span>';
         }
 
         // Firefox relative to Chrome over the replicates: median is the typical case, min the best case.
@@ -520,10 +563,11 @@
                 const section = document.createElement('div');
                 section.className = 'metric';
                 section.innerHTML =
-                    '<div class="metric-title">' + m.label + '</div>' +
+                    '<div class="metric-title">' + m.label + '<span class="lib">lower is better</span></div>' +
                     '<div class="metric-note">' + m.note + ' &middot; <code>' + m.test + '</code></div>' +
                     '<div class="protocol-row">' + PROTOCOLS.map(p =>
-                        '<div><div class="protocol-title">' + p.label + '</div>' +
+                        '<div><div class="protocol-title">' + p.label +
+                        winnerHtml(forMetric.filter(x => x.suite === p.suite)) + '</div>' +
                         compareHtml(forMetric.filter(x => x.suite === p.suite)) +
                         '<div class="chart-container"><canvas id="c-' + m.test + '-' + p.suite + '"></canvas></div></div>'
                     ).join('') + '</div>';
