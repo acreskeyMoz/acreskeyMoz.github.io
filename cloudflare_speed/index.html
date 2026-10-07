@@ -83,6 +83,12 @@
             border-color: #3366ff;
         }
 
+        .subtitle a {
+            color: #3366ff;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
         .legend-key {
             display: flex;
             justify-content: center;
@@ -210,6 +216,11 @@
             <code>bastion.h3.speed.cloudflare.com</code> &middot; HTTP/1.1, HTTP/2, HTTP/3 &middot; Firefox vs Chrome
         </p>
 
+        <p class="subtitle">
+            <a href="https://treeherder.mozilla.org/jobs?repo=try&amp;tier=1%2C2%2C3&amp;revision=768685f0ea30c19519f80850d1948385dd910670" target="_blank" rel="noopener">Try push</a>
+            running the test on Linux shippable and Windows reference hardware
+        </p>
+
         <div class="toggle-row" id="platformToggle"></div>
 
         <div class="legend-key">
@@ -270,7 +281,7 @@
         ];
 
         let platform = new URLSearchParams(location.search).get('platform');
-        if (!PLATFORMS[platform]) platform = 'linux';
+        if (!PLATFORMS[platform]) platform = 'winref';
         let charts = [];
         const cache = {};
 
@@ -546,7 +557,7 @@
                     (key === platform ? ' checked' : '') + '><span>' + cfg.label + '</span>';
                 label.querySelector('input').addEventListener('change', () => {
                     platform = key;
-                    history.replaceState(null, '', key === 'linux' ? location.pathname : '?platform=' + key);
+                    history.replaceState(null, '', key === 'winref' ? location.pathname : '?platform=' + key);
                     load();
                 });
                 row.appendChild(label);
