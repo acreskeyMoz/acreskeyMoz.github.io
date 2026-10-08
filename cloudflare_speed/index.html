@@ -197,6 +197,10 @@
             color: #718096;
         }
 
+        .chart-container.by-day {
+            height: 230px;
+        }
+
         .chart-container {
             position: relative;
             height: 120px;
@@ -251,6 +255,7 @@
         </p>
 
         <div class="toggle-row" id="platformToggle"></div>
+        <div class="toggle-row" id="viewToggle"></div>
 
         <div class="legend-key">
             <span><span class="dot" style="background:#eb6834"></span>Firefox</span>
@@ -259,9 +264,12 @@
             <span><span class="beyond">&#9654;</span>beyond the axis (hover for the value)</span>
         </div>
         <p class="note">
-            Each dot is one replicate from a CI job (ms, lower is better); the bar marks each browser's median.
-            The three charts for a metric share an axis, which ends at the 99th percentile. Above each chart,
-            Firefox is compared with Chrome using the median and minimum of all replicates.
+            Each dot is one replicate from a CI job; the bar marks each browser's median (per day in the
+            By day view, where days run left to right by the date each job reported). Connection times and
+            latency are in ms (lower is better); downloads and uploads are throughput in Mbps (higher is better),
+            from each transfer's size and duration. The three charts for a metric share an axis. Above each chart,
+            Firefox is compared with Chrome using the median and the best replicate (min time, max throughput),
+            and each browser's coefficient of variance (standard deviation / mean) shows how noisy it is.
             Hover for the worker and push; click a dot to open its job.
         </p>
 
@@ -296,27 +304,32 @@
             { suite: 'cf-h3', label: 'HTTP/3' }
         ];
 
+        // Transfer metrics carry their size and are shown as throughput; the rest stay as times.
         const METRICS = [
-            { test: 'cold_connect_ms',   label: 'Cold connect (duration, ms)',    note: 'connection setup for the first request in a fresh browser (TCP+TLS, or QUIC)' },
-            { test: 'cold_ttfb_ms',      label: 'Cold TTFB (time to first byte, ms)',       note: 'request to first byte of that first navigation' },
-            { test: 'latency_ms',        label: 'Latency (round-trip time, ms)',         note: 'warm 0-byte request, TTFB minus Cloudflare server time' },
-            { test: 'download_100kB_ms', label: 'Download 100 kB (time to download, ms)', note: 'warm connection, latency plus payload time' },
-            { test: 'download_1MB_ms',   label: 'Download 1 MB (time to download, ms)',   note: 'warm connection, latency plus payload time' },
-            { test: 'download_10MB_ms',  label: 'Download 10 MB (time to download, ms)',  note: 'warm connection, latency plus payload time' },
-            { test: 'download_25MB_ms',  label: 'Download 25 MB (time to download, ms)',  note: 'warm connection, latency plus payload time' },
-            { test: 'upload_100kB_ms',   label: 'Upload 100 kB (time to upload, ms)',   note: 'POST, request start to response start' },
-            { test: 'upload_1MB_ms',     label: 'Upload 1 MB (time to upload, ms)',     note: 'POST, request start to response start' },
-            { test: 'upload_10MB_ms',    label: 'Upload 10 MB (time to upload, ms)',    note: 'POST, request start to response start' }
+            { test: 'cold_connect_ms',   label: 'Cold connect (duration, ms)',            note: 'connection setup for the first request in a fresh browser (TCP+TLS, or QUIC)' },
+            { test: 'cold_ttfb_ms',      label: 'Cold TTFB (time to first byte, ms)',     note: 'request to first byte of that first navigation' },
+            { test: 'latency_ms',        label: 'Latency (round-trip time, ms)',          note: 'warm 0-byte request, TTFB minus Cloudflare server time' },
+            { test: 'download_100kB_ms', label: 'Download 100 kB (throughput, Mbps)', bytes: 1e5,   note: 'warm connection; size over latency plus payload time' },
+            { test: 'download_1MB_ms',   label: 'Download 1 MB (throughput, Mbps)',   bytes: 1e6,   note: 'warm connection; size over latency plus payload time' },
+            { test: 'download_10MB_ms',  label: 'Download 10 MB (throughput, Mbps)',  bytes: 1e7,   note: 'warm connection; size over latency plus payload time' },
+            { test: 'download_25MB_ms',  label: 'Download 25 MB (throughput, Mbps)',  bytes: 2.5e7, note: 'warm connection; size over latency plus payload time' },
+            { test: 'upload_100kB_ms',   label: 'Upload 100 kB (throughput, Mbps)',   bytes: 1e5,   note: 'POST; size over request start to response start' },
+            { test: 'upload_1MB_ms',     label: 'Upload 1 MB (throughput, Mbps)',     bytes: 1e6,   note: 'POST; size over request start to response start' },
+            { test: 'upload_10MB_ms',    label: 'Upload 10 MB (throughput, Mbps)',    bytes: 1e7,   note: 'POST; size over request start to response start' }
         ];
+        const METRIC_BY_TEST = Object.fromEntries(METRICS.map(m => [m.test, m]));
 
         let platform = new URLSearchParams(location.search).get('platform');
         if (!PLATFORMS[platform]) platform = 'winref';
+        const VIEWS = { all: 'All results', day: 'By day' };
+        let view = new URLSearchParams(location.search).get('view');
+        if (!VIEWS[view]) view = 'all';
         let charts = [];
         const cache = {};
 
         function niceMax(v) {
             const mag = Math.pow(10, Math.floor(Math.log10(v)));
-            return [1, 2, 2.5, 5, 10].map(n => n * mag).find(n => n >= v);
+            return [1, 1.5, 2, 2.5, 3, 4, 5, 6, 8, 10].map(n => n * mag).find(n => n >= v);
         }
 
         function median(values) {
@@ -325,40 +338,68 @@
             return s.length % 2 ? s[mid] : (s[mid - 1] + s[mid]) / 2;
         }
 
-        function compareLine(label, ff, cr) {
-            const pct = (ff - cr) / cr * 100;
-            const verdict = Math.abs(pct) < 0.5 ? 'Firefox same as Chrome'
-                : 'Firefox ' + Math.abs(pct).toFixed(0) + '% ' + (pct > 0 ? 'slower' : 'faster') + ' than Chrome';
+        function fmtVal(v, m) {
+            return (v < 100 ? v.toFixed(1) : v.toFixed(0)) + (m.bytes ? ' Mbps' : ' ms');
+        }
+
+        // Differences of 3% or less count as roughly equal.
+        const TIE = 0.03;
+
+        // 0 = Firefox, 1 = Chrome, null = a tie. Throughput is better higher, times lower.
+        function faster(ff, cr, m) {
+            if (Math.abs(ff - cr) / Math.min(ff, cr) <= TIE) return null;
+            return (m.bytes ? ff > cr : ff < cr) ? 0 : 1;
+        }
+
+        function best(values, m) {
+            return m.bytes ? Math.max(...values) : Math.min(...values);
+        }
+
+        function compareLine(label, ff, cr, m) {
+            const w = faster(ff, cr, m);
+            const pct = Math.abs(ff - cr) / cr * 100;
+            const verdict = w === null ? 'Firefox roughly equal to Chrome'
+                : 'Firefox ' + pct.toFixed(pct < 10 ? 1 : 0) + '% ' + (w === 0 ? 'faster' : 'slower') + ' than Chrome';
             return '<div><strong>' + label + ':</strong> ' + verdict +
-                ' <span class="muted">&mdash; ' + fmtMs(ff).replace(' ms', '') + ' vs ' + fmtMs(cr) + '</span></div>';
+                ' <span class="muted">&mdash; ' + fmtVal(ff, m).replace(m.bytes ? ' Mbps' : ' ms', '') +
+                ' vs ' + fmtVal(cr, m) + '</span></div>';
         }
 
-        // 0 = Firefox, 1 = Chrome, null = within 1% (a tie).
-        function faster(ff, cr) {
-            return Math.abs(ff - cr) / Math.min(ff, cr) < 0.01 ? null : (ff < cr ? 0 : 1);
-        }
-
-        // Names a browser only when the median and the min agree on it; otherwise "Mixed".
-        function winnerHtml(points) {
+        // Names a browser only when the median and the best replicate agree on it; otherwise "Mixed".
+        function winnerHtml(points, m) {
             const [ff, cr] = BROWSERS.map(b => points.filter(p => p.app === b.app).map(p => p.value));
             if (!ff.length || !cr.length) return '';
-            const byMedian = faster(median(ff), median(cr));
-            const byMin = faster(Math.min(...ff), Math.min(...cr));
-            if (byMedian !== byMin) return '<span class="winner">Mixed</span>';
-            if (byMedian === null) return '<span class="winner">about the same</span>';
+            const byMedian = faster(median(ff), median(cr), m);
+            const byBest = faster(best(ff, m), best(cr, m), m);
+            if (byMedian !== byBest) return '<span class="winner">Mixed</span>';
+            if (byMedian === null) return '<span class="winner">roughly equal</span>';
             const w = BROWSERS[byMedian];
             return '<span class="winner"><span class="dot" style="background:' + w.color + '"></span>' +
                 w.label + ' faster</span>';
         }
 
-        // Firefox relative to Chrome over the replicates: median is the typical case, min the best case.
-        function compareHtml(points) {
+        // Coefficient of variation (sample standard deviation over mean), as a percentage.
+        function cov(values) {
+            if (values.length < 2) return null;
+            const mean = values.reduce((a, b) => a + b, 0) / values.length;
+            const variance = values.reduce((a, v) => a + (v - mean) ** 2, 0) / (values.length - 1);
+            return Math.sqrt(variance) / mean * 100;
+        }
+
+        function covLine(ff, cr) {
+            const fmt = v => v === null ? '–' : v.toFixed(v < 10 ? 1 : 0) + '%';
+            return '<div><strong>Coefficient of Variance:</strong> Firefox ' + fmt(cov(ff)) + ' &middot; Chrome ' + fmt(cov(cr)) +
+                ' <span class="muted">&mdash; lower is steadier</span></div>';
+        }
+
+        function compareHtml(points, m) {
             const ff = points.filter(p => p.app === 'firefox').map(p => p.value);
             const cr = points.filter(p => p.app === 'chrome').map(p => p.value);
             if (!ff.length || !cr.length) return '<div class="compare muted">needs both browsers to compare</div>';
             return '<div class="compare">' +
-                compareLine('Median', median(ff), median(cr)) +
-                compareLine('Min', Math.min(...ff), Math.min(...cr)) + '</div>';
+                compareLine('Median', median(ff), median(cr), m) +
+                compareLine(m.bytes ? 'Max' : 'Min', best(ff, m), best(cr, m), m) +
+                covLine(ff, cr) + '</div>';
         }
 
         function fmtMs(v) {
@@ -399,10 +440,13 @@
                     const r = await fetch(url);
                     if (!r.ok) throw new Error('HTTP ' + r.status);
                     const json = await r.json();
+                    const bytes = METRIC_BY_TEST[sig.test].bytes;
                     return ((json[0] && json[0].data) || []).map((p, i) => ({
-                        suite: sig.suite, test: sig.test, app: sig.application, value: p.value, index: i,
+                        suite: sig.suite, test: sig.test, app: sig.application, index: i,
+                        value: bytes ? bytes * 8 / (p.value * 1000) : p.value, ms: p.value,
                         jobId: p.job_id, revision: p.revision, machine: p.machine_name,
-                        date: new Date(p.push_timestamp + 'Z')
+                        date: new Date(p.push_timestamp + 'Z'),
+                        jobDay: (p.submit_time || p.push_timestamp).slice(0, 10)
                     }));
                 } catch (error) {
                     console.warn('Failed to load signature ' + sig.id, error);
@@ -461,7 +505,7 @@
             }
         };
 
-        function dotChart(canvas, points, hi) {
+        function dotChart(canvas, points, hi, m) {
             const datasets = [];
             const medians = BROWSERS.map((b, row) => {
                 const mine = points.filter(p => p.app === b.app);
@@ -514,12 +558,14 @@
                             borderWidth: 1,
                             padding: 10,
                             callbacks: {
-                                title: items => items[0].dataset.label + ': ' + fmtMs(items[0].raw.point.value) +
-                                    ' (median ' + fmtMs(medians[BROWSERS.findIndex(b => b.label === items[0].dataset.label)]) + ')',
+                                title: items => items[0].dataset.label + ': ' + fmtVal(items[0].raw.point.value, m) +
+                                    ' (median ' + fmtVal(medians[BROWSERS.findIndex(b => b.label === items[0].dataset.label)], m) + ')',
                                 label: c => {
                                     const p = c.raw.point;
-                                    return [(p.machine ? 'worker ' + p.machine : ''),
-                                            'push ' + p.revision.slice(0, 12) + ', ' + p.date.toISOString().slice(0, 16).replace('T', ' ')];
+                                    return [(m.bytes ? 'took ' + fmtMs(p.ms) : ''),
+                                            (p.machine ? 'worker ' + p.machine : ''),
+                                            'push ' + p.revision.slice(0, 12) + ', ' + p.date.toISOString().slice(0, 16).replace('T', ' ')]
+                                        .filter(Boolean);
                                 }
                             }
                         }
@@ -532,7 +578,7 @@
                             grid: { color: '#e1e0d9' },
                             border: { display: false },
                             ticks: { font: { size: 11 }, color: '#898781', maxTicksLimit: 6,
-                                     callback: v => (v >= 10 || v === 0 ? Math.round(v) : v) + ' ms' }
+                                     callback: v => (v >= 10 || v === 0 ? Math.round(v) : v) + (m.bytes ? ' Mbps' : ' ms') }
                         },
                         y: {
                             type: 'linear',
@@ -550,10 +596,144 @@
             });
         }
 
-        function render(points) {
+        function syncUrl() {
+            const q = new URLSearchParams();
+            if (platform !== 'winref') q.set('platform', platform);
+            if (view !== 'all') q.set('view', view);
+            history.replaceState(null, '', q.toString() ? '?' + q : location.pathname);
+        }
+
+        function prettyDay(d) {
+            return new Date(d + 'T00:00:00Z').toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
+        }
+
+        // Horizontal median bars, one per browser per day.
+        const dayMedianTicks = {
+            id: 'dayMedianTicks',
+            afterDatasetsDraw(chart) {
+                const { ctx, scales: { x, y } } = chart;
+                chart.options.plugins.dayMedianTicks.medians.forEach(({ cx, value }) => {
+                    const py = y.getPixelForValue(Math.min(value, y.max));
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.moveTo(x.getPixelForValue(cx - 0.16), py);
+                    ctx.lineTo(x.getPixelForValue(cx + 0.16), py);
+                    ctx.strokeStyle = '#ffffff';
+                    ctx.lineWidth = 7;
+                    ctx.stroke();
+                    ctx.strokeStyle = '#2d3748';
+                    ctx.lineWidth = 3;
+                    ctx.stroke();
+                    ctx.restore();
+                });
+            }
+        };
+
+        // Days along x; within each day Firefox sits left of Chrome.
+        function dayChart(canvas, points, hi, m, days) {
+            const datasets = [];
+            const medians = [];
+            BROWSERS.forEach((b, row) => {
+                const offset = row === 0 ? -0.2 : 0.2;
+                const mine = points.filter(p => p.app === b.app);
+                days.forEach((d, i) => {
+                    const v = mine.filter(p => p.jobDay === d).map(p => p.value);
+                    if (v.length) medians.push({ cx: i + offset, value: median(v) });
+                });
+                const toDot = p => ({ x: days.indexOf(p.jobDay) + offset + jitter(p.jobId * 31 + p.index) * 0.4,
+                                      y: Math.min(p.value, hi), point: p });
+                datasets.push({
+                    label: b.label,
+                    data: mine.filter(p => p.value <= hi).map(toDot),
+                    backgroundColor: b.color + '66',
+                    borderWidth: 0,
+                    pointRadius: 3,
+                    pointHoverRadius: 6,
+                    pointHoverBackgroundColor: b.color,
+                    pointHitRadius: 4
+                });
+                datasets.push({
+                    label: b.label,
+                    data: mine.filter(p => p.value > hi).map(toDot),
+                    backgroundColor: b.color,
+                    pointStyle: 'triangle',
+                    clip: 10,
+                    pointRadius: 5,
+                    pointHoverRadius: 8,
+                    pointHitRadius: 6
+                });
+            });
+            return new Chart(canvas.getContext('2d'), {
+                type: 'scatter',
+                data: { datasets },
+                plugins: [dayMedianTicks],
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: false,
+                    onClick: (event, elements, chart) => {
+                        if (elements.length) openJob(chart.data.datasets[elements[0].datasetIndex].data[elements[0].index].point);
+                    },
+                    onHover: (event, elements, chart) => {
+                        chart.canvas.style.cursor = elements.length ? 'pointer' : 'default';
+                    },
+                    plugins: {
+                        dayMedianTicks: { medians },
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: 'rgba(255, 255, 255, 0.97)',
+                            titleColor: '#2d3748',
+                            bodyColor: '#4a5568',
+                            borderColor: '#e2e8f0',
+                            borderWidth: 1,
+                            padding: 10,
+                            callbacks: {
+                                title: items => {
+                                    const p = items[0].raw.point;
+                                    const dayValues = points.filter(x => x.app === p.app && x.jobDay === p.jobDay).map(x => x.value);
+                                    return items[0].dataset.label + ', ' + prettyDay(p.jobDay) + ': ' + fmtVal(p.value, m) +
+                                        ' (day median ' + fmtVal(median(dayValues), m) + ')';
+                                },
+                                label: c => {
+                                    const p = c.raw.point;
+                                    return [(m.bytes ? 'took ' + fmtMs(p.ms) : ''),
+                                            (p.machine ? 'worker ' + p.machine : ''),
+                                            'push ' + p.revision.slice(0, 12)].filter(Boolean);
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            min: -0.5,
+                            max: days.length - 0.5,
+                            afterBuildTicks: a => { a.ticks = days.map((d, i) => ({ value: i })); },
+                            grid: { display: false },
+                            border: { color: '#c3c2b7' },
+                            ticks: { font: { size: 11 }, color: '#52514e', callback: v => days[v] ? prettyDay(days[v]) : '' }
+                        },
+                        y: {
+                            type: 'linear',
+                            min: 0,
+                            max: hi,
+                            afterFit: a => { a.width = 70; },
+                            grid: { color: '#e1e0d9' },
+                            border: { display: false },
+                            ticks: { font: { size: 11 }, color: '#898781', maxTicksLimit: 5,
+                                     callback: v => (v >= 10 || v === 0 ? Math.round(v) : v) + (m.bytes ? ' Mbps' : ' ms') }
+                        }
+                    }
+                }
+            });
+        }
+
+        function render(allPoints) {
             charts.forEach(c => c.destroy());
             charts = [];
             const host = document.getElementById('metrics');
+            const points = allPoints;
+            const days = [...new Set(points.map(p => p.jobDay))].sort();
             if (!points.length) {
                 host.innerHTML = '<div class="loading">No data for ' + PLATFORMS[platform].label + ' yet.</div>';
                 return;
@@ -567,18 +747,22 @@
                 const section = document.createElement('div');
                 section.className = 'metric';
                 section.innerHTML =
-                    '<div class="metric-title">' + m.label + '<span class="lib">lower is better</span></div>' +
+                    '<div class="metric-title">' + m.label + '<span class="lib">' +
+                    (m.bytes ? 'higher is better' : 'lower is better') + '</span></div>' +
                     '<div class="metric-note">' + m.note + ' &middot; <code>' + m.test + '</code></div>' +
                     '<div class="protocol-row">' + PROTOCOLS.map(p =>
                         '<div><div class="protocol-title">' + p.label +
-                        winnerHtml(forMetric.filter(x => x.suite === p.suite)) + '</div>' +
-                        compareHtml(forMetric.filter(x => x.suite === p.suite)) +
-                        '<div class="chart-container"><canvas id="c-' + m.test + '-' + p.suite + '"></canvas></div></div>'
+                        winnerHtml(forMetric.filter(x => x.suite === p.suite), m) + '</div>' +
+                        compareHtml(forMetric.filter(x => x.suite === p.suite), m) +
+                        '<div class="chart-container' + (view === 'day' ? ' by-day' : '') + '"><canvas id="c-' +
+                        m.test + '-' + p.suite + '"></canvas></div></div>'
                     ).join('') + '</div>';
                 host.appendChild(section);
-                PROTOCOLS.forEach(p => builders.push(() => charts.push(dotChart(
-                    document.getElementById('c-' + m.test + '-' + p.suite),
-                    forMetric.filter(x => x.suite === p.suite), hi))));
+                PROTOCOLS.forEach(p => builders.push(() => {
+                    const canvas = document.getElementById('c-' + m.test + '-' + p.suite);
+                    const pts = forMetric.filter(x => x.suite === p.suite);
+                    charts.push(view === 'day' ? dayChart(canvas, pts, hi, m, days) : dotChart(canvas, pts, hi, m));
+                }));
             });
             builders.forEach(b => b());
         }
@@ -587,6 +771,7 @@
             document.getElementById('error').style.display = 'none';
             document.getElementById('metrics').innerHTML = '<div class="loading">Loading CI data…</div>';
             try {
+                syncUrl();
                 render(await getData(platform));
             } catch (error) {
                 document.getElementById('metrics').innerHTML = '';
@@ -605,10 +790,22 @@
                     (key === platform ? ' checked' : '') + '><span>' + cfg.label + '</span>';
                 label.querySelector('input').addEventListener('change', () => {
                     platform = key;
-                    history.replaceState(null, '', key === 'winref' ? location.pathname : '?platform=' + key);
                     load();
                 });
                 row.appendChild(label);
+            });
+            const vrow = document.getElementById('viewToggle');
+            Object.entries(VIEWS).forEach(([key, label]) => {
+                const el = document.createElement('label');
+                el.className = 'pill';
+                el.innerHTML = '<input type="radio" name="view" value="' + key + '"' +
+                    (key === view ? ' checked' : '') + '><span>' + label + '</span>';
+                el.querySelector('input').addEventListener('change', () => {
+                    view = key;
+                    syncUrl();
+                    getData(platform).then(render);
+                });
+                vrow.appendChild(el);
             });
             load();
         });
