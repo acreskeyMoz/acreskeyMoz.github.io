@@ -265,11 +265,14 @@
         </div>
         <p class="note">
             Each dot is one replicate from a CI job; the bar marks each browser's median (per day in the
-            By day view, where days run left to right by the date each job reported). Connection times and
+            By day view, where days run left to right by the date each job reported). The By hour view keeps
+            only the UTC hours, by job start time, in which both browsers ran that protocol, so the comparison
+            and medians use runs that saw the same network conditions. The Time of day view places each replicate
+            at its job's UTC start time, folding all days onto one 24-hour axis, to show daily trends (the test
+            runs within about 2 minutes of job start; spread within a job is jitter). Connection times and
             latency are in ms (lower is better); downloads and uploads are throughput in Mbps (higher is better),
             from each transfer's size and duration. The three charts for a metric share an axis. Above each chart,
-            Firefox is compared with Chrome using the median and the best replicate (min time, max throughput),
-            and each browser's coefficient of variance (standard deviation / mean) shows how noisy it is.
+            Firefox is compared with Chrome using the median, and each browser's coefficient of variance (standard deviation / mean) shows how noisy it is.
             Hover for the worker and push; click a dot to open its job.
         </p>
 
@@ -321,7 +324,7 @@
 
         let platform = new URLSearchParams(location.search).get('platform');
         if (!PLATFORMS[platform]) platform = 'winref';
-        const VIEWS = { all: 'All results', day: 'By day' };
+        const VIEWS = { all: 'All results', day: 'By day', hour: 'By hour', tod: 'Time of day' };
         let view = new URLSearchParams(location.search).get('view');
         if (!VIEWS[view]) view = 'all';
         let charts = [];
@@ -351,9 +354,6 @@
             return (m.bytes ? ff > cr : ff < cr) ? 0 : 1;
         }
 
-        function best(values, m) {
-            return m.bytes ? Math.max(...values) : Math.min(...values);
-        }
 
         function compareLine(label, ff, cr, m) {
             const w = faster(ff, cr, m);
@@ -365,13 +365,10 @@
                 ' vs ' + fmtVal(cr, m) + '</span></div>';
         }
 
-        // Names a browser only when the median and the best replicate agree on it; otherwise "Mixed".
         function winnerHtml(points, m) {
             const [ff, cr] = BROWSERS.map(b => points.filter(p => p.app === b.app).map(p => p.value));
             if (!ff.length || !cr.length) return '';
             const byMedian = faster(median(ff), median(cr), m);
-            const byBest = faster(best(ff, m), best(cr, m), m);
-            if (byMedian !== byBest) return '<span class="winner">Mixed</span>';
             if (byMedian === null) return '<span class="winner">roughly equal</span>';
             const w = BROWSERS[byMedian];
             return '<span class="winner"><span class="dot" style="background:' + w.color + '"></span>' +
@@ -398,7 +395,6 @@
             if (!ff.length || !cr.length) return '<div class="compare muted">needs both browsers to compare</div>';
             return '<div class="compare">' +
                 compareLine('Median', median(ff), median(cr), m) +
-                compareLine(m.bytes ? 'Max' : 'Min', best(ff, m), best(cr, m), m) +
                 covLine(ff, cr) + '</div>';
         }
 
@@ -453,7 +449,27 @@
                     return [];
                 }
             });
-            cache[platformKey] = results.flat();
+            const points = results.flat();
+            const ids = [...new Set(points.map(p => p.jobId))];
+            const chunks = [];
+            for (let i = 0; i < ids.length; i += 50) chunks.push(ids.slice(i, i + 50));
+            const starts = {};
+            await mapLimited(chunks, 4, async chunk => {
+                try {
+                    const r = await fetch(TREEHERDER + '/api/project/' + REPOSITORY + '/jobs/?count=' + chunk.length +
+                        '&id__in=' + chunk.join(','));
+                    if (!r.ok) throw new Error('HTTP ' + r.status);
+                    (await r.json()).results.forEach(j => { starts[j.id] = j.start_timestamp; });
+                } catch (error) {
+                    console.warn('Failed to load job start times', error);
+                }
+            });
+            points.forEach(p => {
+                if (!starts[p.jobId]) return;
+                p.jobHour = new Date(starts[p.jobId] * 1000).toISOString().slice(0, 13);
+                p.jobTod = (starts[p.jobId] % 86400) / 3600;
+            });
+            cache[platformKey] = points;
             return cache[platformKey];
         }
 
@@ -607,7 +623,12 @@
             return new Date(d + 'T00:00:00Z').toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
         }
 
-        // Horizontal median bars, one per browser per day.
+        function prettyHour(h) {
+            return new Date(h + ':00:00Z').toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit',
+                minute: '2-digit', hourCycle: 'h23', timeZone: 'UTC' });
+        }
+
+        // Horizontal median bars, one per browser per group.
         const dayMedianTicks = {
             id: 'dayMedianTicks',
             afterDatasetsDraw(chart) {
@@ -629,18 +650,18 @@
             }
         };
 
-        // Days along x; within each day Firefox sits left of Chrome.
-        function dayChart(canvas, points, hi, m, days) {
+        // Groups (days or hours) along x; within each group Firefox sits left of Chrome.
+        function groupChart(canvas, points, hi, m, days, keyOf, pretty, unit) {
             const datasets = [];
             const medians = [];
             BROWSERS.forEach((b, row) => {
                 const offset = row === 0 ? -0.2 : 0.2;
                 const mine = points.filter(p => p.app === b.app);
                 days.forEach((d, i) => {
-                    const v = mine.filter(p => p.jobDay === d).map(p => p.value);
+                    const v = mine.filter(p => keyOf(p) === d).map(p => p.value);
                     if (v.length) medians.push({ cx: i + offset, value: median(v) });
                 });
-                const toDot = p => ({ x: days.indexOf(p.jobDay) + offset + jitter(p.jobId * 31 + p.index) * 0.4,
+                const toDot = p => ({ x: days.indexOf(keyOf(p)) + offset + jitter(p.jobId * 31 + p.index) * 0.4,
                                       y: Math.min(p.value, hi), point: p });
                 datasets.push({
                     label: b.label,
@@ -690,9 +711,9 @@
                             callbacks: {
                                 title: items => {
                                     const p = items[0].raw.point;
-                                    const dayValues = points.filter(x => x.app === p.app && x.jobDay === p.jobDay).map(x => x.value);
-                                    return items[0].dataset.label + ', ' + prettyDay(p.jobDay) + ': ' + fmtVal(p.value, m) +
-                                        ' (day median ' + fmtVal(median(dayValues), m) + ')';
+                                    const groupValues = points.filter(x => x.app === p.app && keyOf(x) === keyOf(p)).map(x => x.value);
+                                    return items[0].dataset.label + ', ' + pretty(keyOf(p)) + ': ' + fmtVal(p.value, m) +
+                                        ' (' + unit + ' median ' + fmtVal(median(groupValues), m) + ')';
                                 },
                                 label: c => {
                                     const p = c.raw.point;
@@ -711,7 +732,107 @@
                             afterBuildTicks: a => { a.ticks = days.map((d, i) => ({ value: i })); },
                             grid: { display: false },
                             border: { color: '#c3c2b7' },
-                            ticks: { font: { size: 11 }, color: '#52514e', callback: v => days[v] ? prettyDay(days[v]) : '' }
+                            ticks: { font: { size: 11 }, color: '#52514e', callback: v => days[v] ? pretty(days[v]) : '' }
+                        },
+                        y: {
+                            type: 'linear',
+                            min: 0,
+                            max: hi,
+                            afterFit: a => { a.width = 70; },
+                            grid: { color: '#e1e0d9' },
+                            border: { display: false },
+                            ticks: { font: { size: 11 }, color: '#898781', maxTicksLimit: 5,
+                                     callback: v => (v >= 10 || v === 0 ? Math.round(v) : v) + (m.bytes ? ' Mbps' : ' ms') }
+                        }
+                    }
+                }
+            });
+        }
+
+        // In the By hour view, keep only the hours in which both browsers ran this protocol.
+        function forProtocol(points, suite) {
+            const pts = points.filter(x => x.suite === suite);
+            if (view !== 'hour') return pts;
+            const apps = {};
+            pts.forEach(x => { if (x.jobHour) (apps[x.jobHour] = apps[x.jobHour] || new Set()).add(x.app); });
+            return pts.filter(x => apps[x.jobHour] && apps[x.jobHour].size === BROWSERS.length);
+        }
+
+        // Hour of day (UTC, job start) along x, all days folded together.
+        function todChart(canvas, points, hi, m) {
+            const datasets = [];
+            const timed = points.filter(p => p.jobTod !== undefined);
+            const toDot = p => ({ x: p.jobTod + jitter(p.jobId * 31 + p.index) * 0.25, y: Math.min(p.value, hi), point: p });
+            const hhmm = h => String(Math.floor(h)).padStart(2, '0') + ':' + String(Math.floor(h % 1 * 60)).padStart(2, '0');
+            BROWSERS.forEach(b => {
+                const mine = timed.filter(p => p.app === b.app);
+                datasets.push({
+                    label: b.label,
+                    data: mine.filter(p => p.value <= hi).map(toDot),
+                    backgroundColor: b.color + '66',
+                    borderWidth: 0,
+                    pointRadius: 3,
+                    pointHoverRadius: 6,
+                    pointHoverBackgroundColor: b.color,
+                    pointHitRadius: 4
+                });
+                datasets.push({
+                    label: b.label,
+                    data: mine.filter(p => p.value > hi).map(toDot),
+                    backgroundColor: b.color,
+                    pointStyle: 'triangle',
+                    clip: 10,
+                    pointRadius: 5,
+                    pointHoverRadius: 8,
+                    pointHitRadius: 6
+                });
+            });
+            return new Chart(canvas.getContext('2d'), {
+                type: 'scatter',
+                data: { datasets },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: false,
+                    onClick: (event, elements, chart) => {
+                        if (elements.length) openJob(chart.data.datasets[elements[0].datasetIndex].data[elements[0].index].point);
+                    },
+                    onHover: (event, elements, chart) => {
+                        chart.canvas.style.cursor = elements.length ? 'pointer' : 'default';
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: 'rgba(255, 255, 255, 0.97)',
+                            titleColor: '#2d3748',
+                            bodyColor: '#4a5568',
+                            borderColor: '#e2e8f0',
+                            borderWidth: 1,
+                            padding: 10,
+                            callbacks: {
+                                title: items => {
+                                    const p = items[0].raw.point;
+                                    return items[0].dataset.label + ', ' + prettyDay(p.jobHour.slice(0, 10)) + ' ' +
+                                        hhmm(p.jobTod) + ' UTC: ' + fmtVal(p.value, m);
+                                },
+                                label: c => {
+                                    const p = c.raw.point;
+                                    return [(m.bytes ? 'took ' + fmtMs(p.ms) : ''),
+                                            (p.machine ? 'worker ' + p.machine : ''),
+                                            'push ' + p.revision.slice(0, 12)].filter(Boolean);
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            min: 0,
+                            max: 24,
+                            afterBuildTicks: a => { a.ticks = [0, 3, 6, 9, 12, 15, 18, 21, 24].map(value => ({ value })); },
+                            grid: { color: '#efeee9' },
+                            border: { color: '#c3c2b7' },
+                            ticks: { font: { size: 11 }, color: '#52514e', callback: v => hhmm(v % 24) }
                         },
                         y: {
                             type: 'linear',
@@ -750,18 +871,32 @@
                     '<div class="metric-title">' + m.label + '<span class="lib">' +
                     (m.bytes ? 'higher is better' : 'lower is better') + '</span></div>' +
                     '<div class="metric-note">' + m.note + ' &middot; <code>' + m.test + '</code></div>' +
-                    '<div class="protocol-row">' + PROTOCOLS.map(p =>
-                        '<div><div class="protocol-title">' + p.label +
-                        winnerHtml(forMetric.filter(x => x.suite === p.suite), m) + '</div>' +
-                        compareHtml(forMetric.filter(x => x.suite === p.suite), m) +
-                        '<div class="chart-container' + (view === 'day' ? ' by-day' : '') + '"><canvas id="c-' +
-                        m.test + '-' + p.suite + '"></canvas></div></div>'
-                    ).join('') + '</div>';
+                    '<div class="protocol-row">' + PROTOCOLS.map(p => {
+                        const pts = forProtocol(forMetric, p.suite);
+                        if (view === 'hour' && !pts.length) {
+                            return '<div><div class="protocol-title">' + p.label + '</div>' +
+                                '<div class="loading">No hour with both browsers</div></div>';
+                        }
+                        return '<div><div class="protocol-title">' + p.label + winnerHtml(pts, m) + '</div>' +
+                            compareHtml(pts, m) +
+                            '<div class="chart-container' + (view !== 'all' ? ' by-day' : '') + '"><canvas id="c-' +
+                            m.test + '-' + p.suite + '"></canvas></div></div>';
+                    }).join('') + '</div>';
                 host.appendChild(section);
                 PROTOCOLS.forEach(p => builders.push(() => {
                     const canvas = document.getElementById('c-' + m.test + '-' + p.suite);
-                    const pts = forMetric.filter(x => x.suite === p.suite);
-                    charts.push(view === 'day' ? dayChart(canvas, pts, hi, m, days) : dotChart(canvas, pts, hi, m));
+                    if (!canvas) return;
+                    const pts = forProtocol(forMetric, p.suite);
+                    if (view === 'hour') {
+                        const hours = [...new Set(pts.map(x => x.jobHour))].sort();
+                        charts.push(groupChart(canvas, pts, hi, m, hours, x => x.jobHour, prettyHour, 'hour'));
+                    } else if (view === 'tod') {
+                        charts.push(todChart(canvas, pts, hi, m));
+                    } else if (view === 'day') {
+                        charts.push(groupChart(canvas, pts, hi, m, days, x => x.jobDay, prettyDay, 'day'));
+                    } else {
+                        charts.push(dotChart(canvas, pts, hi, m));
+                    }
                 }));
             });
             builders.forEach(b => b());
