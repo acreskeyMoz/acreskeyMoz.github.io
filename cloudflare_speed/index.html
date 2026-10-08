@@ -267,7 +267,9 @@
             Each dot is one replicate from a CI job; the bar marks each browser's median (per day in the
             By day view, where days run left to right by the date each job reported). The By hour view keeps
             only the UTC hours, by job start time, in which both browsers ran that protocol, so the comparison
-            and medians use runs that saw the same network conditions. The Time of day view places each replicate
+            and medians use runs that saw the same network conditions; each hour (and each day in
+            the By day view) is labelled with Firefox's performance relative to Chrome from the medians, the same
+            ratio shown above each chart (above 1&times; means Firefox was faster). The Time of day view places each replicate
             at its job's UTC start time, folding all days onto one 24-hour axis, to show daily trends (the test
             runs within about 2 minutes of job start; spread within a job is jitter). Connection times and
             latency are in ms (lower is better); downloads and uploads are throughput in Mbps (higher is better),
@@ -389,12 +391,20 @@
                 ' <span class="muted">&mdash; lower is steadier</span></div>';
         }
 
+        function ratioLine(ff, cr, m) {
+            const w = faster(ff, cr, m);
+            return '<div><strong>Firefox / Chrome performance:</strong> <span style="color:' +
+                (w === null ? '#718096' : BROWSERS[w].color) + '">' + (m.bytes ? ff / cr : cr / ff).toFixed(2) +
+                '&times;</span> <span class="muted">&mdash; above 1&times; means Firefox faster</span></div>';
+        }
+
         function compareHtml(points, m) {
             const ff = points.filter(p => p.app === 'firefox').map(p => p.value);
             const cr = points.filter(p => p.app === 'chrome').map(p => p.value);
             if (!ff.length || !cr.length) return '<div class="compare muted">needs both browsers to compare</div>';
             return '<div class="compare">' +
                 compareLine('Median', median(ff), median(cr), m) +
+                ratioLine(median(ff), median(cr), m) +
                 covLine(ff, cr) + '</div>';
         }
 
@@ -647,13 +657,31 @@
                     ctx.stroke();
                     ctx.restore();
                 });
+                (chart.options.plugins.dayMedianTicks.labels || []).forEach(({ cx, text, color }) => {
+                    ctx.save();
+                    ctx.font = '600 11px sans-serif';
+                    ctx.fillStyle = color;
+                    ctx.textAlign = 'center';
+                    ctx.fillText(text, x.getPixelForValue(cx), chart.chartArea.top - 6);
+                    ctx.restore();
+                });
             }
         };
 
         // Groups (days or hours) along x; within each group Firefox sits left of Chrome.
-        function groupChart(canvas, points, hi, m, days, keyOf, pretty, unit) {
+        // With showRatio, each group is labelled with Firefox's performance relative to Chrome (above 1 = Firefox faster).
+        function groupChart(canvas, points, hi, m, days, keyOf, pretty, unit, showRatio) {
             const datasets = [];
             const medians = [];
+            const labels = [];
+            if (showRatio) {
+                days.forEach((d, i) => {
+                    const [ff, cr] = BROWSERS.map(b => median(points.filter(p => p.app === b.app && keyOf(p) === d).map(p => p.value)));
+                    const w = faster(ff, cr, m);
+                    labels.push({ cx: i, text: 'Fx ' + (m.bytes ? ff / cr : cr / ff).toFixed(2) + '\u00d7',
+                                  color: w === null ? '#718096' : BROWSERS[w].color });
+                });
+            }
             BROWSERS.forEach((b, row) => {
                 const offset = row === 0 ? -0.2 : 0.2;
                 const mine = points.filter(p => p.app === b.app);
@@ -689,6 +717,7 @@
                 data: { datasets },
                 plugins: [dayMedianTicks],
                 options: {
+                    layout: { padding: { top: showRatio ? 18 : 0 } },
                     responsive: true,
                     maintainAspectRatio: false,
                     animation: false,
@@ -699,7 +728,7 @@
                         chart.canvas.style.cursor = elements.length ? 'pointer' : 'default';
                     },
                     plugins: {
-                        dayMedianTicks: { medians },
+                        dayMedianTicks: { medians, labels },
                         legend: { display: false },
                         tooltip: {
                             backgroundColor: 'rgba(255, 255, 255, 0.97)',
@@ -889,11 +918,11 @@
                     const pts = forProtocol(forMetric, p.suite);
                     if (view === 'hour') {
                         const hours = [...new Set(pts.map(x => x.jobHour))].sort();
-                        charts.push(groupChart(canvas, pts, hi, m, hours, x => x.jobHour, prettyHour, 'hour'));
+                        charts.push(groupChart(canvas, pts, hi, m, hours, x => x.jobHour, prettyHour, 'hour', true));
                     } else if (view === 'tod') {
                         charts.push(todChart(canvas, pts, hi, m));
                     } else if (view === 'day') {
-                        charts.push(groupChart(canvas, pts, hi, m, days, x => x.jobDay, prettyDay, 'day'));
+                        charts.push(groupChart(canvas, pts, hi, m, days, x => x.jobDay, prettyDay, 'day', true));
                     } else {
                         charts.push(dotChart(canvas, pts, hi, m));
                     }
