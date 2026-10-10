@@ -269,7 +269,11 @@
             <strong>GitHub VM:</strong> the same test, Firefox build and conditioned profile, run outside Mozilla's
             network on a GitHub-hosted <code>ubuntu-24.04</code> Actions runner (private repository: 2 vCPU, 8 GB RAM),
             a shared Azure virtual machine. The Azure region and Cloudflare colo can change between workflow runs;
-            hover a dot for its colo. Each dot is one replicate.
+            hover a dot for its colo. Each dot is one replicate. Here the comparison above each chart is about noise,
+            not speed: coefficient of variance, IQR / median (which ignores outliers) and the share of replicates
+            over 3&times; the median time; the badge names the series with the lower coefficient of variance
+            (within 10% counts as similar). The CI talos and GitHub VM runs reach different Cloudflare colos, so their
+            medians are not comparable.
         </p>
         <p class="note">
             Each dot is one replicate from a CI job; the bar marks each browser's median (per day in the
@@ -363,8 +367,9 @@
             return (v < 100 ? v.toFixed(1) : v.toFixed(0)) + (m.bytes ? ' Mbps' : ' ms');
         }
 
-        // Differences of 3% or less count as roughly equal.
+        // Differences of 3% or less count as roughly equal; for noise (CV), 10% or less.
         const TIE = 0.03;
+        const NOISE_TIE = 0.10;
 
         // 0 = first series, 1 = second, null = a tie. Throughput is better higher, times lower.
         function faster(ff, cr, m) {
@@ -387,6 +392,13 @@
         function winnerHtml(points, m) {
             const [ff, cr] = BROWSERS.map(b => points.filter(p => p.app === b.app).map(p => p.value));
             if (!ff.length || !cr.length) return '';
+            if (PLATFORMS[platform].offsite) {
+                const [a, b] = [cov(ff), cov(cr)];
+                if (Math.abs(a - b) / Math.min(a, b) <= NOISE_TIE) return '<span class="winner">similar noise</span>';
+                const w = BROWSERS[a < b ? 0 : 1];
+                return '<span class="winner"><span class="dot" style="background:' + w.color + '"></span>' +
+                    w.label + ' steadier</span>';
+            }
             const byMedian = faster(median(ff), median(cr), m);
             if (byMedian === null) return '<span class="winner">roughly equal</span>';
             const w = BROWSERS[byMedian];
@@ -416,9 +428,33 @@
                 '&times;</span> <span class="muted">&mdash; above 1&times; means ' + BROWSERS[0].label + ' faster</span></div>';
         }
 
+        // Spread measures per series: CV, IQR over median (robust to outliers), and the share of
+        // replicates taking over 3x the median time.
+        function noiseHtml(points) {
+            const series = BROWSERS.map(b => points.filter(p => p.app === b.app));
+            const fmt = v => v === null ? '–' : v.toFixed(v < 10 ? 1 : 0) + '%';
+            const line = (label, f, note) => '<div><strong>' + label + ':</strong> ' +
+                BROWSERS.map((b, i) => b.label + ' ' + fmt(f(series[i]))).join(' &middot; ') +
+                ' <span class="muted">&mdash; ' + note + '</span></div>';
+            const iqr = pts => {
+                const v = pts.map(p => p.value);
+                return (percentile(v, 0.75) - percentile(v, 0.25)) / median(v) * 100;
+            };
+            const tail = pts => {
+                const ms = pts.map(p => p.ms);
+                const m = median(ms);
+                return ms.filter(v => v > 3 * m).length / ms.length * 100;
+            };
+            return '<div class="compare">' +
+                line('Coefficient of Variance', pts => cov(pts.map(p => p.value)), 'standard deviation / mean') +
+                line('IQR / median', iqr, 'spread of the middle half, ignores outliers') +
+                line('Over 3&times; median time', tail, 'share of replicates') + '</div>';
+        }
+
         function compareHtml(points, m) {
             const [ff, cr] = BROWSERS.map(b => points.filter(p => p.app === b.app).map(p => p.value));
             if (!ff.length || !cr.length) return '<div class="compare muted">needs both series to compare</div>';
+            if (PLATFORMS[platform].offsite) return noiseHtml(points);
             return '<div class="compare">' +
                 compareLine('Median', median(ff), median(cr), m) +
                 ratioLine(median(ff), median(cr), m) +
@@ -710,7 +746,9 @@
             const labels = [];
             if (showRatio) {
                 days.forEach((d, i) => {
-                    const [ff, cr] = BROWSERS.map(b => median(points.filter(p => p.app === b.app && keyOf(p) === d).map(p => p.value)));
+                    const [ffv, crv] = BROWSERS.map(b => points.filter(p => p.app === b.app && keyOf(p) === d).map(p => p.value));
+                    if (!ffv.length || !crv.length) return;
+                    const [ff, cr] = [median(ffv), median(crv)];
                     const w = faster(ff, cr, m);
                     labels.push({ cx: i, text: BROWSERS[0].short + ' ' + (m.bytes ? ff / cr : cr / ff).toFixed(2) + '\u00d7',
                                   color: w === null ? '#718096' : BROWSERS[w].color });
