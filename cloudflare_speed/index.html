@@ -258,11 +258,19 @@
         <div class="toggle-row" id="viewToggle"></div>
 
         <div class="legend-key">
-            <span><span class="dot" style="background:#eb6834"></span>Firefox</span>
-            <span><span class="dot" style="background:#2a78d6"></span>Chrome</span>
+            <span id="key0"></span>
+            <span id="key1"></span>
             <span><span class="tick"></span>median</span>
             <span><span class="beyond">&#9654;</span>beyond the axis (hover for the value)</span>
         </div>
+        <p class="note" id="seriesNote" style="display: none;">
+            <strong>CI talos:</strong> Firefox in Mozilla CI, <code>gecko-t-linux-talos-2404</code> pool: bare-metal
+            Linux hosts in Mozilla's MDC1 data centre, Ubuntu 24.04; Cloudflare answers from SJC.
+            <strong>GitHub VM:</strong> the same test, Firefox build and conditioned profile, run outside Mozilla's
+            network on a GitHub-hosted <code>ubuntu-24.04</code> Actions runner (private repository: 2 vCPU, 8 GB RAM),
+            a shared Azure virtual machine. The Azure region and Cloudflare colo can change between workflow runs;
+            hover a dot for its colo. Each dot is one replicate.
+        </p>
         <p class="note">
             Each dot is one replicate from a CI job; the bar marks each browser's median (per day in the
             By day view, where days run left to right by the date each job reported). The By hour view keeps
@@ -275,7 +283,8 @@
             latency are in ms (lower is better); downloads and uploads are throughput in Mbps (higher is better),
             from each transfer's size and duration. The three charts for a metric share an axis. Above each chart,
             Firefox is compared with Chrome using the median, and each browser's coefficient of variance (standard deviation / mean) shows how noisy it is.
-            Hover for the worker and push; click a dot to open its job.
+            Hover for the worker and push; click a dot to open its job. The Firefox: Linux CI vs off-site option
+            compares Firefox on the Linux CI pool with the same test and build run outside Mozilla's data centre.
         </p>
 
         <div id="metrics"><div class="loading">Loading CI data…</div></div>
@@ -295,13 +304,20 @@
 
         const PLATFORMS = {
             linux:  { label: 'Linux 24.04 shippable',   platform: 'linux2404-64-shippable' },
-            winref: { label: 'Windows 11 ref hardware', platform: 'windows11-64-24h2-hw-ref-shippable' }
+            winref: { label: 'Windows 11 ref hardware', platform: 'windows11-64-24h2-hw-ref-shippable' },
+            offsite: { label: 'Firefox: Linux CI vs off-site', platform: 'linux2404-64-shippable', offsite: true }
         };
 
-        const BROWSERS = [
-            { app: 'firefox', label: 'Firefox', color: '#eb6834' },
-            { app: 'chrome',  label: 'Chrome',  color: '#2a78d6' }
+        // The two series every chart compares: the browsers, or for the off-site view, Firefox in CI vs off-site.
+        const BROWSER_SERIES = [
+            { app: 'firefox', label: 'Firefox', short: 'Fx', color: '#eb6834' },
+            { app: 'chrome',  label: 'Chrome',  short: 'Cr', color: '#2a78d6' }
         ];
+        const OFFSITE_SERIES = [
+            { app: 'ci',      label: 'CI talos', short: 'CI', color: '#eb6834' },
+            { app: 'offsite', label: 'GitHub VM', short: 'GH', color: '#2f9e44' }
+        ];
+        let BROWSERS = BROWSER_SERIES;
 
         const PROTOCOLS = [
             { suite: 'cf-h1', label: 'HTTP/1.1' },
@@ -350,7 +366,7 @@
         // Differences of 3% or less count as roughly equal.
         const TIE = 0.03;
 
-        // 0 = Firefox, 1 = Chrome, null = a tie. Throughput is better higher, times lower.
+        // 0 = first series, 1 = second, null = a tie. Throughput is better higher, times lower.
         function faster(ff, cr, m) {
             if (Math.abs(ff - cr) / Math.min(ff, cr) <= TIE) return null;
             return (m.bytes ? ff > cr : ff < cr) ? 0 : 1;
@@ -360,8 +376,9 @@
         function compareLine(label, ff, cr, m) {
             const w = faster(ff, cr, m);
             const pct = Math.abs(ff - cr) / cr * 100;
-            const verdict = w === null ? 'Firefox roughly equal to Chrome'
-                : 'Firefox ' + pct.toFixed(pct < 10 ? 1 : 0) + '% ' + (w === 0 ? 'faster' : 'slower') + ' than Chrome';
+            const [a, b] = BROWSERS.map(x => x.label);
+            const verdict = w === null ? a + ' roughly equal to ' + b
+                : a + ' ' + pct.toFixed(pct < 10 ? 1 : 0) + '% ' + (w === 0 ? 'faster' : 'slower') + ' than ' + b;
             return '<div><strong>' + label + ':</strong> ' + verdict +
                 ' <span class="muted">&mdash; ' + fmtVal(ff, m).replace(m.bytes ? ' Mbps' : ' ms', '') +
                 ' vs ' + fmtVal(cr, m) + '</span></div>';
@@ -387,21 +404,21 @@
 
         function covLine(ff, cr) {
             const fmt = v => v === null ? '–' : v.toFixed(v < 10 ? 1 : 0) + '%';
-            return '<div><strong>Coefficient of Variance:</strong> Firefox ' + fmt(cov(ff)) + ' &middot; Chrome ' + fmt(cov(cr)) +
+            return '<div><strong>Coefficient of Variance:</strong> ' + BROWSERS[0].label + ' ' + fmt(cov(ff)) +
+                ' &middot; ' + BROWSERS[1].label + ' ' + fmt(cov(cr)) +
                 ' <span class="muted">&mdash; lower is steadier</span></div>';
         }
 
         function ratioLine(ff, cr, m) {
             const w = faster(ff, cr, m);
-            return '<div><strong>Firefox / Chrome performance:</strong> <span style="color:' +
+            return '<div><strong>' + BROWSERS[0].label + ' / ' + BROWSERS[1].label + ' performance:</strong> <span style="color:' +
                 (w === null ? '#718096' : BROWSERS[w].color) + '">' + (m.bytes ? ff / cr : cr / ff).toFixed(2) +
-                '&times;</span> <span class="muted">&mdash; above 1&times; means Firefox faster</span></div>';
+                '&times;</span> <span class="muted">&mdash; above 1&times; means ' + BROWSERS[0].label + ' faster</span></div>';
         }
 
         function compareHtml(points, m) {
-            const ff = points.filter(p => p.app === 'firefox').map(p => p.value);
-            const cr = points.filter(p => p.app === 'chrome').map(p => p.value);
-            if (!ff.length || !cr.length) return '<div class="compare muted">needs both browsers to compare</div>';
+            const [ff, cr] = BROWSERS.map(b => points.filter(p => p.app === b.app).map(p => p.value));
+            if (!ff.length || !cr.length) return '<div class="compare muted">needs both series to compare</div>';
             return '<div class="compare">' +
                 compareLine('Median', median(ff), median(cr), m) +
                 ratioLine(median(ff), median(cr), m) +
@@ -433,7 +450,8 @@
             if (!response.ok) throw new Error('signatures request failed: HTTP ' + response.status);
             const suites = new Set(PROTOCOLS.map(p => p.suite));
             const tests = new Set(METRICS.map(m => m.test));
-            const apps = new Set(BROWSERS.map(b => b.app));
+            const offsite = PLATFORMS[platformKey].offsite;
+            const apps = new Set(offsite ? ['firefox'] : BROWSERS.map(b => b.app));
             const sigs = Object.values(await response.json()).filter(sig =>
                 suites.has(sig.suite) && tests.has(sig.test) && apps.has(sig.application) &&
                 !(sig.extra_options || []).some(o => o === 'gecko-profile' || o === 'simpleperf'));
@@ -448,7 +466,7 @@
                     const json = await r.json();
                     const bytes = METRIC_BY_TEST[sig.test].bytes;
                     return ((json[0] && json[0].data) || []).map((p, i) => ({
-                        suite: sig.suite, test: sig.test, app: sig.application, index: i,
+                        suite: sig.suite, test: sig.test, app: offsite ? 'ci' : sig.application, index: i,
                         value: bytes ? bytes * 8 / (p.value * 1000) : p.value, ms: p.value,
                         jobId: p.job_id, revision: p.revision, machine: p.machine_name,
                         date: new Date(p.push_timestamp + 'Z'),
@@ -479,6 +497,21 @@
                 p.jobHour = new Date(starts[p.jobId] * 1000).toISOString().slice(0, 13);
                 p.jobTod = (starts[p.jobId] % 86400) / 3600;
             });
+            if (offsite) {
+                const r = await fetch('offsite.json');
+                if (!r.ok) throw new Error('offsite.json request failed: HTTP ' + r.status);
+                (await r.json()).forEach(o => {
+                    const bytes = METRIC_BY_TEST[o.test] && METRIC_BY_TEST[o.test].bytes;
+                    const t = Date.parse(o.start) / 1000;
+                    points.push({
+                        suite: o.suite, test: o.test, app: 'offsite', index: o.index,
+                        value: bytes ? bytes * 8 / (o.ms * 1000) : o.ms, ms: o.ms,
+                        jobId: t, revision: '', machine: o.runner + ', colo ' + o.colo,
+                        date: new Date(t * 1000), jobDay: o.start.slice(0, 10),
+                        jobHour: o.start.slice(0, 13), jobTod: (t % 86400) / 3600
+                    });
+                });
+            }
             cache[platformKey] = points;
             return cache[platformKey];
         }
@@ -497,6 +530,7 @@
         // Treeherder selects a job by task_id.retry_id; the series only has job_id, so look it up.
         // The tab is opened before the await so the popup blocker allows it.
         function openJob(point) {
+            if (!point.revision) return;
             const pushUrl = TREEHERDER + '/jobs?repo=' + REPOSITORY + '&revision=' + point.revision + '&tier=1%2C2%2C3';
             const win = window.open('', '_blank');
             const go = url => { if (win) { win.location = url; } else { window.open(url, '_blank'); } };
@@ -590,7 +624,7 @@
                                     const p = c.raw.point;
                                     return [(m.bytes ? 'took ' + fmtMs(p.ms) : ''),
                                             (p.machine ? 'worker ' + p.machine : ''),
-                                            'push ' + p.revision.slice(0, 12) + ', ' + p.date.toISOString().slice(0, 16).replace('T', ' ')]
+                                            (p.revision ? 'push ' + p.revision.slice(0, 12) + ', ' : '') + p.date.toISOString().slice(0, 16).replace('T', ' ')]
                                         .filter(Boolean);
                                 }
                             }
@@ -611,7 +645,7 @@
                             min: -0.5,
                             max: BROWSERS.length - 0.5,
                             reverse: true,
-                            afterFit: a => { a.width = 62; },
+                            afterFit: a => { a.width = 72; },
                             afterBuildTicks: a => { a.ticks = BROWSERS.map((b, i) => ({ value: i })); },
                             grid: { display: false },
                             border: { display: false },
@@ -678,7 +712,7 @@
                 days.forEach((d, i) => {
                     const [ff, cr] = BROWSERS.map(b => median(points.filter(p => p.app === b.app && keyOf(p) === d).map(p => p.value)));
                     const w = faster(ff, cr, m);
-                    labels.push({ cx: i, text: 'Fx ' + (m.bytes ? ff / cr : cr / ff).toFixed(2) + '\u00d7',
+                    labels.push({ cx: i, text: BROWSERS[0].short + ' ' + (m.bytes ? ff / cr : cr / ff).toFixed(2) + '\u00d7',
                                   color: w === null ? '#718096' : BROWSERS[w].color });
                 });
             }
@@ -748,7 +782,7 @@
                                     const p = c.raw.point;
                                     return [(m.bytes ? 'took ' + fmtMs(p.ms) : ''),
                                             (p.machine ? 'worker ' + p.machine : ''),
-                                            'push ' + p.revision.slice(0, 12)].filter(Boolean);
+                                            (p.revision ? 'push ' + p.revision.slice(0, 12) : '')].filter(Boolean);
                                 }
                             }
                         }
@@ -848,7 +882,7 @@
                                     const p = c.raw.point;
                                     return [(m.bytes ? 'took ' + fmtMs(p.ms) : ''),
                                             (p.machine ? 'worker ' + p.machine : ''),
-                                            'push ' + p.revision.slice(0, 12)].filter(Boolean);
+                                            (p.revision ? 'push ' + p.revision.slice(0, 12) : '')].filter(Boolean);
                                 }
                             }
                         }
@@ -904,7 +938,7 @@
                         const pts = forProtocol(forMetric, p.suite);
                         if (view === 'hour' && !pts.length) {
                             return '<div><div class="protocol-title">' + p.label + '</div>' +
-                                '<div class="loading">No hour with both browsers</div></div>';
+                                '<div class="loading">No hour with both series</div></div>';
                         }
                         return '<div><div class="protocol-title">' + p.label + winnerHtml(pts, m) + '</div>' +
                             compareHtml(pts, m) +
@@ -936,6 +970,12 @@
             document.getElementById('metrics').innerHTML = '<div class="loading">Loading CI data…</div>';
             try {
                 syncUrl();
+                BROWSERS = PLATFORMS[platform].offsite ? OFFSITE_SERIES : BROWSER_SERIES;
+                document.getElementById('seriesNote').style.display = PLATFORMS[platform].offsite ? '' : 'none';
+                BROWSERS.forEach((b, i) => {
+                    document.getElementById('key' + i).innerHTML =
+                        '<span class="dot" style="background:' + b.color + '"></span>' + b.label;
+                });
                 render(await getData(platform));
             } catch (error) {
                 document.getElementById('metrics').innerHTML = '';
