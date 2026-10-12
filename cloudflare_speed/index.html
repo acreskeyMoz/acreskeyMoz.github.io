@@ -264,9 +264,10 @@
             <span><span class="beyond">&#9654;</span>beyond the axis (hover for the value)</span>
         </div>
         <p class="note" id="seriesNote" style="display: none;">
-            <strong>CI talos:</strong> Firefox in Mozilla CI, <code>gecko-t-linux-talos-2404</code> pool: bare-metal
+            <strong>CI talos:</strong> the browser in Mozilla CI, <code>gecko-t-linux-talos-2404</code> pool: bare-metal
             Linux hosts in Mozilla's MDC1 data centre, Ubuntu 24.04; Cloudflare answers from SJC.
-            <strong>GitHub VM:</strong> the same test, Firefox build and conditioned profile, run outside Mozilla's
+            <strong>GitHub VM:</strong> the same test (for Firefox, the same build and conditioned profile; for
+            Chrome, Chrome stable with its matching chromedriver), run outside Mozilla's
             network on a GitHub-hosted <code>ubuntu-24.04</code> Actions runner (private repository: 2 vCPU, 8 GB RAM),
             a shared Azure virtual machine. The Azure region and Cloudflare colo can change between workflow runs;
             hover a dot for its colo. Each dot is one replicate. Here the comparison above each chart is about noise,
@@ -288,7 +289,10 @@
             from each transfer's size and duration. The three charts for a metric share an axis. Above each chart,
             Firefox is compared with Chrome using the median, and each browser's coefficient of variance (standard deviation / mean) shows how noisy it is.
             Hover for the worker and push; click a dot to open its job. The Firefox: Linux CI vs off-site option
-            compares Firefox on the Linux CI pool with the same test and build run outside Mozilla's data centre.
+            compares Firefox on the Linux CI pool with the same test and build run outside Mozilla's data centre,
+            and Chrome: Linux CI vs off-site does the same for Chrome. GitHub VM (off-site) compares Firefox with
+            Chrome on GitHub-hosted Azure VMs (2 vCPU, 8 GB RAM), where each protocol runs in both browsers back to
+            back on the same machine; it only includes hours in which both browsers ran that protocol.
         </p>
 
         <div id="metrics"><div class="loading">Loading CI data…</div></div>
@@ -309,7 +313,9 @@
         const PLATFORMS = {
             linux:  { label: 'Linux 24.04 shippable',   platform: 'linux2404-64-shippable' },
             winref: { label: 'Windows 11 ref hardware', platform: 'windows11-64-24h2-hw-ref-shippable' },
-            offsite: { label: 'Firefox: Linux CI vs off-site', platform: 'linux2404-64-shippable', offsite: true }
+            ghvm:    { label: 'GitHub VM (off-site)', runner: 'GitHub Actions VM' },
+            offsite: { label: 'Firefox: Linux CI vs off-site', platform: 'linux2404-64-shippable', offsite: true, browser: 'firefox' },
+            offsiteChrome: { label: 'Chrome: Linux CI vs off-site', platform: 'linux2404-64-shippable', offsite: true, browser: 'chrome' }
         };
 
         // The two series every chart compares: the browsers, or for the off-site view, Firefox in CI vs off-site.
@@ -478,8 +484,34 @@
             return out;
         }
 
+        // Off-site replicates from offsite.json, keeping those that pass keep(point).
+        async function offsitePoints(keep, appOf) {
+            const r = await fetch('offsite.json');
+            if (!r.ok) throw new Error('offsite.json request failed: HTTP ' + r.status);
+            return (await r.json()).filter(o => keep({ browser: 'firefox', ...o })).map(o => {
+                const bytes = METRIC_BY_TEST[o.test] && METRIC_BY_TEST[o.test].bytes;
+                const t = Date.parse(o.start) / 1000;
+                return {
+                    suite: o.suite, test: o.test, app: appOf({ browser: 'firefox', ...o }), index: o.index,
+                    value: bytes ? bytes * 8 / (o.ms * 1000) : o.ms, ms: o.ms,
+                    jobId: t, revision: '', machine: o.runner + ', colo ' + o.colo,
+                    date: new Date(t * 1000), jobDay: o.start.slice(0, 10),
+                    jobHour: o.start.slice(0, 13), jobTod: (t % 86400) / 3600
+                };
+            });
+        }
+
         async function getData(platformKey) {
             if (cache[platformKey]) return cache[platformKey];
+            const cfg = PLATFORMS[platformKey];
+            if (cfg.runner) {
+                // Only hours in which both browsers ran a protocol, so each comparison uses the same machine.
+                const pts = await offsitePoints(o => o.runner === cfg.runner, o => o.browser);
+                const apps = {};
+                pts.forEach(p => { (apps[p.suite + p.jobHour] = apps[p.suite + p.jobHour] || new Set()).add(p.app); });
+                cache[platformKey] = pts.filter(p => apps[p.suite + p.jobHour].size === BROWSER_SERIES.length);
+                return cache[platformKey];
+            }
             const sigUrl = TREEHERDER + '/api/project/' + REPOSITORY + '/performance/signatures/?framework=' +
                 FRAMEWORK + '&platform=' + PLATFORMS[platformKey].platform;
             const response = await fetch(sigUrl);
@@ -487,7 +519,7 @@
             const suites = new Set(PROTOCOLS.map(p => p.suite));
             const tests = new Set(METRICS.map(m => m.test));
             const offsite = PLATFORMS[platformKey].offsite;
-            const apps = new Set(offsite ? ['firefox'] : BROWSERS.map(b => b.app));
+            const apps = new Set(offsite ? [cfg.browser] : BROWSERS.map(b => b.app));
             const sigs = Object.values(await response.json()).filter(sig =>
                 suites.has(sig.suite) && tests.has(sig.test) && apps.has(sig.application) &&
                 !(sig.extra_options || []).some(o => o === 'gecko-profile' || o === 'simpleperf'));
@@ -533,21 +565,7 @@
                 p.jobHour = new Date(starts[p.jobId] * 1000).toISOString().slice(0, 13);
                 p.jobTod = (starts[p.jobId] % 86400) / 3600;
             });
-            if (offsite) {
-                const r = await fetch('offsite.json');
-                if (!r.ok) throw new Error('offsite.json request failed: HTTP ' + r.status);
-                (await r.json()).forEach(o => {
-                    const bytes = METRIC_BY_TEST[o.test] && METRIC_BY_TEST[o.test].bytes;
-                    const t = Date.parse(o.start) / 1000;
-                    points.push({
-                        suite: o.suite, test: o.test, app: 'offsite', index: o.index,
-                        value: bytes ? bytes * 8 / (o.ms * 1000) : o.ms, ms: o.ms,
-                        jobId: t, revision: '', machine: o.runner + ', colo ' + o.colo,
-                        date: new Date(t * 1000), jobDay: o.start.slice(0, 10),
-                        jobHour: o.start.slice(0, 13), jobTod: (t % 86400) / 3600
-                    });
-                });
-            }
+            if (offsite) points.push(...await offsitePoints(o => o.browser === cfg.browser, () => 'offsite'));
             cache[platformKey] = points;
             return cache[platformKey];
         }
