@@ -50,6 +50,34 @@
             margin-bottom: 18px;
         }
 
+        .notes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 8px 32px;
+            color: #4a5568;
+            font-size: 0.85rem;
+            margin: 4px 0 20px;
+        }
+
+        .notes h3 {
+            font-size: 0.9rem;
+            margin: 0 0 4px;
+            color: #2d3748;
+        }
+
+        .notes ul {
+            margin: 0;
+            padding-left: 18px;
+        }
+
+        .notes li {
+            margin-bottom: 3px;
+        }
+
+        .notes p {
+            margin: 6px 0 0;
+        }
+
         .toggle-row {
             display: flex;
             gap: 10px;
@@ -280,38 +308,28 @@
             <span><span class="tick"></span>median</span>
             <span><span class="beyond">&#9654;</span>beyond the axis (hover for the value)</span>
         </div>
-        <p class="note" id="seriesNote" style="display: none;">
-            <strong>Linux CI:</strong> the browser in Mozilla CI, <code>gecko-t-linux-talos-2404</code> pool: bare-metal
-            Linux hosts in Mozilla's MDC1 data centre, Ubuntu 24.04; Cloudflare answers from SJC.
-            <strong>GitHub VM:</strong> the same test (for Firefox, the same build and conditioned profile; for
-            Chrome, Chrome stable with its matching chromedriver), run outside Mozilla's network on a GitHub-hosted
-            <code>ubuntu-24.04</code> Actions runner (private repository: 2 vCPU, 8 GB RAM), a shared Azure virtual
-            machine. The Azure region and Cloudflare colo can change between workflow runs; hover a dot for its colo.
-            <strong>AWS metal:</strong> the same off-site test on an AWS <code>c5.metal</code> bare-metal instance
-            (2 &times; Xeon Platinum 8275CL, 96 vCPU, 25 Gbps network, no hypervisor; spot, us-west-1), Ubuntu 24.04;
-            Cloudflare answers from SJC, the same colo as CI. So far one short run (Oct 12): one or two jobs per browser
-            and protocol. Each dot is one replicate. Linux CI and AWS metal reach the same Cloudflare colo (SJC);
-            the GitHub VM usually reaches a different one, so its medians are not directly comparable. The GitHub VM
-            and AWS metal Browsers options run each protocol in both browsers back to back on the same machine, and
-            only include hours in which both browsers ran that protocol.
-        </p>
-        <p class="note">
-            Each dot is one replicate from a CI job; the bar marks each browser's median (per day in the
-            By day view, where days run left to right by the date each job reported). The By hour view keeps
-            only the UTC hours, by job start time, in which both browsers ran that protocol, so the comparison
-            and medians use runs that saw the same network conditions; each hour (and each day in
-            the By day view) is labelled with Firefox's performance relative to Chrome from the medians, the same
-            ratio shown above each chart (above 1&times; means Firefox was faster). The Time of day view places each replicate
-            at its job's UTC start time, folding all days onto one 24-hour axis, to show daily trends (the test
-            runs within about 2 minutes of job start; spread within a job is jitter). Connection times and
-            latency are in ms (lower is better); downloads and uploads are throughput in Mbps (higher is better),
-            from each transfer's size and duration. The three charts for a metric share an axis. Above each chart,
-            Firefox is compared with Chrome using the median, and each browser's coefficient of variance (standard deviation / mean) shows how noisy it is.
-            Hover for the worker and push; click a dot to open its job. Overview shows every source on one chart per
-            metric, with each source's median, coefficient of variance and job count. Browsers compares Firefox with
-            Chrome in one environment. The GitHub VM and AWS metal options show the same test run outside Mozilla's
-            data centre; their hardware is described above the charts.
-        </p>
+        <div class="notes">
+            <div>
+                <h3>Environments</h3>
+                <ul>
+                    <li><strong>Linux CI</strong>: Mozilla CI, bare-metal Linux hosts in the MDC1 data centre. Cloudflare: SJC.</li>
+                    <li><strong>Windows ref</strong>: Mozilla CI, Windows 11 reference hardware (Intel NUC). Cloudflare: SJC.</li>
+                    <li><strong>GitHub VM</strong>: GitHub Actions runner, a shared Azure VM (2 vCPU, 8 GB). Cloudflare colo varies (hover a dot).</li>
+                    <li><strong>AWS metal</strong>: <code>c5.metal</code> bare-metal instance, us-west-1. Cloudflare: SJC. One short run so far.</li>
+                </ul>
+                <p>Off-site runs use the same test and Firefox build as CI, and run both browsers back to back on one machine.</p>
+            </div>
+            <div>
+                <h3>Reading the charts</h3>
+                <ul>
+                    <li>Each dot is one replicate; the bar is the median.</li>
+                    <li>Times are in ms (lower is better); transfers in Mbps (higher is better).</li>
+                    <li>Above each chart: medians, the Firefox / Chrome ratio (above 1&times; = Firefox faster) and the coefficient of variance (noise).</li>
+                    <li>By hour keeps only hours in which both browsers ran; Time of day folds all days onto 24 hours (UTC).</li>
+                    <li>Hover a dot for details; click it to open the CI job.</li>
+                </ul>
+            </div>
+        </div>
 
         <div id="metrics"><div class="loading">Loading CI data…</div></div>
         <div id="error" class="error" style="display: none;"></div>
@@ -1052,7 +1070,6 @@
                 document.getElementById('viewToggle').style.display = platform === 'overview' ? 'none' : '';
                 document.getElementById('platformToggle').style.display = platform === 'overview' ? 'none' : '';
                 BROWSERS = platform === 'overview' ? OVERVIEW_SERIES : BROWSER_SERIES;
-                document.getElementById('seriesNote').style.display = cfg.runner ? '' : 'none';
                 (platform === 'overview' ? BROWSER_SERIES : BROWSERS).forEach((b, i) => {
                     document.getElementById('key' + i).innerHTML =
                         '<span class="dot" style="background:' + b.color + '"></span>' + b.label;
