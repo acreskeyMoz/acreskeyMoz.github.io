@@ -1084,7 +1084,7 @@
         }
 
         // The option last picked in each section, so switching tabs returns to it.
-        const lastPick = { [PLATFORMS[platform].section]: platform };
+        const lastPick = { browsers: 'metal', [PLATFORMS[platform].section]: platform };
 
         function buildPlatformPills() {
             const row = document.getElementById('platformToggle');
