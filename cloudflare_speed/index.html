@@ -235,7 +235,7 @@
         }
 
         .chart-container.overview {
-            height: 330px;
+            height: 400px;
         }
 
         .toggle-row.sections label.pill {
@@ -312,7 +312,8 @@
             <div>
                 <h3>Environments</h3>
                 <ul>
-                    <li><strong>Linux CI</strong>: Mozilla CI, bare-metal Linux hosts in the MDC1 data centre. Cloudflare: SJC.</li>
+                    <li><strong>Linux talos</strong>: Mozilla CI's main Linux perf pool, bare-metal hosts in the MDC1 data centre. Cloudflare: SJC.</li>
+                    <li><strong>Linux netperf</strong>: Mozilla CI's dedicated network-test pool, 6 bare-metal hosts in MDC1. Cloudflare: SJC. Firefox only so far (the hosts lack a current Chrome).</li>
                     <li><strong>Windows ref</strong>: Mozilla CI, Windows 11 reference hardware (Intel NUC). Cloudflare: SJC.</li>
                     <li><strong>GitHub VM</strong>: GitHub Actions runner, a shared Azure VM (2 vCPU, 8 GB). Cloudflare colo varies (hover a dot).</li>
                     <li><strong>AWS metal</strong>: <code>c5.metal</code> bare-metal instance, us-west-1. Cloudflare: SJC. One short run so far.</li>
@@ -346,13 +347,17 @@
         const FRAMEWORK = 13; // browsertime
         const INTERVAL = 90 * 24 * 60 * 60;
 
+        // Linux CI hosts in the dedicated netperf pool; the rest of linux2404-64-shippable is the talos pool.
+        const NETPERF_HOSTS = new Set([226, 239, 240, 273, 274, 275].map(n => 't-linux64-ms-' + n));
+
         const SECTIONS = { overview: 'Overview', browsers: 'Browsers' };
 
         // Each option belongs to a section: Overview shows every source, Browsers compares Firefox with
         // Chrome in one environment.
         const PLATFORMS = {
             overview: { label: 'All sources', section: 'overview', runner: 'all' },
-            linux:  { label: 'Linux CI (shippable)', platform: 'linux2404-64-shippable', section: 'browsers' },
+            linux:  { label: 'Linux CI (talos pool)', platform: 'linux2404-64-shippable', pool: 'talos', section: 'browsers' },
+            netperf: { label: 'Linux CI (netperf pool)', platform: 'linux2404-64-shippable', pool: 'netperf', section: 'browsers' },
             winref: { label: 'Windows 11 ref hardware', platform: 'windows11-64-24h2-hw-ref-shippable', section: 'browsers' },
             ghvm:    { label: 'GitHub VM', runner: 'GitHub Actions VM', section: 'browsers' },
             metal:   { label: 'AWS metal', runner: 'c5.metal', section: 'browsers' }
@@ -365,7 +370,8 @@
         ];
         // Overview rows: every environment in both browsers.
         const ENVIRONMENTS = [
-            { key: 'linux', label: 'Linux CI' },
+            { key: 'linux', label: 'Linux talos' },
+            { key: 'netperf', label: 'Linux netperf' },
             { key: 'winref', label: 'Windows ref' },
             { key: 'ghvm', label: 'GitHub VM' },
             { key: 'metal', label: 'AWS metal' }
@@ -532,9 +538,10 @@
 
         async function getData(platformKey) {
             if (cache[platformKey]) return cache[platformKey];
-            const cfg = PLATFORMS[platformKey];
+            // 'raw:<platform>' fetches every CI result for a Treeherder platform; pools filter it by host.
+            const cfg = PLATFORMS[platformKey] || { platform: platformKey.slice(4) };
             if (platformKey === 'overview') {
-                const ci = await Promise.all(['linux', 'winref'].map(async k =>
+                const ci = await Promise.all(['linux', 'netperf', 'winref'].map(async k =>
                     (await getData(k)).map(p => ({ ...p, app: k + '-' + p.app }))));
                 const off = await offsitePoints(() => true, o =>
                     (o.runner === 'c5.metal' ? 'metal' : 'ghvm') + '-' + o.browser);
@@ -549,8 +556,13 @@
                 cache[platformKey] = pts.filter(p => apps[p.suite + p.jobHour].size === BROWSER_SERIES.length);
                 return cache[platformKey];
             }
+            if (cfg.pool) {
+                const all = await getData('raw:' + cfg.platform);
+                cache[platformKey] = all.filter(p => NETPERF_HOSTS.has(p.machine) === (cfg.pool === 'netperf'));
+                return cache[platformKey];
+            }
             const sigUrl = TREEHERDER + '/api/project/' + REPOSITORY + '/performance/signatures/?framework=' +
-                FRAMEWORK + '&platform=' + PLATFORMS[platformKey].platform;
+                FRAMEWORK + '&platform=' + cfg.platform;
             const response = await fetch(sigUrl);
             if (!response.ok) throw new Error('signatures request failed: HTTP ' + response.status);
             const suites = new Set(PROTOCOLS.map(p => p.suite));
