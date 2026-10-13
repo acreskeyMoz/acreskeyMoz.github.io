@@ -281,7 +281,7 @@
             <span><span class="beyond">&#9654;</span>beyond the axis (hover for the value)</span>
         </div>
         <p class="note" id="seriesNote" style="display: none;">
-            <strong>CI talos:</strong> the browser in Mozilla CI, <code>gecko-t-linux-talos-2404</code> pool: bare-metal
+            <strong>Linux CI:</strong> the browser in Mozilla CI, <code>gecko-t-linux-talos-2404</code> pool: bare-metal
             Linux hosts in Mozilla's MDC1 data centre, Ubuntu 24.04; Cloudflare answers from SJC.
             <strong>GitHub VM:</strong> the same test (for Firefox, the same build and conditioned profile; for
             Chrome, Chrome stable with its matching chromedriver), run outside Mozilla's network on a GitHub-hosted
@@ -290,14 +290,10 @@
             <strong>AWS metal:</strong> the same off-site test on an AWS <code>c5.metal</code> bare-metal instance
             (2 &times; Xeon Platinum 8275CL, 96 vCPU, 25 Gbps network, no hypervisor; spot, us-west-1), Ubuntu 24.04;
             Cloudflare answers from SJC, the same colo as CI. So far one short run (Oct 12): one or two jobs per browser
-            and protocol. Each dot is one replicate.
-            In the CI vs GitHub VM and CI vs AWS metal options, the comparison above each chart is about noise, not
-            speed: coefficient of variance, IQR / median (which ignores outliers) and the share of replicates over
-            3&times; the median time; the badge names the series with the lower coefficient of variance (within 10%
-            counts as similar). CI talos and the GitHub VM reach different Cloudflare colos, so their medians are not
-            comparable; CI and AWS metal both reach SJC. The GitHub VM and AWS metal Firefox vs Chrome options run
-            each protocol in both browsers back to back on the same machine, and only include hours in which both
-            browsers ran that protocol.
+            and protocol. Each dot is one replicate. Linux CI and AWS metal reach the same Cloudflare colo (SJC);
+            the GitHub VM usually reaches a different one, so its medians are not directly comparable. The GitHub VM
+            and AWS metal Browsers options run each protocol in both browsers back to back on the same machine, and
+            only include hours in which both browsers ran that protocol.
         </p>
         <p class="note">
             Each dot is one replicate from a CI job; the bar marks each browser's median (per day in the
@@ -313,9 +309,8 @@
             Firefox is compared with Chrome using the median, and each browser's coefficient of variance (standard deviation / mean) shows how noisy it is.
             Hover for the worker and push; click a dot to open its job. Overview shows every source on one chart per
             metric, with each source's median, coefficient of variance and job count. Browsers compares Firefox with
-            Chrome in one environment; Network environments compares Mozilla CI with an off-site environment for one
-            browser. The GitHub VM and AWS metal options show the same test run outside Mozilla's data centre; their
-            hardware is described above the charts.
+            Chrome in one environment. The GitHub VM and AWS metal options show the same test run outside Mozilla's
+            data centre; their hardware is described above the charts.
         </p>
 
         <div id="metrics"><div class="loading">Loading CI data…</div></div>
@@ -333,34 +328,22 @@
         const FRAMEWORK = 13; // browsertime
         const INTERVAL = 90 * 24 * 60 * 60;
 
-        const SECTIONS = { overview: 'Overview', browsers: 'Browsers', environments: 'Network environments' };
+        const SECTIONS = { overview: 'Overview', browsers: 'Browsers' };
 
         // Each option belongs to a section: Overview shows every source, Browsers compares Firefox with
-        // Chrome in one environment, Network environments compares CI with an off-site environment.
+        // Chrome in one environment.
         const PLATFORMS = {
             overview: { label: 'All sources', section: 'overview', runner: 'all' },
             linux:  { label: 'Linux CI (shippable)', platform: 'linux2404-64-shippable', section: 'browsers' },
             winref: { label: 'Windows 11 ref hardware', platform: 'windows11-64-24h2-hw-ref-shippable', section: 'browsers' },
             ghvm:    { label: 'GitHub VM', runner: 'GitHub Actions VM', section: 'browsers' },
-            metal:   { label: 'AWS metal', runner: 'c5.metal', section: 'browsers' },
-            offsite: { label: 'Firefox: CI vs GitHub VM', platform: 'linux2404-64-shippable', offsite: true, section: 'environments',
-                       browser: 'firefox', runner: 'GitHub Actions VM', series: 'GitHub VM', color: '#2f9e44' },
-            offsiteChrome: { label: 'Chrome: CI vs GitHub VM', platform: 'linux2404-64-shippable', offsite: true, section: 'environments',
-                       browser: 'chrome', runner: 'GitHub Actions VM', series: 'GitHub VM', color: '#2f9e44' },
-            metalFirefox: { label: 'Firefox: CI vs AWS metal', platform: 'linux2404-64-shippable', offsite: true, section: 'environments',
-                       browser: 'firefox', runner: 'c5.metal', series: 'AWS metal', color: '#7b4fd6' },
-            metalChrome: { label: 'Chrome: CI vs AWS metal', platform: 'linux2404-64-shippable', offsite: true, section: 'environments',
-                       browser: 'chrome', runner: 'c5.metal', series: 'AWS metal', color: '#7b4fd6' }
+            metal:   { label: 'AWS metal', runner: 'c5.metal', section: 'browsers' }
         };
 
-        // The two series every chart compares: the browsers, or for the off-site view, Firefox in CI vs off-site.
+        // The two series every Browsers chart compares.
         const BROWSER_SERIES = [
             { app: 'firefox', label: 'Firefox', short: 'Fx', color: '#eb6834' },
             { app: 'chrome',  label: 'Chrome',  short: 'Cr', color: '#2a78d6' }
-        ];
-        const OFFSITE_SERIES = [
-            { app: 'ci',      label: 'CI talos', short: 'CI', color: '#eb6834' },
-            { app: 'offsite', label: 'GitHub VM', short: 'GH', color: '#2f9e44' }
         ];
         // Overview rows: every environment in both browsers.
         const ENVIRONMENTS = [
@@ -417,9 +400,8 @@
             return (v < 100 ? v.toFixed(1) : v.toFixed(0)) + (m.bytes ? ' Mbps' : ' ms');
         }
 
-        // Differences of 3% or less count as roughly equal; for noise (CV), 10% or less.
+        // Differences of 3% or less count as roughly equal.
         const TIE = 0.03;
-        const NOISE_TIE = 0.10;
 
         // 0 = first series, 1 = second, null = a tie. Throughput is better higher, times lower.
         function faster(ff, cr, m) {
@@ -442,13 +424,6 @@
         function winnerHtml(points, m) {
             const [ff, cr] = BROWSERS.map(b => points.filter(p => p.app === b.app).map(p => p.value));
             if (platform === 'overview' || !ff.length || !cr.length) return '';
-            if (PLATFORMS[platform].offsite) {
-                const [a, b] = [cov(ff), cov(cr)];
-                if (Math.abs(a - b) / Math.min(a, b) <= NOISE_TIE) return '<span class="winner">similar noise</span>';
-                const w = BROWSERS[a < b ? 0 : 1];
-                return '<span class="winner"><span class="dot" style="background:' + w.color + '"></span>' +
-                    w.label + ' steadier</span>';
-            }
             const byMedian = faster(median(ff), median(cr), m);
             if (byMedian === null) return '<span class="winner">roughly equal</span>';
             const w = BROWSERS[byMedian];
@@ -478,29 +453,6 @@
                 '&times;</span> <span class="muted">&mdash; above 1&times; means ' + BROWSERS[0].label + ' faster</span></div>';
         }
 
-        // Spread measures per series: CV, IQR over median (robust to outliers), and the share of
-        // replicates taking over 3x the median time.
-        function noiseHtml(points) {
-            const series = BROWSERS.map(b => points.filter(p => p.app === b.app));
-            const fmt = v => v === null ? '–' : v.toFixed(v < 10 ? 1 : 0) + '%';
-            const line = (label, f, note) => '<div><strong>' + label + ':</strong> ' +
-                BROWSERS.map((b, i) => b.label + ' ' + fmt(f(series[i]))).join(' &middot; ') +
-                ' <span class="muted">&mdash; ' + note + '</span></div>';
-            const iqr = pts => {
-                const v = pts.map(p => p.value);
-                return (percentile(v, 0.75) - percentile(v, 0.25)) / median(v) * 100;
-            };
-            const tail = pts => {
-                const ms = pts.map(p => p.ms);
-                const m = median(ms);
-                return ms.filter(v => v > 3 * m).length / ms.length * 100;
-            };
-            return '<div class="compare">' +
-                line('Coefficient of Variance', pts => cov(pts.map(p => p.value)), 'standard deviation / mean') +
-                line('IQR / median', iqr, 'spread of the middle half, ignores outliers') +
-                line('Over 3&times; median time', tail, 'share of replicates') + '</div>';
-        }
-
         // Overview: median, coefficient of variance and job count for every source.
         function overviewHtml(points, m) {
             const rows = BROWSERS.map(b => {
@@ -519,8 +471,7 @@
         function compareHtml(points, m) {
             if (platform === 'overview') return overviewHtml(points, m);
             const [ff, cr] = BROWSERS.map(b => points.filter(p => p.app === b.app).map(p => p.value));
-            if (!ff.length || !cr.length) return '<div class="compare muted">needs both series to compare</div>';
-            if (PLATFORMS[platform].offsite) return noiseHtml(points);
+            if (!ff.length || !cr.length) return '<div class="compare muted">needs both browsers to compare</div>';
             return '<div class="compare">' +
                 compareLine('Median', median(ff), median(cr), m) +
                 ratioLine(median(ff), median(cr), m) +
@@ -572,7 +523,7 @@
                 cache[platformKey] = ci.flat().concat(off);
                 return cache[platformKey];
             }
-            if (cfg.runner && !cfg.offsite) {
+            if (cfg.runner) {
                 // Only hours in which both browsers ran a protocol, so each comparison uses the same machine.
                 const pts = await offsitePoints(o => o.runner === cfg.runner, o => o.browser);
                 const apps = {};
@@ -586,8 +537,7 @@
             if (!response.ok) throw new Error('signatures request failed: HTTP ' + response.status);
             const suites = new Set(PROTOCOLS.map(p => p.suite));
             const tests = new Set(METRICS.map(m => m.test));
-            const offsite = PLATFORMS[platformKey].offsite;
-            const apps = new Set(offsite ? [cfg.browser] : BROWSER_SERIES.map(b => b.app));
+            const apps = new Set(BROWSER_SERIES.map(b => b.app));
             const sigs = Object.values(await response.json()).filter(sig =>
                 suites.has(sig.suite) && tests.has(sig.test) && apps.has(sig.application) &&
                 !(sig.extra_options || []).some(o => o === 'gecko-profile' || o === 'simpleperf'));
@@ -602,7 +552,7 @@
                     const json = await r.json();
                     const bytes = METRIC_BY_TEST[sig.test].bytes;
                     return ((json[0] && json[0].data) || []).map((p, i) => ({
-                        suite: sig.suite, test: sig.test, app: offsite ? 'ci' : sig.application, index: i,
+                        suite: sig.suite, test: sig.test, app: sig.application, index: i,
                         value: bytes ? bytes * 8 / (p.value * 1000) : p.value, ms: p.value,
                         jobId: p.job_id, revision: p.revision, machine: p.machine_name,
                         date: new Date(p.push_timestamp + 'Z'),
@@ -633,9 +583,6 @@
                 p.jobHour = new Date(starts[p.jobId] * 1000).toISOString().slice(0, 13);
                 p.jobTod = (starts[p.jobId] % 86400) / 3600;
             });
-            if (offsite) {
-                points.push(...await offsitePoints(o => o.browser === cfg.browser && o.runner === cfg.runner, () => 'offsite'));
-            }
             cache[platformKey] = points;
             return cache[platformKey];
         }
@@ -1064,7 +1011,7 @@
                         const pts = forProtocol(forMetric, p.suite);
                         if (view === 'hour' && !pts.length) {
                             return '<div><div class="protocol-title">' + p.label + '</div>' +
-                                '<div class="loading">No hour with both series</div></div>';
+                                '<div class="loading">No hour with both browsers</div></div>';
                         }
                         return '<div><div class="protocol-title">' + p.label + winnerHtml(pts, m) + '</div>' +
                             compareHtml(pts, m) +
@@ -1104,9 +1051,7 @@
                 }
                 document.getElementById('viewToggle').style.display = platform === 'overview' ? 'none' : '';
                 document.getElementById('platformToggle').style.display = platform === 'overview' ? 'none' : '';
-                BROWSERS = platform === 'overview' ? OVERVIEW_SERIES : cfg.offsite
-                    ? [OFFSITE_SERIES[0], { ...OFFSITE_SERIES[1], label: cfg.series, color: cfg.color }]
-                    : BROWSER_SERIES;
+                BROWSERS = platform === 'overview' ? OVERVIEW_SERIES : BROWSER_SERIES;
                 document.getElementById('seriesNote').style.display = cfg.runner ? '' : 'none';
                 (platform === 'overview' ? BROWSER_SERIES : BROWSERS).forEach((b, i) => {
                     document.getElementById('key' + i).innerHTML =
