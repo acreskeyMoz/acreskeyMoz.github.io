@@ -206,6 +206,22 @@
             height: 120px;
         }
 
+        .chart-container.overview {
+            height: 330px;
+        }
+
+        .toggle-row.sections label.pill {
+            font-weight: 600;
+        }
+
+        .compare table {
+            border-collapse: collapse;
+        }
+
+        .compare td {
+            padding: 0 10px 0 0;
+        }
+
         .error {
             background: #fed7d7;
             color: #c53030;
@@ -254,6 +270,7 @@
             running the test on Linux shippable and Windows reference hardware
         </p>
 
+        <div class="toggle-row sections" id="sectionToggle"></div>
         <div class="toggle-row" id="platformToggle"></div>
         <div class="toggle-row" id="viewToggle"></div>
 
@@ -294,8 +311,11 @@
             latency are in ms (lower is better); downloads and uploads are throughput in Mbps (higher is better),
             from each transfer's size and duration. The three charts for a metric share an axis. Above each chart,
             Firefox is compared with Chrome using the median, and each browser's coefficient of variance (standard deviation / mean) shows how noisy it is.
-            Hover for the worker and push; click a dot to open its job. The GitHub VM and AWS metal options show
-            the same test run outside Mozilla's data centre; their hardware is described above the charts.
+            Hover for the worker and push; click a dot to open its job. Overview shows every source on one chart per
+            metric, with each source's median, coefficient of variance and job count. Browsers compares Firefox with
+            Chrome in one environment; Network environments compares Mozilla CI with an off-site environment for one
+            browser. The GitHub VM and AWS metal options show the same test run outside Mozilla's data centre; their
+            hardware is described above the charts.
         </p>
 
         <div id="metrics"><div class="loading">Loading CI data…</div></div>
@@ -313,18 +333,23 @@
         const FRAMEWORK = 13; // browsertime
         const INTERVAL = 90 * 24 * 60 * 60;
 
+        const SECTIONS = { overview: 'Overview', browsers: 'Browsers', environments: 'Network environments' };
+
+        // Each option belongs to a section: Overview shows every source, Browsers compares Firefox with
+        // Chrome in one environment, Network environments compares CI with an off-site environment.
         const PLATFORMS = {
-            linux:  { label: 'Linux 24.04 shippable',   platform: 'linux2404-64-shippable' },
-            winref: { label: 'Windows 11 ref hardware', platform: 'windows11-64-24h2-hw-ref-shippable' },
-            ghvm:    { label: 'GitHub VM: Firefox vs Chrome', runner: 'GitHub Actions VM' },
-            metal:   { label: 'AWS metal: Firefox vs Chrome', runner: 'c5.metal' },
-            offsite: { label: 'Firefox: CI vs GitHub VM', platform: 'linux2404-64-shippable', offsite: true,
+            overview: { label: 'All sources', section: 'overview', runner: 'all' },
+            linux:  { label: 'Linux CI (shippable)', platform: 'linux2404-64-shippable', section: 'browsers' },
+            winref: { label: 'Windows 11 ref hardware', platform: 'windows11-64-24h2-hw-ref-shippable', section: 'browsers' },
+            ghvm:    { label: 'GitHub VM', runner: 'GitHub Actions VM', section: 'browsers' },
+            metal:   { label: 'AWS metal', runner: 'c5.metal', section: 'browsers' },
+            offsite: { label: 'Firefox: CI vs GitHub VM', platform: 'linux2404-64-shippable', offsite: true, section: 'environments',
                        browser: 'firefox', runner: 'GitHub Actions VM', series: 'GitHub VM', color: '#2f9e44' },
-            offsiteChrome: { label: 'Chrome: CI vs GitHub VM', platform: 'linux2404-64-shippable', offsite: true,
+            offsiteChrome: { label: 'Chrome: CI vs GitHub VM', platform: 'linux2404-64-shippable', offsite: true, section: 'environments',
                        browser: 'chrome', runner: 'GitHub Actions VM', series: 'GitHub VM', color: '#2f9e44' },
-            metalFirefox: { label: 'Firefox: CI vs AWS metal', platform: 'linux2404-64-shippable', offsite: true,
+            metalFirefox: { label: 'Firefox: CI vs AWS metal', platform: 'linux2404-64-shippable', offsite: true, section: 'environments',
                        browser: 'firefox', runner: 'c5.metal', series: 'AWS metal', color: '#7b4fd6' },
-            metalChrome: { label: 'Chrome: CI vs AWS metal', platform: 'linux2404-64-shippable', offsite: true,
+            metalChrome: { label: 'Chrome: CI vs AWS metal', platform: 'linux2404-64-shippable', offsite: true, section: 'environments',
                        browser: 'chrome', runner: 'c5.metal', series: 'AWS metal', color: '#7b4fd6' }
         };
 
@@ -337,6 +362,15 @@
             { app: 'ci',      label: 'CI talos', short: 'CI', color: '#eb6834' },
             { app: 'offsite', label: 'GitHub VM', short: 'GH', color: '#2f9e44' }
         ];
+        // Overview rows: every environment in both browsers.
+        const ENVIRONMENTS = [
+            { key: 'linux', label: 'Linux CI' },
+            { key: 'winref', label: 'Windows ref' },
+            { key: 'ghvm', label: 'GitHub VM' },
+            { key: 'metal', label: 'AWS metal' }
+        ];
+        const OVERVIEW_SERIES = ENVIRONMENTS.flatMap(e => BROWSER_SERIES.map(b =>
+            ({ app: e.key + '-' + b.app, label: e.label + ' · ' + b.label, short: b.short, color: b.color })));
         let BROWSERS = BROWSER_SERIES;
 
         const PROTOCOLS = [
@@ -361,7 +395,7 @@
         const METRIC_BY_TEST = Object.fromEntries(METRICS.map(m => [m.test, m]));
 
         let platform = new URLSearchParams(location.search).get('platform');
-        if (!PLATFORMS[platform]) platform = 'winref';
+        if (!PLATFORMS[platform]) platform = 'overview';
         const VIEWS = { all: 'All results', day: 'By day', hour: 'By hour', tod: 'Time of day' };
         let view = new URLSearchParams(location.search).get('view');
         if (!VIEWS[view]) view = 'all';
@@ -407,7 +441,7 @@
 
         function winnerHtml(points, m) {
             const [ff, cr] = BROWSERS.map(b => points.filter(p => p.app === b.app).map(p => p.value));
-            if (!ff.length || !cr.length) return '';
+            if (platform === 'overview' || !ff.length || !cr.length) return '';
             if (PLATFORMS[platform].offsite) {
                 const [a, b] = [cov(ff), cov(cr)];
                 if (Math.abs(a - b) / Math.min(a, b) <= NOISE_TIE) return '<span class="winner">similar noise</span>';
@@ -467,7 +501,23 @@
                 line('Over 3&times; median time', tail, 'share of replicates') + '</div>';
         }
 
+        // Overview: median, coefficient of variance and job count for every source.
+        function overviewHtml(points, m) {
+            const rows = BROWSERS.map(b => {
+                const pts = points.filter(p => p.app === b.app);
+                if (!pts.length) return '';
+                const v = pts.map(p => p.value);
+                const c = cov(v);
+                const jobs = new Set(pts.map(p => p.jobId)).size;
+                return '<tr><td><span class="dot" style="background:' + b.color + '"></span>' + b.label + '</td><td>' +
+                    fmtVal(median(v), m) + '</td><td>CV ' + (c === null ? '–' : c.toFixed(c < 10 ? 1 : 0) + '%') +
+                    '</td><td class="muted">' + jobs + (jobs === 1 ? ' job' : ' jobs') + '</td></tr>';
+            }).join('');
+            return '<div class="compare"><table>' + rows + '</table></div>';
+        }
+
         function compareHtml(points, m) {
+            if (platform === 'overview') return overviewHtml(points, m);
             const [ff, cr] = BROWSERS.map(b => points.filter(p => p.app === b.app).map(p => p.value));
             if (!ff.length || !cr.length) return '<div class="compare muted">needs both series to compare</div>';
             if (PLATFORMS[platform].offsite) return noiseHtml(points);
@@ -514,6 +564,14 @@
         async function getData(platformKey) {
             if (cache[platformKey]) return cache[platformKey];
             const cfg = PLATFORMS[platformKey];
+            if (platformKey === 'overview') {
+                const ci = await Promise.all(['linux', 'winref'].map(async k =>
+                    (await getData(k)).map(p => ({ ...p, app: k + '-' + p.app }))));
+                const off = await offsitePoints(() => true, o =>
+                    (o.runner === 'c5.metal' ? 'metal' : 'ghvm') + '-' + o.browser);
+                cache[platformKey] = ci.flat().concat(off);
+                return cache[platformKey];
+            }
             if (cfg.runner && !cfg.offsite) {
                 // Only hours in which both browsers ran a protocol, so each comparison uses the same machine.
                 const pts = await offsitePoints(o => o.runner === cfg.runner, o => o.browser);
@@ -529,7 +587,7 @@
             const suites = new Set(PROTOCOLS.map(p => p.suite));
             const tests = new Set(METRICS.map(m => m.test));
             const offsite = PLATFORMS[platformKey].offsite;
-            const apps = new Set(offsite ? [cfg.browser] : BROWSERS.map(b => b.app));
+            const apps = new Set(offsite ? [cfg.browser] : BROWSER_SERIES.map(b => b.app));
             const sigs = Object.values(await response.json()).filter(sig =>
                 suites.has(sig.suite) && tests.has(sig.test) && apps.has(sig.application) &&
                 !(sig.extra_options || []).some(o => o === 'gecko-profile' || o === 'simpleperf'));
@@ -711,7 +769,7 @@
                             min: -0.5,
                             max: BROWSERS.length - 0.5,
                             reverse: true,
-                            afterFit: a => { a.width = 72; },
+                            afterFit: a => { a.width = BROWSERS.length > 2 ? 150 : 72; },
                             afterBuildTicks: a => { a.ticks = BROWSERS.map((b, i) => ({ value: i })); },
                             grid: { display: false },
                             border: { display: false },
@@ -724,7 +782,7 @@
 
         function syncUrl() {
             const q = new URLSearchParams();
-            if (platform !== 'winref') q.set('platform', platform);
+            if (platform !== 'overview') q.set('platform', platform);
             if (view !== 'all') q.set('view', view);
             history.replaceState(null, '', q.toString() ? '?' + q : location.pathname);
         }
@@ -1010,7 +1068,8 @@
                         }
                         return '<div><div class="protocol-title">' + p.label + winnerHtml(pts, m) + '</div>' +
                             compareHtml(pts, m) +
-                            '<div class="chart-container' + (view !== 'all' ? ' by-day' : '') + '"><canvas id="c-' +
+                            '<div class="chart-container' + (platform === 'overview' ? ' overview' : view !== 'all' ? ' by-day' : '') +
+                            '"><canvas id="c-' +
                             m.test + '-' + p.suite + '"></canvas></div></div>';
                     }).join('') + '</div>';
                 host.appendChild(section);
@@ -1039,11 +1098,17 @@
             try {
                 syncUrl();
                 const cfg = PLATFORMS[platform];
-                BROWSERS = cfg.offsite
+                if (platform === 'overview') {
+                    view = 'all';
+                    document.querySelector('input[name=view][value=all]').checked = true;
+                }
+                document.getElementById('viewToggle').style.display = platform === 'overview' ? 'none' : '';
+                document.getElementById('platformToggle').style.display = platform === 'overview' ? 'none' : '';
+                BROWSERS = platform === 'overview' ? OVERVIEW_SERIES : cfg.offsite
                     ? [OFFSITE_SERIES[0], { ...OFFSITE_SERIES[1], label: cfg.series, color: cfg.color }]
                     : BROWSER_SERIES;
                 document.getElementById('seriesNote').style.display = cfg.runner ? '' : 'none';
-                BROWSERS.forEach((b, i) => {
+                (platform === 'overview' ? BROWSER_SERIES : BROWSERS).forEach((b, i) => {
                     document.getElementById('key' + i).innerHTML =
                         '<span class="dot" style="background:' + b.color + '"></span>' + b.label;
                 });
@@ -1056,19 +1121,42 @@
             }
         }
 
-        window.addEventListener('load', () => {
+        // The option last picked in each section, so switching tabs returns to it.
+        const lastPick = { [PLATFORMS[platform].section]: platform };
+
+        function buildPlatformPills() {
             const row = document.getElementById('platformToggle');
-            Object.entries(PLATFORMS).forEach(([key, cfg]) => {
-                const label = document.createElement('label');
-                label.className = 'pill';
-                label.innerHTML = '<input type="radio" name="platform" value="' + key + '"' +
-                    (key === platform ? ' checked' : '') + '><span>' + cfg.label + '</span>';
-                label.querySelector('input').addEventListener('change', () => {
-                    platform = key;
+            row.innerHTML = '';
+            Object.entries(PLATFORMS).filter(([, cfg]) => cfg.section === PLATFORMS[platform].section)
+                .forEach(([key, cfg]) => {
+                    const label = document.createElement('label');
+                    label.className = 'pill';
+                    label.innerHTML = '<input type="radio" name="platform" value="' + key + '"' +
+                        (key === platform ? ' checked' : '') + '><span>' + cfg.label + '</span>';
+                    label.querySelector('input').addEventListener('change', () => {
+                        platform = key;
+                        lastPick[cfg.section] = key;
+                        load();
+                    });
+                    row.appendChild(label);
+                });
+        }
+
+        window.addEventListener('load', () => {
+            const srow = document.getElementById('sectionToggle');
+            Object.entries(SECTIONS).forEach(([key, label]) => {
+                const el = document.createElement('label');
+                el.className = 'pill';
+                el.innerHTML = '<input type="radio" name="section" value="' + key + '"' +
+                    (key === PLATFORMS[platform].section ? ' checked' : '') + '><span>' + label + '</span>';
+                el.querySelector('input').addEventListener('change', () => {
+                    platform = lastPick[key] || Object.keys(PLATFORMS).find(k => PLATFORMS[k].section === key);
+                    buildPlatformPills();
                     load();
                 });
-                row.appendChild(label);
+                srow.appendChild(el);
             });
+            buildPlatformPills();
             const vrow = document.getElementById('viewToggle');
             Object.entries(VIEWS).forEach(([key, label]) => {
                 const el = document.createElement('label');
