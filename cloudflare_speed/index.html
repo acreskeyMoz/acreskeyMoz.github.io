@@ -317,6 +317,7 @@
                     <li><strong>Windows ref</strong>: Mozilla CI, Windows 11 reference hardware (Intel NUC). Cloudflare: SJC.</li>
                     <li><strong>GitHub VM</strong>: GitHub Actions runner, a shared Azure VM (2 vCPU, 8 GB). Cloudflare colo varies (hover a dot).</li>
                     <li><strong>AWS metal</strong>: <code>c5.metal</code> bare-metal instance, us-west-1. Cloudflare: SJC. One short run so far.</li>
+                    <li><strong>macOS home</strong>: MacBook Pro (M1 Max) on a Bell home fibre connection in Ottawa, ON. Cloudflare: YUL. Uses a current Nightly build rather than the CI build. Large downloads top out at about 530 Mbps in both browsers, the line's limit.</li>
                 </ul>
                 <p>Off-site runs use the same test and Firefox build as CI, and run both browsers back to back on one machine.</p>
             </div>
@@ -360,7 +361,8 @@
             netperf: { label: 'Linux CI (netperf pool)', platform: 'linux2404-64-shippable', pool: 'netperf', section: 'browsers' },
             winref: { label: 'Windows 11 ref hardware', platform: 'windows11-64-24h2-hw-ref-shippable', section: 'browsers' },
             ghvm:    { label: 'GitHub VM', runner: 'GitHub Actions VM', section: 'browsers' },
-            metal:   { label: 'AWS metal', runner: 'c5.metal', section: 'browsers' }
+            metal:   { label: 'AWS metal', runner: 'c5.metal', section: 'browsers' },
+            macos:   { label: 'macOS home (Bell fibre, Ottawa)', runner: 'macOS (Bell fibre, Ottawa)', section: 'browsers' }
         };
 
         // The two series every Browsers chart compares.
@@ -374,7 +376,8 @@
             { key: 'netperf', label: 'Linux netperf' },
             { key: 'winref', label: 'Windows ref' },
             { key: 'ghvm', label: 'GitHub VM' },
-            { key: 'metal', label: 'AWS metal' }
+            { key: 'metal', label: 'AWS metal' },
+            { key: 'macos', label: 'macOS home' }
         ];
         const OVERVIEW_SERIES = ENVIRONMENTS.flatMap(e => BROWSER_SERIES.map(b =>
             ({ app: e.key + '-' + b.app, label: e.label + ' · ' + b.label, short: b.short, color: b.color })));
@@ -544,7 +547,7 @@
                 const ci = await Promise.all(['linux', 'netperf', 'winref'].map(async k =>
                     (await getData(k)).map(p => ({ ...p, app: k + '-' + p.app }))));
                 const off = await offsitePoints(() => true, o =>
-                    (o.runner === 'c5.metal' ? 'metal' : 'ghvm') + '-' + o.browser);
+                    (Object.keys(PLATFORMS).find(k => PLATFORMS[k].runner === o.runner) || 'ghvm') + '-' + o.browser);
                 cache[platformKey] = ci.flat().concat(off);
                 return cache[platformKey];
             }
